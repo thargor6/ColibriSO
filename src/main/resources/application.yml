@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: colibri-so
+  jmx:
+    default-domain: colibri-so
+  datasource:
+    url: jdbc:h2:file:D:/TMP/wf_out/colibri-so-database;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
+    username: admin
+    password: password
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  mustache:
+    check-template-location: false
+
+server:
+  port: ${PORT:8080}
+logging:
+  level:
+    org.atmosphere: warn
+
+# To improve the performance during development.
+# For more information https://vaadin.com/docs/flow/spring/tutorial-spring-configuration.html#special-configuration-parameters
+# vaadin.whitelisted-packages= org/vaadin/example
+
+
