@@ -24,11 +24,10 @@ export class ProjectView extends CrudView<User> {
             id: '',
             creationTime: '',
             lastChangedTime: '',
-            creatorId: '',
             username: '',
             email: '',
+            enabled: true,
             passwordHash: '',
-            passwordSalt: ''
         }
     }
 

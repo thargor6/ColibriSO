@@ -19,12 +19,15 @@ import '../components/confirmation-dialog';
 import {selectElementFromComponent} from '../utils/document-utils';
 
 import {html, LitElement, property, query, TemplateResult, unsafeCSS} from 'lit-element';
-import BaseEntity from '../../generated/com/overwhale/colibri_so/domain/entity/BaseEntity';
 import styles from './crud-view.css';
 import {ConfirmationDialogElement} from "../components/confirmation-dialog";
-import BaseEntityModel from "../../generated/com/overwhale/colibri_so/domain/entity/BaseEntityModel";
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
 import {store} from "../../store";
+import {AbstractModel} from "@vaadin/form";
+
+interface BaseEntity {
+    id: string;
+}
 
 export abstract class CrudView<EntityType extends BaseEntity> extends LitElement {
     @query('#grid')
@@ -41,7 +44,7 @@ export abstract class CrudView<EntityType extends BaseEntity> extends LitElement
         return [CSSModule('lumo-typography'), unsafeCSS(styles)];
     }
 
-    protected abstract getBinder(): Binder<EntityType, BaseEntityModel<EntityType>>;
+    protected abstract getBinder(): Binder<EntityType, AbstractModel<EntityType>>;
 
     protected abstract renderColumns: ()=> TemplateResult;
 
