@@ -1,6 +1,5 @@
 package com.overwhale.colibri_so.domain.endpoint;
 
-import com.overwhale.colibri_so.data.CrudEndpoint;
 import com.overwhale.colibri_so.domain.entity.User;
 import com.overwhale.colibri_so.domain.service.UserService;
 import com.vaadin.flow.server.connect.Endpoint;
