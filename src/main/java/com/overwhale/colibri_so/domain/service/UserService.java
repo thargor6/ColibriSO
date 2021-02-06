@@ -1,6 +1,5 @@
 package com.overwhale.colibri_so.domain.service;
 
-
 import com.overwhale.colibri_so.domain.entity.User;
 import com.overwhale.colibri_so.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,7 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Service
-public class UserService extends CrudService<User, UUID>  {
+public class UserService extends CrudService<User, UUID> {
   private UserRepository repository;
 
   public UserService(@Autowired UserRepository repository) {
@@ -20,11 +19,11 @@ public class UserService extends CrudService<User, UUID>  {
 
   @Override
   public User update(User entity) {
-    if(entity.getId()==null) {
-      entity.setCreationTime(OffsetDateTime.now());
+    if (entity.getId() == null) {
+     // entity.setCreationTime(OffsetDateTime.now());
       entity.setId(UUID.randomUUID());
     }
-    entity.setLastChangedTime(OffsetDateTime.now());
+   // entity.setLastChangedTime(OffsetDateTime.now());
     return super.update(entity);
   }
 

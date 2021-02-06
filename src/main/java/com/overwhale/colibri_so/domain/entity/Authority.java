@@ -2,6 +2,7 @@ package com.overwhale.colibri_so.domain.entity;
 
 import lombok.Data;
 import org.hibernate.annotations.Type;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -12,19 +13,13 @@ import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "tags")
-public class Tag {
+@Table(name = "authorities")
+public class Authority  {
   @Id
   @Type(type = "uuid-char")
   private UUID id;
 
   @NotNull
-  private OffsetDateTime creationTime;
+  private String authority;
 
-  private OffsetDateTime lastChangedTime;
-
-  @NotNull
-  private UUID creatorId;
-
-  @NotNull private String tag;
 }
