@@ -26,7 +26,7 @@ import {store} from "../../store";
 import {AbstractModel} from "@vaadin/form";
 
 interface BaseEntity {
-    id: string;
+    id?: string;
 }
 
 export abstract class CrudView<EntityType extends BaseEntity> extends LitElement {

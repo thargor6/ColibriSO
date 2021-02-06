@@ -4,15 +4,17 @@ spring:
   jmx:
     default-domain: colibri-so
   datasource:
-    #url: jdbc:h2:file:~/Documents/colibri-so-database;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
     url: jdbc:h2:file:~/colibri-so-database;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
     username: admin
     password: password
     driver-class-name: org.h2.Driver
+    platform: h2
+    initialization-mode: always
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+
   mustache:
     check-template-location: false
 

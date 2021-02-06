@@ -17,16 +17,16 @@ import java.util.UUID;
 public class Project {
   @Id
   @Type(type = "uuid-char")
-  @NotNull
+  @Nullable
   private UUID id;
 
-  @NotNull
+  @Nullable
   private OffsetDateTime creationTime;
 
   @Nullable
   private OffsetDateTime lastChangedTime;
 
-  @NotNull
+  @Nullable
   private UUID creatorId;
 
   @NotNull
