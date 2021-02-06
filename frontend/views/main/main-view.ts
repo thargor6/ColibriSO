@@ -136,7 +136,7 @@ export class MainView extends MobxLitElement {
           <vaadin-drawer-toggle></vaadin-drawer-toggle>
           <h1>${this.getSelectedTabName(this.menuTabs)} / ${store.projects.length}</h1>
           <label>${store.sessionUser!.username} </label>
-          <img src="images/user.svg" alt="Avatar" />
+
           <vaadin-menu-bar id="main_menu"></vaadin-menu-bar>
           <div style="display: none";>
             <vaadin-item @click="${this.editProjects}" id="edit_projects_item">Projects</vaadin-item>

@@ -3,6 +3,9 @@
 .settings
 .project
 .classpath
+.gradle
+
+TODO.md
 
 *.iml
 .DS_Store
