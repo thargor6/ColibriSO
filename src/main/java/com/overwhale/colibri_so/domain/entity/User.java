@@ -4,6 +4,7 @@ import lombok.Data;
 import org.hibernate.annotations.Type;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import javax.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -17,11 +18,13 @@ import java.util.UUID;
 public class User {
   @Id
   @Type(type = "uuid-char")
+  @NotNull
   private UUID id;
 
   @NotNull
   private OffsetDateTime creationTime;
 
+  @Nullable
   private OffsetDateTime lastChangedTime;
 
   @NotNull
@@ -30,6 +33,7 @@ public class User {
   @NotNull
   private String passwordHash;
 
+  @Nullable
   private String email;
 
   @NotNull

@@ -17,6 +17,7 @@ import java.util.UUID;
 public class Authority  {
   @Id
   @Type(type = "uuid-char")
+  @NotNull
   private UUID id;
 
   @NotNull

@@ -15,6 +15,10 @@ public class UserEndpoint extends CrudEndpoint<User, UUID>  {
     this.service = service;
   }
 
+  public User getByUsername(String username) {
+    return service.getByUsername(username);
+  }
+
   @Override
   protected UserService getService() {
     return service;

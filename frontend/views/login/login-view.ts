@@ -82,15 +82,15 @@ export class LoginView extends LitElement implements AfterEnterObserver {
   private get i18n(): LoginI18n {
     return {
       header: {
-        title: 'Vaadin CRM',
-        description: 'Demo app for the Java Web App tutorial series. Log in with user: user and password: password.'
+        title: 'Colibri Snippet Organizer',
+        description: 'Demo project to play around with Vaadin Fusion'
       },
       form: {
         title: 'Log in',
         username: 'Username',
         password: 'Password',
         submit: 'Log in',
-        forgotPassword: 'Forgot password'
+        forgotPassword: ''
       },
       errorMessage: {
         title: this.errorTitle,

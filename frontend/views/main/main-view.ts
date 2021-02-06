@@ -135,6 +135,7 @@ export class MainView extends MobxLitElement {
         <header slot="navbar" theme="dark">
           <vaadin-drawer-toggle></vaadin-drawer-toggle>
           <h1>${this.getSelectedTabName(this.menuTabs)} / ${store.projects.length}</h1>
+          <label>${store.sessionUser!.username} </label>
           <img src="images/user.svg" alt="Avatar" />
           <vaadin-menu-bar id="main_menu"></vaadin-menu-bar>
           <div style="display: none";>

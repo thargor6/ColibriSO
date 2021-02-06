@@ -3,6 +3,7 @@ package com.overwhale.colibri_so.domain.entity;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
+import javax.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -16,15 +17,18 @@ import java.util.UUID;
 public class Tag {
   @Id
   @Type(type = "uuid-char")
+  @NotNull
   private UUID id;
 
   @NotNull
   private OffsetDateTime creationTime;
 
+  @Nullable
   private OffsetDateTime lastChangedTime;
 
   @NotNull
   private UUID creatorId;
 
-  @NotNull private String tag;
+  @NotNull
+  private String tag;
 }

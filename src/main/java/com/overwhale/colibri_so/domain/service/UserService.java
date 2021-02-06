@@ -27,6 +27,10 @@ public class UserService extends CrudService<User, UUID> {
     return super.update(entity);
   }
 
+  public User getByUsername(String username) {
+    return getRepository().getByUsername(username);
+  }
+
   @Override
   protected UserRepository getRepository() {
     return repository;
