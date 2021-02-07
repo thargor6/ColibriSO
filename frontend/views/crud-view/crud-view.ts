@@ -126,18 +126,12 @@ export abstract class CrudView<EntityType extends BaseEntity> extends LitElement
         try {
             await this.getBinder().submitTo(this.updateEntity);
             if (!this.getBinder().value.id) {
-                console.log('ADD');
                 // We added a new item
                 this.gridSize++;
                 const entity: any = this.getBinder().value;
                 if(this.instanceOfProject(entity)) {
                     Store.getInstance().projects = [...Store.getInstance().projects, entity];
-                    console.log('ADDED TO STORE');
                 }
-                else {
-                    console.log('NO ADD TO STORE');
-                }
-
             }
             this.clearForm();
             this.refreshGrid();
@@ -167,15 +161,21 @@ export abstract class CrudView<EntityType extends BaseEntity> extends LitElement
 
     private async execDelete() {
         try {
-            if (this.getBinder().value.id) {
-                await this.deleteEntity(this.getBinder().value.id);
+            const entity = this.getBinder().value;
+            if (entity.id) {
+                const deletedId = entity.id;
+                await this.deleteEntity(entity.id);
 
-                if (!this.getBinder().value.id) {
+                if (!entity.id) {
                     // We removed a item
                     this.gridSize--;
                 }
+                if(this.instanceOfProject(entity)) {
+                    Store.getInstance().projects = [... Store.getInstance().projects.filter( p => ! (p.id === deletedId))];
+                }
                 this.clearForm();
                 this.refreshGrid();
+
                 showNotification(`${this.objectName} was removed.`, {position: 'bottom-start'});
             }
         } catch (error) {

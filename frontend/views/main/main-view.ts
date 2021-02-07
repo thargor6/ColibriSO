@@ -48,7 +48,7 @@ export class MainView extends MobxLitElement {
   @query('#logout_item')
   private logoutItem!: HTMLElement;
 
-  @property({ type: Array }) menuTabs: MenuTab[] = [
+  @property({ type: Array }) baseMenuTabs: MenuTab[] = [
     { route: 'snippet', name: 'Snippets' },
   ];
 
@@ -138,7 +138,7 @@ export class MainView extends MobxLitElement {
       <vaadin-app-layout primary-section="drawer">
         <header slot="navbar" theme="dark">
           <vaadin-drawer-toggle></vaadin-drawer-toggle>
-          <h1>${this.getSelectedTabName(this.menuTabs)} / ${Store.getInstance().projects.length}</h1>
+          <h1>${this.getSelectedTabName(this.getMenuTabs())} / ${Store.getInstance().projects.length}</h1>
           <vaadin-menu-bar id="main_menu"></vaadin-menu-bar>
           <div style="display: none";>
             <vaadin-item id="user_menu_item"><iron-icon style="width: 18px; color:${this.getAvatarColor()};" icon="${this.getAvatar()}"></iron-icon><span style="padding-left: 0.35em;">${this.getUsername()}</span></vaadin-item>
@@ -159,7 +159,7 @@ export class MainView extends MobxLitElement {
           </div>
           <hr />
           <vaadin-tabs orientation="vertical" theme="minimal" id="tabs" .selected="${this.getIndexOfSelectedTab()}">
-            ${this.menuTabs.map(
+            ${this.getMenuTabs().map(
               (menuTab) => html`
                 <vaadin-tab>
                   <a href="${router.urlForPath(menuTab.route)}" tabindex="-1">${menuTab.name}</a>
@@ -194,7 +194,7 @@ export class MainView extends MobxLitElement {
   }
 
   private getIndexOfSelectedTab(): number {
-    const index = this.menuTabs.findIndex((menuTab) => this.isCurrentLocation(menuTab.route));
+    const index = this.getMenuTabs().findIndex((menuTab) => this.isCurrentLocation(menuTab.route));
 
     // Select first tab if there is no tab for home in the menu
     if (index === -1 && this.isCurrentLocation('')) {
@@ -250,22 +250,10 @@ export class MainView extends MobxLitElement {
       },
     ];
     this.mainMenu.items = menuItems;
-
-    const newMenuTabs: MenuTab[] = [...this.menuTabs];
-
-    Store.getInstance().projects.map( item => {
-        newMenuTabs.push( { name: item.project,
-          // todo encode URL
-        route: "/snippet?project="+item.project }  ) });
-
-    this.menuTabs = newMenuTabs;
-
-
     const userDetail = Store.getInstance().sessionUserDetail;
     if(userDetail && userDetail.uiTheme) {
       switchTheme(userDetail.uiTheme);
     }
-
   }
 
   private editProjects() {
@@ -318,5 +306,16 @@ export class MainView extends MobxLitElement {
     else {
       return "";
     }
+  }
+
+  private getMenuTabs() {
+    const newMenuTabs: MenuTab[] = [...this.baseMenuTabs];
+
+    Store.getInstance().projects.map( item => {
+      newMenuTabs.push( { name: item.project,
+        // todo encode URL
+        route: "/snippet?project="+item.project }  ) });
+
+    return newMenuTabs;
   }
 }
