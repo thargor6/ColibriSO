@@ -15,21 +15,23 @@ import {Binder, field} from '@vaadin/form';
 import UserDetail from '../../generated/com/overwhale/colibri_so/domain/entity/UserDetail';
 import UserDetailModel from '../../generated/com/overwhale/colibri_so/domain/entity/UserDetailModel';
 import * as UserDetailEndpoint from '../../generated/UserDetailEndpoint';
-import {getSessionUserId} from "../../auth";
 import styles from './user-detail-view.css';
 
-import {customElement, html, LitElement, property} from 'lit-element';
+import {customElement, html, property} from 'lit-element';
 import {ComboBoxElement, ComboBoxItemModel} from "@vaadin/vaadin-combo-box";
 
 import {showNotification} from '@vaadin/flow-frontend/a-notification';
 import {EndpointError} from '@vaadin/flow-frontend/Connect';
+import {Store} from "../../store";
+import {switchTheme} from "../utils/theme-utils";
+import {MobxLitElement} from "@adobe/lit-mobx";
 
 enum EditMode {EDIT, INSERT};
 
 const DFLT_SELECTED_COLOR = '#ffffff';
 
 @customElement('user-detail-view')
-export class UserDetailView extends LitElement {
+export class UserDetailView extends MobxLitElement {
     private binder = new Binder<UserDetail, UserDetailModel>(this, UserDetailModel);
 
     @property({type: Array})
@@ -105,7 +107,6 @@ export class UserDetailView extends LitElement {
     private async save() {
         try {
             await this.binder.submitTo(this.updateEntity);
-            this.publishChangedUserDetails();
             showNotification(`User Settings stored.`, {position: 'bottom-start'});
         } catch (error) {
             if (error instanceof EndpointError) {
@@ -125,18 +126,14 @@ export class UserDetailView extends LitElement {
             entity.lastChangedTime =new Date().toISOString();
         }
         return UserDetailEndpoint.update(entity);
+        this.publishChangedUserDetails(entity);
     }
 
-    private async publishChangedUserDetails() {
-        const userInfo = await UserDetailEndpoint.get(this.currUserId);
-        if(userInfo && userInfo.uiTheme) {
-            this.switchTheme(userInfo.uiTheme);
+    private async publishChangedUserDetails(entity: UserDetail) {
+        Store.getInstance().sessionUserDetail = entity;
+        if(entity && entity.uiTheme) {
+            switchTheme(entity.uiTheme);
         }
-    }
-
-    private switchTheme(newTheme: string) {
-        const body: HTMLElement = document.querySelector("body")!;
-        body.attributes.getNamedItem('theme')!.value = newTheme;
     }
 
     private async cancel() {
@@ -144,8 +141,7 @@ export class UserDetailView extends LitElement {
     }
 
     private async refreshUserDetail() {
-        this.currUserId = getSessionUserId()!;
-        const userInfo = await UserDetailEndpoint.get(this.currUserId);
+        const userInfo = Store.getInstance().sessionUserDetail;
         if(userInfo) {
             this.binder.read(userInfo);
             if(userInfo.avatarColor) {
@@ -199,7 +195,7 @@ export class UserDetailView extends LitElement {
     uiThemeValueChanged = (e: Event) => {
         const newValue = (e.target as HTMLInputElement).value;
         if(newValue) {
-            this.switchTheme(newValue);
+            switchTheme(newValue);
         }
     }
 

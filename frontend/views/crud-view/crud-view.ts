@@ -22,7 +22,7 @@ import {html, LitElement, property, query, TemplateResult, unsafeCSS} from 'lit-
 import styles from './crud-view.css';
 import {ConfirmationDialogElement} from "../components/confirmation-dialog";
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
-import {store} from "../../store";
+import {Store} from "../../store";
 import {AbstractModel} from "@vaadin/form";
 
 interface BaseEntity {
@@ -131,7 +131,7 @@ export abstract class CrudView<EntityType extends BaseEntity> extends LitElement
                 this.gridSize++;
                 const entity: any = this.getBinder().value;
                 if(this.instanceOfProject(entity)) {
-                    store.projects = [...store.projects, entity];
+                    Store.getInstance().projects = [...Store.getInstance().projects, entity];
                     console.log('ADDED TO STORE');
                 }
                 else {

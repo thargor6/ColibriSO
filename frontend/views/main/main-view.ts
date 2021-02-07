@@ -11,7 +11,8 @@ import '@vaadin/vaadin-menu-bar';
 import '@vaadin/vaadin-context-menu';
 import {MenuBarElement} from "@vaadin/vaadin-menu-bar";
 import {MobxLitElement} from "@adobe/lit-mobx";
-import {store} from "../../store";
+import {Store} from "../../store";
+import {switchTheme} from "../utils/theme-utils";
 
 interface MenuTab {
   route: string;
@@ -28,6 +29,9 @@ export class MainView extends MobxLitElement {
 
   @query('#edit_projects_item')
   private editProjectsItem!: HTMLElement;
+
+  @query('#user_menu_item')
+  private userMenuItem!: HTMLElement;
 
   @query('#edit_tags_item')
   private editTagsItem!: HTMLElement;
@@ -134,11 +138,11 @@ export class MainView extends MobxLitElement {
       <vaadin-app-layout primary-section="drawer">
         <header slot="navbar" theme="dark">
           <vaadin-drawer-toggle></vaadin-drawer-toggle>
-          <h1>${this.getSelectedTabName(this.menuTabs)} / ${store.projects.length}</h1>
-          <label>${store.sessionUser!.username} </label>
-
+          <h1>${this.getSelectedTabName(this.menuTabs)} / ${Store.getInstance().projects.length}</h1>
           <vaadin-menu-bar id="main_menu"></vaadin-menu-bar>
           <div style="display: none";>
+            <vaadin-item id="user_menu_item"><iron-icon style="width: 18px; color:${this.getAvatarColor()};" icon="${this.getAvatar()}"></iron-icon><span style="padding-left: 0.35em;">${this.getUsername()}</span></vaadin-item>
+
             <vaadin-item @click="${this.editProjects}" id="edit_projects_item">Projects</vaadin-item>
             <vaadin-item @click="${this.editTags}" id="edit_tags_item">Tags</vaadin-item>
             <vaadin-item @click="${this.editIntents}" id="edit_intents_item">Intents</vaadin-item>
@@ -173,7 +177,7 @@ export class MainView extends MobxLitElement {
     AppLayoutElement.dispatchCloseOverlayDrawerEvent();
   }
 
-  connectedCallback() {
+  async connectedCallback() {
     super.connectedCallback();
     window.addEventListener('vaadin-router-location-changed', this._routerLocationChanged);
     this.projectName = 'ColibriSO';
@@ -220,6 +224,7 @@ export class MainView extends MobxLitElement {
     console.log('Selected: '+e);
   }
 
+
   firstUpdated() {
     let menuItems = [
       {
@@ -237,7 +242,7 @@ export class MainView extends MobxLitElement {
         ]
       },
       {
-        text: 'User',
+        component: this.userMenuItem,
         children: [
           {component: this.userDetailItem},
           {component: this.logoutItem},
@@ -248,12 +253,19 @@ export class MainView extends MobxLitElement {
 
     const newMenuTabs: MenuTab[] = [...this.menuTabs];
 
-    store.projects.map( item => {
+    Store.getInstance().projects.map( item => {
         newMenuTabs.push( { name: item.project,
           // todo encode URL
         route: "/snippet?project="+item.project }  ) });
 
     this.menuTabs = newMenuTabs;
+
+
+    const userDetail = Store.getInstance().sessionUserDetail;
+    if(userDetail && userDetail.uiTheme) {
+      switchTheme(userDetail.uiTheme);
+    }
+
   }
 
   private editProjects() {
@@ -280,4 +292,31 @@ export class MainView extends MobxLitElement {
     window.location.assign('/logout');
   }
 
+  private getAvatarColor() {
+    if(Store.getInstance().sessionUserDetail && Store.getInstance().sessionUserDetail!.avatarColor) {
+      return Store.getInstance().sessionUserDetail!.avatarColor;
+    }
+    else {
+      return '#ffffff';
+    }
+  }
+
+  private getAvatar() {
+    if(Store.getInstance().sessionUserDetail && Store.getInstance().sessionUserDetail!.avatarColor) {
+      return 'vaadin:'+Store.getInstance().sessionUserDetail!.avatar;
+    }
+    else {
+      return 'vaadin:circle';
+    }
+  }
+
+
+  private getUsername() {
+    if(Store.getInstance().sessionUser && Store.getInstance().sessionUser!.username) {
+      return Store.getInstance().sessionUser!.username;
+    }
+    else {
+      return "";
+    }
+  }
 }
