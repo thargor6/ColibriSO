@@ -9,14 +9,14 @@ import java.util.UUID;
 
 @Endpoint
 public class ProjectEndpoint extends CrudEndpoint<Project, UUID> {
-    private final ProjectService service;
+  private final ProjectService service;
 
-    public ProjectEndpoint(@Autowired ProjectService service) {
-        this.service = service;
-    }
+  public ProjectEndpoint(@Autowired ProjectService service) {
+    this.service = service;
+  }
 
-    @Override
-    protected ProjectService getService() {
-        return service;
-    }
+  @Override
+  protected ProjectService getService() {
+    return service;
+  }
 }

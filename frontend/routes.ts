@@ -45,9 +45,9 @@ export const routes = [
     children: [
       {
         path: '',
-        component: 'user-view',
+        component: 'snippet-view',
         action: async () => {
-          await import('./views/user/user-view');
+          await import('./views/snippet/snippet-view');
         },
       },
       {
@@ -55,6 +55,13 @@ export const routes = [
         component: 'user-view',
         action: async () => {
           await import('./views/user/user-view');
+        },
+      },
+      {
+        path: 'user-detail',
+        component: 'user-detail-view',
+        action: async () => {
+          await import('./views/user/user-detail-view');
         },
       },
       {

@@ -1,5 +1,6 @@
 package com.overwhale.colibri_so.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
@@ -21,17 +22,16 @@ public class Project {
   private UUID id;
 
   @Nullable
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
   private OffsetDateTime creationTime;
 
   @Nullable
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
   private OffsetDateTime lastChangedTime;
 
-  @Nullable
-  private UUID creatorId;
+  @Nullable private UUID creatorId;
 
-  @NotNull
-  private String project;
+  @NotNull private String project;
 
-  @Nullable
-  private String description;
+  @Nullable private String description;
 }

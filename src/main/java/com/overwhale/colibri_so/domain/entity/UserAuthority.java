@@ -3,9 +3,11 @@ package com.overwhale.colibri_so.domain.entity;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
@@ -16,24 +18,11 @@ public class UserAuthority {
 
   @NotNull
   @Id
-  @Column(insertable = false, updatable = false)
   @Type(type = "uuid-char")
   private UUID userId;
 
   @NotNull
-  @ManyToOne
-  @JoinColumn(name = "userId")
-  private User user;
-
-  @NotNull
   @Id
-  @Column(insertable = false, updatable = false)
   @Type(type = "uuid-char")
   private UUID authorityId;
-
-  @NotNull
-  @ManyToOne
-  @JoinColumn(name = "authorityId")
-  private Authority authority;
-
 }

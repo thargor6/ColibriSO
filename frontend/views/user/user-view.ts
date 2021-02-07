@@ -25,7 +25,6 @@ export class ProjectView extends CrudView<User> {
             creationTime: '',
             lastChangedTime: '',
             username: '',
-            email: '',
             enabled: true,
             passwordHash: '',
         }
@@ -39,9 +38,6 @@ export class ProjectView extends CrudView<User> {
                         id="username"
                         ...="${field(this.binder.model.username)}"
                 ></vaadin-text-field
-                >
-                <vaadin-text-field label="Email" id="email"
-                                   ...="${field(this.binder.model.email)}"></vaadin-text-field
                 >
             </vaadin-form-layout>`;
     }

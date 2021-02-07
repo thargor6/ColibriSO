@@ -9,14 +9,14 @@ import java.util.UUID;
 
 @Endpoint
 public class SnippetEndpoint extends CrudEndpoint<Snippet, UUID> {
-    private final SnippetService service;
+  private final SnippetService service;
 
-    public SnippetEndpoint(@Autowired SnippetService service) {
-        this.service = service;
-    }
+  public SnippetEndpoint(@Autowired SnippetService service) {
+    this.service = service;
+  }
 
-    @Override
-    protected SnippetService getService() {
-        return service;
-    }
+  @Override
+  protected SnippetService getService() {
+    return service;
+  }
 }

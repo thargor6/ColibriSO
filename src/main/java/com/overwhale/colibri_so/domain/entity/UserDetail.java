@@ -14,22 +14,28 @@ import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "tags")
-public class Tag {
+@Table(name = "user_details")
+public class UserDetail {
+  @NotNull
   @Id
   @Type(type = "uuid-char")
-  @NotNull
-  private UUID id;
+  private UUID userId;
 
-  @NotNull
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  @NotNull
   private OffsetDateTime creationTime;
 
-  @Nullable
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  @Nullable
   private OffsetDateTime lastChangedTime;
 
-  @NotNull private UUID creatorId;
+  @Nullable private String email;
 
-  @NotNull private String tag;
+  @Nullable private String fullName;
+
+  @Nullable private String avatar;
+
+  @Nullable private String avatarColor;
+
+  @Nullable private String uiTheme;
 }

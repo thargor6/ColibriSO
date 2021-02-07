@@ -7,6 +7,6 @@ import java.util.UUID;
 
 @Data
 public class UserAuthorityKey implements Serializable {
-    private UUID userId;
-    private UUID authorityId;
+  private UUID userId;
+  private UUID authorityId;
 }

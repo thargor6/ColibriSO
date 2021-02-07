@@ -38,8 +38,8 @@ export class MainView extends MobxLitElement {
   @query('#edit_users_item')
   private editUsersItem!: HTMLElement;
 
-  @query('#user_info_item')
-  private userInfoItem!: HTMLElement;
+  @query('#user_detail_item')
+  private userDetailItem!: HTMLElement;
 
   @query('#logout_item')
   private logoutItem!: HTMLElement;
@@ -143,7 +143,7 @@ export class MainView extends MobxLitElement {
             <vaadin-item @click="${this.editTags}" id="edit_tags_item">Tags</vaadin-item>
             <vaadin-item @click="${this.editIntents}" id="edit_intents_item">Intents</vaadin-item>
             <vaadin-item @click="${this.editUsers}" id="edit_users_item">Edit Users</vaadin-item>
-            <vaadin-item @click="${this.userInfo}" id="user_info_item">User Info</vaadin-item>
+            <vaadin-item @click="${this.editUserDetail}" id="user_detail_item">User Settings</vaadin-item>
             <vaadin-item @click="${this.logout}" id="logout_item">Logout</vaadin-item>
           </div>
         </header>
@@ -223,12 +223,6 @@ export class MainView extends MobxLitElement {
   firstUpdated() {
     let menuItems = [
       {
-        text: 'File',
-        children: [
-          {text: 'Auto Save', checked: true},
-        ]
-      },
-      {
         text: 'Edit',
         children: [
           {component: this.editProjectsItem},
@@ -243,9 +237,9 @@ export class MainView extends MobxLitElement {
         ]
       },
       {
-        text: 'Info',
+        text: 'User',
         children: [
-          {component: this.userInfoItem},
+          {component: this.userDetailItem},
           {component: this.logoutItem},
         ]
       },
@@ -278,8 +272,8 @@ export class MainView extends MobxLitElement {
     window.location.assign('/user');
   }
 
-  private userInfo() {
-    window.location.assign('/user-info');
+  private editUserDetail() {
+    window.location.assign('/user-detail');
   }
 
   private logout() {
