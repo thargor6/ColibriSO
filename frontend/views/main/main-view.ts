@@ -13,6 +13,7 @@ import {MenuBarElement} from "@vaadin/vaadin-menu-bar";
 import {MobxLitElement} from "@adobe/lit-mobx";
 import {store} from "../../store";
 import {switchTheme} from "../utils/theme-utils";
+import {Router} from "@vaadin/router";
 
 interface MenuTab {
   route: string;
@@ -256,27 +257,27 @@ export class MainView extends MobxLitElement {
   }
 
   private editProjects() {
-    window.location.assign('/project');
+    Router.go('/project');
   }
 
   private editTags() {
-    window.location.assign('/tag');
+    Router.go('/tag');
   }
 
   private editIntents() {
-    window.location.assign('/intent');
+    Router.go('/intent');
   }
 
   private editUsers() {
-    window.location.assign('/user');
+    Router.go('/user');
   }
 
   private editUserDetail() {
-    window.location.assign('/user-detail');
+    Router.go('/user-detail');
   }
 
   private logout() {
-    window.location.assign('/logout');
+    Router.go('/logout');
   }
 
   private getAvatarColor() {
