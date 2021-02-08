@@ -100,7 +100,7 @@ export class MainView extends MobxLitElement {
         }
 
         #logo img {
-          height: calc(var(--lumo-size-l) * 1.5);
+          height: calc(var(--lumo-size-l) * 2.5);
         }
 
         #logo span {
@@ -154,8 +154,7 @@ export class MainView extends MobxLitElement {
 
         <div slot="drawer">
           <div id="logo">
-            <img src="images/logo.png" alt="${this.projectName} logo" />
-            <span>${this.projectName}</span>
+            <img src="images/colibri.svg" alt="${this.projectName} logo" />
           </div>
           <hr />
           <vaadin-tabs orientation="vertical" theme="minimal" id="tabs" .selected="${this.getIndexOfSelectedTab()}">
