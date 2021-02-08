@@ -7,7 +7,7 @@ import * as UserDetailEndpoint from './generated/UserDetailEndpoint';
 import {getSessionUserId} from "./auth";
 import UserDetail from "./generated/com/overwhale/colibri_so/domain/entity/UserDetail";
 
-export class Store {
+class Store {
     private static _instance:Store = new Store();
 
     private _projects: Project[] = [];
@@ -72,3 +72,5 @@ export class Store {
         this.sessionUserDetail = undefined;
     }
 }
+
+export const store = Store.getInstance();

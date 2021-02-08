@@ -22,7 +22,7 @@ import {ComboBoxElement, ComboBoxItemModel} from "@vaadin/vaadin-combo-box";
 
 import {showNotification} from '@vaadin/flow-frontend/a-notification';
 import {EndpointError} from '@vaadin/flow-frontend/Connect';
-import {Store} from "../../store";
+import {store} from "../../store";
 import {switchTheme} from "../utils/theme-utils";
 import {MobxLitElement} from "@adobe/lit-mobx";
 
@@ -130,7 +130,7 @@ export class UserDetailView extends MobxLitElement {
     }
 
     private async publishChangedUserDetails(entity: UserDetail) {
-        Store.getInstance().sessionUserDetail = entity;
+        store.sessionUserDetail = entity;
         if(entity && entity.uiTheme) {
             switchTheme(entity.uiTheme);
         }
@@ -141,7 +141,7 @@ export class UserDetailView extends MobxLitElement {
     }
 
     private async refreshUserDetail() {
-        const userInfo = Store.getInstance().sessionUserDetail;
+        const userInfo = store.sessionUserDetail;
         if(userInfo) {
             this.binder.read(userInfo);
             if(userInfo.avatarColor) {

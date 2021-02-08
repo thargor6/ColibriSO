@@ -3,7 +3,7 @@
 import { login as loginImpl, logout as logoutImpl } from '@vaadin/flow-frontend';
 import type { LoginResult } from '@vaadin/flow-frontend';
 import * as UserEndpoint from './generated/UserEndpoint';
-import {Store} from "./store";
+import {store} from "./store";
 
 const LAST_LOGIN_TIMESTAMP = 'lastLoginTimestamp';
 const SESSION_USER_ID = 'sessionUserId';
@@ -31,15 +31,15 @@ export async function login(username: string, password: string): Promise<LoginRe
 async function postLogin(username: string) {
   const user = await UserEndpoint.getByUsername(username);
   localStorage.setItem(SESSION_USER_ID, user?.id);
-  Store.getInstance().clearSessionData();
-  await Store.getInstance().init();
+  store.clearSessionData();
+  await store.init();
 }
 
 export async function logout() {
   _isLoggedIn = false;
   localStorage.removeItem(LAST_LOGIN_TIMESTAMP);
   localStorage.removeItem(SESSION_USER_ID);
-  Store.getInstance().clearSessionData();
+  store.clearSessionData();
   return await logoutImpl();
 }
 

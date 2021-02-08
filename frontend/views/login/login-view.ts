@@ -83,7 +83,7 @@ export class LoginView extends LitElement implements AfterEnterObserver {
     return {
       header: {
         title: 'Colibri Snippet Organizer',
-        description: 'Demo project to play around with Vaadin Fusion'
+        description: 'Demo project to play around with Vaadin Fusion. Log in as admin/colibri42 or user/colibri42'
       },
       form: {
         title: 'Log in',

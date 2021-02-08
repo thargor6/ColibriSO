@@ -1,6 +1,6 @@
 INSERT INTO USERS (ID, USERNAME, ENABLED, PASSWORD_HASH, CREATION_TIME)
   values ('f2642591-312a-414a-80ab-e13e59b610f9', 'admin', 1,
-          '$2y$12$PGO..za3LBKShGQ2gQ2QcOaVHrBqB5kBe2eIkJnohGS9NyQqf2PQ6',
+          '$2y$12$sE1zfriusl2MWpVsqcvR7ewUiJ2xqS0776AZS4oGFUQ6sCSgH5Mgu',
           parsedatetime('06-02-2021 18:00:00.00', 'dd-MM-yyyy hh:mm:ss.SS'));
 
 insert INTO USER_DETAILS (USER_ID, AVATAR, AVATAR_COLOR, CREATION_TIME, EMAIL, FULL_NAME, UI_THEME)
@@ -22,7 +22,7 @@ INSERT INTO USER_AUTHORITIES (AUTHORITY_ID, USER_ID)
 
 INSERT INTO USERS (ID, USERNAME, ENABLED, PASSWORD_HASH, CREATION_TIME)
 values ('43471800-10cd-41ce-9c1e-26fe60814e26', 'user', 1,
-        '$2y$12$o3coSv41C4QXMAUpDyWErOY2nZN95HPoMdjgOPMaD0uda7JaFoJ2a',
+        '$2y$12$Aa7VN/csWw/Doqv4k9Nh0ezZmfaw843kabQv/M5Xtnit9s1vor.TK',
         parsedatetime('06-02-2021 18:00:00.00', 'dd-MM-yyyy hh:mm:ss.SS'));
 
 insert INTO USER_DETAILS (USER_ID, AVATAR, AVATAR_COLOR, CREATION_TIME, EMAIL, FULL_NAME, UI_THEME)
@@ -34,7 +34,7 @@ INSERT INTO USER_AUTHORITIES (AUTHORITY_ID, USER_ID)
 values ('bbd7b226-d1d3-4f00-afbe-d9979871417e', '43471800-10cd-41ce-9c1e-26fe60814e26');
 
 
-// password is always "password"
+// password is always "colibri42"
 
 
 

@@ -11,7 +11,7 @@ import '@vaadin/vaadin-menu-bar';
 import '@vaadin/vaadin-context-menu';
 import {MenuBarElement} from "@vaadin/vaadin-menu-bar";
 import {MobxLitElement} from "@adobe/lit-mobx";
-import {Store} from "../../store";
+import {store} from "../../store";
 import {switchTheme} from "../utils/theme-utils";
 
 interface MenuTab {
@@ -138,7 +138,7 @@ export class MainView extends MobxLitElement {
       <vaadin-app-layout primary-section="drawer">
         <header slot="navbar" theme="dark">
           <vaadin-drawer-toggle></vaadin-drawer-toggle>
-          <h1>${this.getSelectedTabName(this.getMenuTabs())} / ${Store.getInstance().projects.length}</h1>
+          <h1>${this.getSelectedTabName(this.getMenuTabs())} / ${store.projects.length}</h1>
           <vaadin-menu-bar id="main_menu"></vaadin-menu-bar>
           <div style="display: none";>
             <vaadin-item id="user_menu_item"><iron-icon style="width: 18px; color:${this.getAvatarColor()};" icon="${this.getAvatar()}"></iron-icon><span style="padding-left: 0.35em;">${this.getUsername()}</span></vaadin-item>
@@ -250,7 +250,7 @@ export class MainView extends MobxLitElement {
       },
     ];
     this.mainMenu.items = menuItems;
-    const userDetail = Store.getInstance().sessionUserDetail;
+    const userDetail = store.sessionUserDetail;
     if(userDetail && userDetail.uiTheme) {
       switchTheme(userDetail.uiTheme);
     }
@@ -281,8 +281,8 @@ export class MainView extends MobxLitElement {
   }
 
   private getAvatarColor() {
-    if(Store.getInstance().sessionUserDetail && Store.getInstance().sessionUserDetail!.avatarColor) {
-      return Store.getInstance().sessionUserDetail!.avatarColor;
+    if(store.sessionUserDetail && store.sessionUserDetail!.avatarColor) {
+      return store.sessionUserDetail!.avatarColor;
     }
     else {
       return '#ffffff';
@@ -290,8 +290,8 @@ export class MainView extends MobxLitElement {
   }
 
   private getAvatar() {
-    if(Store.getInstance().sessionUserDetail && Store.getInstance().sessionUserDetail!.avatarColor) {
-      return 'vaadin:'+Store.getInstance().sessionUserDetail!.avatar;
+    if(store.sessionUserDetail && store.sessionUserDetail!.avatarColor) {
+      return 'vaadin:'+store.sessionUserDetail!.avatar;
     }
     else {
       return 'vaadin:circle';
@@ -300,8 +300,8 @@ export class MainView extends MobxLitElement {
 
 
   private getUsername() {
-    if(Store.getInstance().sessionUser && Store.getInstance().sessionUser!.username) {
-      return Store.getInstance().sessionUser!.username;
+    if(store.sessionUser && store.sessionUser!.username) {
+      return store.sessionUser!.username;
     }
     else {
       return "";
@@ -311,7 +311,7 @@ export class MainView extends MobxLitElement {
   private getMenuTabs() {
     const newMenuTabs: MenuTab[] = [...this.baseMenuTabs];
 
-    Store.getInstance().projects.map( item => {
+    store.projects.map( item => {
       newMenuTabs.push( { name: item.project,
         // todo encode URL
         route: "/snippet?project="+item.project }  ) });
