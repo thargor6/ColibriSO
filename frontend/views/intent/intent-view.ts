@@ -6,6 +6,11 @@ import Intent from '../../generated/com/overwhale/colibri_so/domain/entity/Inten
 import IntentModel from '../../generated/com/overwhale/colibri_so/domain/entity/IntentModel';
 import * as IntentEndpoint from '../../generated/IntentEndpoint';
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
+import {render} from "lit-html";
+import * as moment from 'moment';
+import {GridColumnElement} from "@vaadin/vaadin-grid/vaadin-grid-column";
+import {GridItemModel} from "@vaadin/vaadin-grid";
+import {store} from "../../store";
 
 @customElement('intent-view')
 export class ProjectView extends CrudView<Intent> {
@@ -21,12 +26,8 @@ export class ProjectView extends CrudView<Intent> {
 
     protected createNewEntity(): Intent {
         return {
-            creationTime: '',
-            creatorId: '',
-            id: '',
-            lastChangedTime: '',
-            intent: '',
-            description: ''
+            creatorId: store.sessionUser.id,
+            intent: ''
         };
     }
 
@@ -37,16 +38,21 @@ export class ProjectView extends CrudView<Intent> {
                         label="Intent"
                         id="intent"
                         ...="${field(this.binder.model.intent)}"
-                ></vaadin-text-field
-                >
+                ></vaadin-text-field>
+                <vaadin-text-field
+                        label="Description"
+                        id="description"
+                        ...="${field(this.binder.model.description)}"
+                ></vaadin-text-field>
             </vaadin-form-layout>`;
     }
 
     protected renderColumns = () => {
         return html`
             <vaadin-grid-sort-column auto-width path="intent"></vaadin-grid-sort-column>
-            <vaadin-grid-sort-column auto-width path="creationTime"></vaadin-grid-sort-column>
-            <vaadin-grid-sort-column auto-width path="lastChangedTime"></vaadin-grid-sort-column>`;
+            <vaadin-grid-sort-column auto-width path="description"></vaadin-grid-sort-column>
+            <vaadin-grid-sort-column auto-width path="creationTime" .renderer="${this.creationTimeRenderer}"></vaadin-grid-sort-column>
+            <vaadin-grid-sort-column auto-width path="lastChangedTime" .renderer="${this.lastChangedTimeRenderer}"></vaadin-grid-sort-column>`;
     }
 
     protected getEntity(id: any): Promise<Intent | undefined> {
@@ -67,5 +73,17 @@ export class ProjectView extends CrudView<Intent> {
 
     protected deleteEntity(id: any): Promise<void> {
         return IntentEndpoint.delete(id);
+    }
+
+    private creationTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
+        const user = model.item as Intent;
+        const formattedTime = moment(user.creationTime).format('MM/DD/YYYY hh:mm:ss');
+        render(html`<div>${formattedTime}</div>`, root);
+    }
+
+    private lastChangedTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
+        const user = model.item as Intent;
+        const formattedTime = user.lastChangedTime ?  moment(user.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
+        render(html`<div>${formattedTime}</div>`, root);
     }
 }

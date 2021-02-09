@@ -23,7 +23,7 @@ public class User {
   private UUID id;
 
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-  @NotNull
+  @Nullable
   private OffsetDateTime creationTime;
 
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")

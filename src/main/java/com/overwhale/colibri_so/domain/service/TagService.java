@@ -22,10 +22,9 @@ public class TagService extends CrudService<Tag, UUID> {
     if (entity.getId() == null) {
       entity.setCreationTime(OffsetDateTime.now());
       entity.setId(UUID.randomUUID());
-      // TODO
-      entity.setCreatorId(UUID.randomUUID());
+    } else {
+      entity.setLastChangedTime(OffsetDateTime.now());
     }
-    entity.setLastChangedTime(OffsetDateTime.now());
     return super.update(entity);
   }
 

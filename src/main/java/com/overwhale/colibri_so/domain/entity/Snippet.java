@@ -18,10 +18,10 @@ import java.util.UUID;
 public class Snippet {
   @Id
   @Type(type = "uuid-char")
-  @NotNull
+  @Nullable
   private UUID id;
 
-  @NotNull
+  @Nullable
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
   private OffsetDateTime creationTime;
 
@@ -29,9 +29,10 @@ public class Snippet {
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
   private OffsetDateTime lastChangedTime;
 
-  @NotNull private UUID creatorId;
+  @Nullable private UUID creatorId;
+
+  @Nullable private String content;
 
   @Nullable private String description;
 
-  @Nullable private String content;
 }

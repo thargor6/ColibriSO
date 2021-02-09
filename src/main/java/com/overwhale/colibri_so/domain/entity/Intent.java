@@ -18,10 +18,10 @@ import java.util.UUID;
 public class Intent {
   @Id
   @Type(type = "uuid-char")
-  @NotNull
+  @Nullable
   private UUID id;
 
-  @NotNull
+  @Nullable
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
   private OffsetDateTime creationTime;
 
@@ -29,7 +29,7 @@ public class Intent {
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
   private OffsetDateTime lastChangedTime;
 
-  @NotNull private UUID creatorId;
+  @Nullable private UUID creatorId;
 
   @NotNull private String intent;
 

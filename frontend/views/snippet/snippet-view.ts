@@ -6,6 +6,11 @@ import Snippet from '../../generated/com/overwhale/colibri_so/domain/entity/Snip
 import SnippetModel from '../../generated/com/overwhale/colibri_so/domain/entity/SnippetModel';
 import * as SnippetEndpoint from '../../generated/SnippetEndpoint';
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
+import {GridColumnElement} from "@vaadin/vaadin-grid/vaadin-grid-column";
+import {GridItemModel} from "@vaadin/vaadin-grid";
+import * as moment from "moment";
+import {render} from "lit-html";
+import {store} from "../../store";
 
 @customElement('snippet-view')
 export class ProjectView extends CrudView<Snippet> {
@@ -21,12 +26,7 @@ export class ProjectView extends CrudView<Snippet> {
 
     protected createNewEntity(): Snippet {
         return {
-            creationTime: '',
-            creatorId: '',
-            id: '',
-            lastChangedTime: '',
-            content: '',
-            description: ''
+            creatorId: store.sessionUser.id
         }
     }
 
@@ -37,16 +37,21 @@ export class ProjectView extends CrudView<Snippet> {
                         label="Content"
                         id="content"
                         ...="${field(this.binder.model.content)}"
-                ></vaadin-text-field
-                >
+                ></vaadin-text-field>
+                <vaadin-text-field
+                        label="Description"
+                        id="description"
+                        ...="${field(this.binder.model.description)}"
+                ></vaadin-text-field>
             </vaadin-form-layout>`;
     }
 
     protected renderColumns = () => {
         return html`
             <vaadin-grid-sort-column auto-width path="content"></vaadin-grid-sort-column>
-            <vaadin-grid-sort-column auto-width path="creationTime"></vaadin-grid-sort-column>
-            <vaadin-grid-sort-column auto-width path="lastChangedTime"></vaadin-grid-sort-column>`;
+            <vaadin-grid-sort-column auto-width path="description"></vaadin-grid-sort-column>
+            <vaadin-grid-sort-column auto-width path="creationTime" .renderer="${this.creationTimeRenderer}"></vaadin-grid-sort-column>
+            <vaadin-grid-sort-column auto-width path="lastChangedTime" .renderer="${this.lastChangedTimeRenderer}"></vaadin-grid-sort-column>`;
     }
 
     protected getEntity(id: any): Promise<Snippet | undefined> {
@@ -67,5 +72,17 @@ export class ProjectView extends CrudView<Snippet> {
 
     protected deleteEntity(id: any): Promise<void> {
         return SnippetEndpoint.delete(id);
+    }
+
+    private creationTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
+        const user = model.item as Snippet;
+        const formattedTime = moment(user.creationTime).format('MM/DD/YYYY hh:mm:ss');
+        render(html`<div>${formattedTime}</div>`, root);
+    }
+
+    private lastChangedTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
+        const user = model.item as Snippet;
+        const formattedTime = user.lastChangedTime ?  moment(user.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
+        render(html`<div>${formattedTime}</div>`, root);
     }
 }

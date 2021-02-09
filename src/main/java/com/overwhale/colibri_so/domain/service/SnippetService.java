@@ -22,10 +22,10 @@ public class SnippetService extends CrudService<Snippet, UUID> {
     if (entity.getId() == null) {
       entity.setCreationTime(OffsetDateTime.now());
       entity.setId(UUID.randomUUID());
-      // TODO
-      entity.setCreatorId(UUID.randomUUID());
     }
-    entity.setLastChangedTime(OffsetDateTime.now());
+    else {
+      entity.setLastChangedTime(OffsetDateTime.now());
+    }
     return super.update(entity);
   }
 
