@@ -11,15 +11,21 @@ class Store {
     private static _instance:Store = new Store();
 
     private _projects: Project[] = [];
-    private _sessionUser: User | undefined;
-    private _sessionUserDetail: UserDetail | undefined;
+    private _sessionUser: User = {
+        creationTime: undefined,
+        enabled: false,
+        id: undefined,
+        passwordHash: "",
+        username: ""
+    };
+    private _sessionUserDetail: UserDetail = {creationTime: undefined, userId: undefined};
 
     constructor() {
         if(Store._instance){
             throw new Error("Error: Instantiation failed: Use Store.getInstance() instead of new.");
         }
         Store._instance = this;
-        console.log('STORE construct');
+
         makeAutoObservable(this);
         this.init();
     }
@@ -30,15 +36,17 @@ class Store {
     }
 
     async init() {
-        console.log('STORE INIT');
       this.projects = await ProjectEndpoint.list(0, 10000, []);
       const userId = getSessionUserId();
       if(userId) {
-
-          this.sessionUser = await UserEndpoint.get(userId)!;
-          console.log('LOADED USER '+this.sessionUser);
-          this.sessionUserDetail = await UserDetailEndpoint.get(userId);
-          console.log('LOADED USER DEATAIL '+this.sessionUserDetail);
+          const sessionUser = await UserEndpoint.get(userId);
+          if(sessionUser) {
+              this.sessionUser = sessionUser;
+          }
+          const sessionUserDetail = await UserDetailEndpoint.get(userId);
+          if(sessionUserDetail) {
+              this.sessionUserDetail = sessionUserDetail;
+          }
       }
     }
 
@@ -54,11 +62,11 @@ class Store {
             return this._sessionUser;
     }
 
-    set sessionUser(newUser: User | undefined) {
+    set sessionUser(newUser: User) {
         this._sessionUser = newUser;
     }
 
-    set sessionUserDetail(newUserDetail: UserDetail | undefined) {
+    set sessionUserDetail(newUserDetail: UserDetail) {
         this._sessionUserDetail = newUserDetail;
     }
 
@@ -67,9 +75,8 @@ class Store {
     }
 
     clearSessionData() {
-        console.log('CLEAR SESSION DATA')
-        this.sessionUser = undefined;
-        this.sessionUserDetail = undefined;
+        this.sessionUser = {creationTime: undefined, enabled: false, id: undefined, passwordHash: "", username: ""};
+        this.sessionUserDetail = {creationTime: undefined, userId: undefined};
     }
 }
 

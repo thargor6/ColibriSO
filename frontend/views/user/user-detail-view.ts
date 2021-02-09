@@ -106,7 +106,10 @@ export class UserDetailView extends MobxLitElement {
 
     private async save() {
         try {
-            await this.binder.submitTo(this.updateEntity);
+            const userDetail = await this.binder.submitTo(this.updateEntity);
+            if(userDetail) {
+                this.publishChangedUserDetails(userDetail);
+            }
             showNotification(`User Settings stored.`, {position: 'bottom-start'});
         } catch (error) {
             if (error instanceof EndpointError) {
@@ -126,11 +129,13 @@ export class UserDetailView extends MobxLitElement {
             entity.lastChangedTime =new Date().toISOString();
         }
         return UserDetailEndpoint.update(entity);
-        this.publishChangedUserDetails(entity);
     }
 
     private async publishChangedUserDetails(entity: UserDetail) {
+        console.log('OLD ITEM: ' + store.sessionUserDetail?.avatar);
+        console.log('HAS ENTITY' + entity.avatar);
         store.sessionUserDetail = entity;
+        console.log('NEW ITEM: ' + store.sessionUserDetail.avatar);
         if(entity && entity.uiTheme) {
             switchTheme(entity.uiTheme);
         }

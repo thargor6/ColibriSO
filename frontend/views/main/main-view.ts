@@ -53,6 +53,17 @@ export class MainView extends MobxLitElement {
     { route: 'snippet', name: 'Snippets' },
   ];
 
+  private allNamedRoutes: MenuTab[] = [
+    { route: 'snippet', name: 'Snippets' },
+    { route: '', name: 'Snippets' },
+    { route: 'user', name: 'Users' },
+    { route: 'user-detail', name: 'User Settings' },
+    { route: 'tag', name: 'Tags' },
+    { route: 'intent', name: 'Intent' },
+    { route: 'project', name: 'Projects' }
+  ];
+
+
   @property({ type: String }) projectName = '';
 
   static get styles() {
@@ -139,7 +150,7 @@ export class MainView extends MobxLitElement {
       <vaadin-app-layout primary-section="drawer">
         <header slot="navbar" theme="dark">
           <vaadin-drawer-toggle></vaadin-drawer-toggle>
-          <h1>${this.getSelectedTabName(this.getMenuTabs())} / ${store.projects.length}</h1>
+          <h1><div style="padding-right: 0.8em;">${this.getSelectedTabName(this.allNamedRoutes)}</div></h1>
           <vaadin-menu-bar id="main_menu"></vaadin-menu-bar>
           <div style="display: none";>
             <vaadin-item id="user_menu_item"><iron-icon style="width: 18px; color:${this.getAvatarColor()};" icon="${this.getAvatar()}"></iron-icon><span style="padding-left: 0.35em;">${this.getUsername()}</span></vaadin-item>
@@ -194,7 +205,7 @@ export class MainView extends MobxLitElement {
   }
 
   private getIndexOfSelectedTab(): number {
-    const index = this.getMenuTabs().findIndex((menuTab) => this.isCurrentLocation(menuTab.route));
+    const index = this.allNamedRoutes.findIndex((menuTab) => this.isCurrentLocation(menuTab.route));
 
     // Select first tab if there is no tab for home in the menu
     if (index === -1 && this.isCurrentLocation('')) {
@@ -210,7 +221,7 @@ export class MainView extends MobxLitElement {
     if (currentTab) {
       tabName = currentTab.name;
     } else {
-      tabName = 'Users';
+      tabName = '';
     }
     return tabName;
   }
