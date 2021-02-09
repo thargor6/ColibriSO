@@ -1,11 +1,16 @@
 import {CrudView} from "../crud-view/crud-view";
 import {customElement, html} from "lit-element";
-
 import {Binder, field} from '@vaadin/form';
 import User from '../../generated/com/overwhale/colibri_so/domain/entity/User';
 import UserModel from '../../generated/com/overwhale/colibri_so/domain/entity/UserModel';
 import * as UserEndpoint from '../../generated/UserEndpoint';
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
+import '@vaadin/vaadin-text-field'
+import '@vaadin/vaadin-checkbox'
+import {GridColumnElement} from "@vaadin/vaadin-grid/vaadin-grid-column";
+import {GridItemModel} from "@vaadin/vaadin-grid";
+import {render} from "lit-html";
+import * as moment from 'moment';
 
 @customElement('user-view')
 export class ProjectView extends CrudView<User> {
@@ -37,17 +42,21 @@ export class ProjectView extends CrudView<User> {
                         label="User name"
                         id="username"
                         ...="${field(this.binder.model.username)}"
-                ></vaadin-text-field
-                >
+                ></vaadin-text-field>
+                <vaadin-checkbox
+                        label="Enabled"
+                        id="enabled"
+                        ...="${field(this.binder.model.enabled)}"
+                ></vaadin-checkbox>
             </vaadin-form-layout>`;
     }
 
     protected renderColumns = () => {
         return html`
             <vaadin-grid-sort-column auto-width path="username"></vaadin-grid-sort-column>
-            <vaadin-grid-sort-column auto-width path="email"></vaadin-grid-sort-column>
-            <vaadin-grid-sort-column auto-width path="creationTime"></vaadin-grid-sort-column>
-            <vaadin-grid-sort-column auto-width path="lastChangedTime"></vaadin-grid-sort-column>`;
+            <vaadin-grid-sort-column auto-width path="enabled"></vaadin-grid-sort-column>
+            <vaadin-grid-sort-column auto-width path="creationTime" .renderer="${this.creationTimeRenderer}"></vaadin-grid-sort-column>
+            <vaadin-grid-sort-column auto-width path="lastChangedTime" .renderer="${this.lastChangedTimeRenderer}"></vaadin-grid-sort-column>`;
     }
 
     protected getEntity(id: any): Promise<User | undefined> {
@@ -68,5 +77,17 @@ export class ProjectView extends CrudView<User> {
 
     protected deleteEntity(id: any): Promise<void> {
         return UserEndpoint.delete(id);
+    }
+
+    private creationTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
+        const user = model.item as User;
+        const formattedTime = moment(user.creationTime).format('MM/DD/YYYY hh:mm:ss');
+        render(html`<div>${formattedTime}</div>`, root);
+    }
+
+    private lastChangedTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
+        const user = model.item as User;
+        const formattedTime = user.lastChangedTime ?  moment(user.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
+        render(html`<div>${formattedTime}</div>`, root);
     }
 }

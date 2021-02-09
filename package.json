@@ -54,6 +54,7 @@
     "chance": "1.1.7",
     "lit-element": "2.3.1",
     "mobx": "^6.1.5",
+    "moment": "^2.29.1",
     "open": "^7.2.1",
     "uuid": "^8.3.2"
   },
@@ -157,6 +158,6 @@
       "lit-css-loader": "0.0.4",
       "extract-loader": "5.1.0"
     },
-    "hash": "0b947078cb4cfa8ceedcffc3a9dfc46fabcadd8813d9e46deb9709eec6b72130"
+    "hash": "90a380f19daf6aae0ae605915ac369cb44a1cab13e0950c8a05a6dc41820f427"
   }
 }

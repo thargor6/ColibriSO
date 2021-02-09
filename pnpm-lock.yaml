@@ -51,6 +51,7 @@ dependencies:
   chance: 1.1.7
   lit-element: 2.3.1
   mobx: 6.1.5
+  moment: 2.29.1
   open: 7.4.0
   uuid: 8.3.2
 devDependencies:
@@ -5510,6 +5511,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-BsVAHEk/Ty+6BmCis0CUvA7E9u5aJpUkdRM91YwBt4lVha4heDLjRT43z2pqENeFuVZPfA1RRaf7sRcqRB2i4Q==
+  /moment/2.29.1:
+    dev: false
+    resolution:
+      integrity: sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
   /move-concurrently/1.0.1:
     dependencies:
       aproba: 1.2.0
@@ -7787,6 +7792,7 @@ specifiers:
   lit-element: 2.3.1
   lit-html: 1.2.1
   mobx: ^6.1.5
+  moment: ^2.29.1
   open: ^7.2.1
   progress-webpack-plugin: 0.0.24
   raw-loader: 4.0.0
