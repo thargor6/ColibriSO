@@ -32,7 +32,7 @@ export class ConfirmationDialogElement extends LitElement {
             html`
                 <h3>${this.message}</h3>
                 <vaadin-button @click=${this._yesClicked} theme="primary">Yes</vaadin-button>
-                <vaadin-button @click=${this._noClicked} theme="primary">No</vaadin-button>
+                <vaadin-button @click=${this._noClicked}>No</vaadin-button>
             `,
             root,
             {eventContext: this} // bind event listener properly

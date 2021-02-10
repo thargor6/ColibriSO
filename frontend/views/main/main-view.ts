@@ -15,6 +15,8 @@ import {store} from "../../store";
 import {switchTheme} from "../utils/theme-utils";
 import {Router} from "@vaadin/router";
 import styles from './main-view.css'
+import '../snippet/new-snippet-dialog'
+import {NewSnippetDialog} from "../snippet/new-snippet-dialog";
 
 interface MenuTab {
   route: string;
@@ -25,6 +27,8 @@ interface MenuTab {
 export class MainView extends MobxLitElement {
   @property({ type: Object }) location = router.location;
 
+  @query('#new_snippet_dlg')
+  private newSnippetDialog!: NewSnippetDialog;
 
   @query('#main_menu')
   private mainMenu!: MenuBarElement;
@@ -81,6 +85,7 @@ export class MainView extends MobxLitElement {
 
   render() {
     return html`
+      <new-snippet-dialog id="new_snippet_dlg"></new-snippet-dialog>
       <vaadin-app-layout primary-section="drawer">
         <header slot="navbar" theme="dark">
           <vaadin-drawer-toggle></vaadin-drawer-toggle>
@@ -267,7 +272,11 @@ export class MainView extends MobxLitElement {
     return newMenuTabs;
   }
 
+  private execSaveNewSnippet() {
+
+  }
+
   private newSnippet() {
-    //
+    this.newSnippetDialog.showDialog(this.execSaveNewSnippet.bind(this));
   }
 }
