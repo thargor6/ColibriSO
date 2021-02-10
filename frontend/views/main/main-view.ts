@@ -5,7 +5,7 @@ import '@vaadin/vaadin-app-layout/theme/lumo/vaadin-app-layout';
 import '@vaadin/vaadin-app-layout/vaadin-drawer-toggle';
 import '@vaadin/vaadin-tabs/theme/lumo/vaadin-tab';
 import '@vaadin/vaadin-tabs/theme/lumo/vaadin-tabs';
-import {css, customElement, html, property, query} from 'lit-element';
+import { customElement, html, property, query} from 'lit-element';
 import { router } from '../../index';
 import '@vaadin/vaadin-menu-bar';
 import '@vaadin/vaadin-context-menu';
@@ -14,6 +14,7 @@ import {MobxLitElement} from "@adobe/lit-mobx";
 import {store} from "../../store";
 import {switchTheme} from "../utils/theme-utils";
 import {Router} from "@vaadin/router";
+import styles from './main-view.css'
 
 interface MenuTab {
   route: string;
@@ -27,6 +28,9 @@ export class MainView extends MobxLitElement {
 
   @query('#main_menu')
   private mainMenu!: MenuBarElement;
+
+  @query('#new_snippet_item')
+  private newSnippetItem!: HTMLElement;
 
   @query('#edit_projects_item')
   private editProjectsItem!: HTMLElement;
@@ -71,77 +75,7 @@ export class MainView extends MobxLitElement {
       CSSModule('lumo-typography'),
       CSSModule('lumo-color'),
       CSSModule('app-layout'),
-      css`
-        :host {
-          display: block;
-          height: 100%;
-        }
-
-        header {
-          align-items: center;
-          box-shadow: var(--lumo-box-shadow-s);
-          display: flex;
-          height: var(--lumo-size-xl);
-          width: 100%;
-        }
-
-        header h1 {
-          font-size: var(--lumo-font-size-l);
-          margin: 0;
-        }
-
-        header img {
-          border-radius: 50%;
-          height: var(--lumo-size-s);
-          margin-left: auto;
-          margin-right: var(--lumo-space-m);
-          overflow: hidden;
-          background-color: var(--lumo-contrast);
-        }
-
-        vaadin-app-layout[dir='rtl'] header img {
-          margin-left: var(--lumo-space-m);
-          margin-right: auto;
-        }
-
-        #logo {
-          align-items: center;
-          box-sizing: border-box;
-          display: flex;
-          padding: var(--lumo-space-s) var(--lumo-space-m);
-        }
-
-        #logo img {
-          height: calc(var(--lumo-size-l) * 2.5);
-        }
-
-        #logo span {
-          font-size: var(--lumo-font-size-xl);
-          font-weight: 600;
-          margin: 0 var(--lumo-space-s);
-        }
-
-        vaadin-tab {
-          font-size: var(--lumo-font-size-s);
-          height: var(--lumo-size-l);
-          font-weight: 600;
-          color: var(--lumo-body-text-color);
-        }
-
-        vaadin-tab:hover {
-          background-color: var(--lumo-contrast-5pct);
-          text-decoration: none;
-        }
-
-        vaadin-tab[selected] {
-          background-color: var(--lumo-primary-color-10pct);
-          color: var(--lumo-primary-text-color);
-        }
-
-        hr {
-          margin: 0;
-        }
-      `,
+      styles
     ];
   }
 
@@ -154,7 +88,7 @@ export class MainView extends MobxLitElement {
           <vaadin-menu-bar id="main_menu"></vaadin-menu-bar>
           <div style="display: none";>
             <vaadin-item id="user_menu_item"><iron-icon style="width: 18px; color:${this.getAvatarColor()};" icon="${this.getAvatar()}"></iron-icon><span style="padding-left: 0.35em;">${this.getUsername()}</span></vaadin-item>
-
+            <vaadin-item @click="${this.newSnippet}" id="new_snippet_item">New</vaadin-item>
             <vaadin-item @click="${this.editProjects}" id="edit_projects_item">Projects</vaadin-item>
             <vaadin-item @click="${this.editTags}" id="edit_tags_item">Tags</vaadin-item>
             <vaadin-item @click="${this.editIntents}" id="edit_intents_item">Intents</vaadin-item>
@@ -238,6 +172,9 @@ export class MainView extends MobxLitElement {
 
   firstUpdated() {
     let menuItems = [
+      {
+        component: this.newSnippetItem
+      },
       {
         text: 'Edit',
         children: [
@@ -328,5 +265,9 @@ export class MainView extends MobxLitElement {
         route: "/snippet?project="+item.project }  ) });
 
     return newMenuTabs;
+  }
+
+  private newSnippet() {
+    //
   }
 }
