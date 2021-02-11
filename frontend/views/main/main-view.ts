@@ -13,7 +13,7 @@ import {MenuBarElement} from "@vaadin/vaadin-menu-bar";
 import {MobxLitElement} from "@adobe/lit-mobx";
 import {store} from "../../store";
 import {switchTheme} from "../utils/theme-utils";
-import {Router} from "@vaadin/router";
+import {Router, Params} from "@vaadin/router";
 import styles from './main-view.css'
 import '../snippet/new-snippet-dialog'
 import {NewSnippetDialog} from "../snippet/new-snippet-dialog";
@@ -21,6 +21,7 @@ import {NewSnippetDialog} from "../snippet/new-snippet-dialog";
 interface MenuTab {
   route: string;
   name: string;
+  params?: Params
 }
 
 @customElement('main-view')
@@ -112,7 +113,7 @@ export class MainView extends MobxLitElement {
             ${this.getMenuTabs().map(
               (menuTab) => html`
                 <vaadin-tab>
-                  <a href="${router.urlForPath(menuTab.route)}" tabindex="-1">${menuTab.name}</a>
+                  <a href="${router.urlForPath(menuTab.route, menuTab.params)}" tabindex="-1">${menuTab.name}</a>
                 </vaadin-tab>
               `
             )}
@@ -164,16 +165,6 @@ export class MainView extends MobxLitElement {
     }
     return tabName;
   }
-
-  menuItemClicked(e: Event) {
-    console.log('Clicked: ' + (e.target as Element).textContent!);
-  }
-
-  menuItemSelected(e:any) {
- //   const item = e.target;
-    console.log('Selected: '+e);
-  }
-
 
   firstUpdated() {
     let menuItems = [
@@ -265,18 +256,20 @@ export class MainView extends MobxLitElement {
     const newMenuTabs: MenuTab[] = [...this.baseMenuTabs];
 
     store.projects.map( item => {
-      newMenuTabs.push( { name: item.project,
-        // todo encode URL
-        route: "/snippet?project="+item.project }  ) });
+      newMenuTabs.push( {
+        name: item.project,
+        route: "/snippet/:project",
+        params: {'project': item.project}
+      }  ) });
 
     return newMenuTabs;
   }
 
-  private execSaveNewSnippet() {
+  private execSavedNewSnippet() {
 
   }
 
   private newSnippet() {
-    this.newSnippetDialog.showDialog(this.execSaveNewSnippet.bind(this));
+    this.newSnippetDialog.showDialog(this.execSavedNewSnippet.bind(this));
   }
 }

@@ -86,6 +86,13 @@ export const routes = [
         },
       },
       {
+        path: 'snippet/:project',
+        component: 'snippet-view',
+        action: async () => {
+          await import('./views/snippet/snippet-view');
+        },
+      },
+      {
         path: 'project',
         component: 'project-view',
         action: async () => {

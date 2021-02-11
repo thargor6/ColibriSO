@@ -11,9 +11,10 @@ import {GridItemModel} from "@vaadin/vaadin-grid";
 import * as moment from "moment";
 import {render} from "lit-html";
 import {store} from "../../store";
+import {Router, RouterLocation, PreventAndRedirectCommands, BeforeEnterObserver} from "@vaadin/router";
 
 @customElement('snippet-view')
-export class ProjectView extends CrudView<Snippet> {
+export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserver {
     private binder = new Binder<Snippet, SnippetModel>(this, SnippetModel);
 
     constructor() {
@@ -84,5 +85,16 @@ export class ProjectView extends CrudView<Snippet> {
         const user = model.item as Snippet;
         const formattedTime = user.lastChangedTime ?  moment(user.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
         render(html`<div>${formattedTime}</div>`, root);
+    }
+
+    protected _routerLocationChanged() {
+        console.log(window.location.search);
+    }
+
+    onBeforeEnter(
+        _location: RouterLocation,
+        _commands: PreventAndRedirectCommands,
+        _router: Router) {
+        console.log(_location.params);
     }
 }
