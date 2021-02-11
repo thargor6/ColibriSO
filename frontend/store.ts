@@ -1,4 +1,4 @@
-import {computed, observable} from 'mobx';
+import {makeAutoObservable} from 'mobx';
 import Project from "./generated/com/overwhale/colibri_so/domain/entity/Project";
 import User from "./generated/com/overwhale/colibri_so/domain/entity/User";
 import * as ProjectEndpoint from './generated/ProjectEndpoint';
@@ -13,17 +13,9 @@ import Tag from "./generated/com/overwhale/colibri_so/domain/entity/Tag";
 
 class Store {
     private static _instance:Store = new Store();
-
-    @observable
     private _projects: Project[] = [];
-
-    @observable
     private _intents: Intent[] = [];
-
-    @observable
     private _tags: Tag[] = [];
-
-    @observable
     private _sessionUser: User = {
         creationTime: undefined,
         enabled: false,
@@ -32,7 +24,6 @@ class Store {
         username: ""
     };
 
-    @observable
     private _sessionUserDetail: UserDetail = {creationTime: undefined, userId: undefined};
 
     constructor() {
@@ -41,7 +32,7 @@ class Store {
         }
         Store._instance = this;
 
-       // makeAutoObservable(this);
+        makeAutoObservable(this);
         this.init();
     }
 
@@ -85,12 +76,10 @@ class Store {
         this._projects = newProjects;
     }
 
-    @computed
     get intents() {
         return this._intents;
     }
 
-    @computed
     get intentNames() {
         return this.intents.map(i => i.intent);
     }
