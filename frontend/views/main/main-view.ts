@@ -17,6 +17,7 @@ import {Router, Params} from "@vaadin/router";
 import styles from './main-view.css'
 import '../snippet/new-snippet-dialog'
 import {NewSnippetDialog} from "../snippet/new-snippet-dialog";
+import * as SnippetEndpoint from '../../generated/SnippetEndpoint';
 
 interface MenuTab {
   route: string;
@@ -58,9 +59,11 @@ export class MainView extends MobxLitElement {
   @query('#logout_item')
   private logoutItem!: HTMLElement;
 
-  @property({ type: Array }) baseMenuTabs: MenuTab[] = [
+  baseMenuTabs: MenuTab[] = [
     { route: 'snippet', name: 'Snippets' },
   ];
+
+  @property({ type: Array }) menuTabs: MenuTab[] = [];
 
   private allNamedRoutes: MenuTab[] = [
     { route: 'snippet', name: 'Snippets' },
@@ -110,12 +113,13 @@ export class MainView extends MobxLitElement {
           </div>
           <hr />
           <vaadin-tabs orientation="vertical" theme="minimal" id="tabs" .selected="${this.getIndexOfSelectedTab()}">
-            ${this.getMenuTabs().map(
-              (menuTab) => html`
+            ${this.menuTabs.map(
+              (menuTab) => {
+                return html`
                 <vaadin-tab>
                   <a href="${router.urlForPath(menuTab.route, menuTab.params)}" tabindex="-1">${menuTab.name}</a>
                 </vaadin-tab>
-              `
+              ` }
             )}
           </vaadin-tabs>
         </div>
@@ -166,7 +170,7 @@ export class MainView extends MobxLitElement {
     return tabName;
   }
 
-  firstUpdated() {
+  async firstUpdated() {
     let menuItems = [
       {
         component: this.newSnippetItem
@@ -198,6 +202,7 @@ export class MainView extends MobxLitElement {
     if(userDetail && userDetail.uiTheme) {
       switchTheme(userDetail.uiTheme);
     }
+    this.menuTabs = await this.recalcMenuTabs();
   }
 
   private editProjects() {
@@ -252,12 +257,35 @@ export class MainView extends MobxLitElement {
     }
   }
 
-  private getMenuTabs() {
+  private async recalcMenuTabs() {
     const newMenuTabs: MenuTab[] = [...this.baseMenuTabs];
 
+    const promises = new Array<Promise<void>>();
+    const counts = new Map();
+
+    const promise = SnippetEndpoint.count().then(c => {
+      counts.set('', c);
+    });
+    promises.push(promise);
+
     store.projects.map( item => {
-      newMenuTabs.push( {
-        name: item.project,
+      const projectId = store.projectByName(item.project);
+      if(projectId) {
+        const promise = SnippetEndpoint.countForProjectId(projectId.id).then(c => {
+          counts.set(item.project, c);
+        });
+        promises.push(promise);
+      }
+    });
+    await Promise.all(promises);
+
+    const count = counts.get('');
+    newMenuTabs[0].name = 'Snippets' +  (count && count>0 ? ' ['+count+']' : '');
+
+    store.projects.map( item => {
+       const count = counts.get(item.project);
+       newMenuTabs.push( {
+        name: item.project + (count && count>0 ? ' ['+count+']' : ''),
         route: "/snippet/:project",
         params: {'project': item.project}
       }  ) });
@@ -265,8 +293,8 @@ export class MainView extends MobxLitElement {
     return newMenuTabs;
   }
 
-  private execSavedNewSnippet() {
-
+  private async execSavedNewSnippet() {
+    this.menuTabs = await this.recalcMenuTabs();
   }
 
   private newSnippet() {

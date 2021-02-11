@@ -1,5 +1,5 @@
 import {CrudView} from "../crud-view/crud-view";
-import {customElement, html} from "lit-element";
+import {customElement, html, property} from "lit-element";
 
 import {Binder, field} from '@vaadin/form';
 import Snippet from '../../generated/com/overwhale/colibri_so/domain/entity/Snippet';
@@ -16,6 +16,7 @@ import {Router, RouterLocation, PreventAndRedirectCommands, BeforeEnterObserver}
 @customElement('snippet-view')
 export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserver {
     private binder = new Binder<Snippet, SnippetModel>(this, SnippetModel);
+    @property({type: String}) projectId = '';
 
     constructor() {
         super('Snippet', 'snippet-view');
@@ -64,11 +65,21 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
     }
 
     protected countEntities(): Promise<number> {
-        return SnippetEndpoint.count();
+        if(this.projectId) {
+            return SnippetEndpoint.countForProjectId(this.projectId);
+        }
+        else {
+            return SnippetEndpoint.count();
+        }
     }
 
     protected listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<Snippet>> {
-        return SnippetEndpoint.list(offset, limit, sortOrder);
+        if(this.projectId) {
+            return SnippetEndpoint.listForProjectId(this.projectId, offset, limit, sortOrder);
+        }
+        else {
+            return SnippetEndpoint.list(offset, limit, sortOrder);
+        }
     }
 
     protected deleteEntity(id: any): Promise<void> {
@@ -95,6 +106,18 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
         _location: RouterLocation,
         _commands: PreventAndRedirectCommands,
         _router: Router) {
-        console.log(_location.params);
+        const projectName = _location.params['project'] as string;
+        if(projectName) {
+           const project = store.projectByName(projectName);
+           if(project) {
+               this.projectId = project.id;
+           }
+           else {
+               this.projectId = '';
+           }
+        }
+        else {
+            this.projectId = '';
+        }
     }
 }

@@ -18,18 +18,19 @@ import '@vaadin/vaadin-dialog';
 import '../components/confirmation-dialog';
 import {selectElementFromComponent} from '../utils/document-utils';
 
-import {html, LitElement, property, query, TemplateResult, unsafeCSS} from 'lit-element';
+import {html, property, query, TemplateResult, unsafeCSS} from 'lit-element';
 import styles from './crud-view.css';
 import {ConfirmationDialogElement} from "../components/confirmation-dialog";
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
 import {store} from "../../store";
 import {AbstractModel} from "@vaadin/form";
+import {MobxLitElement} from "@adobe/lit-mobx";
 
 interface BaseEntity {
     id?: string;
 }
 
-export abstract class CrudView<EntityType extends BaseEntity> extends LitElement {
+export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitElement {
     @query('#grid')
     private grid!: GridElement;
     @property({type: Number})
@@ -122,6 +123,11 @@ export abstract class CrudView<EntityType extends BaseEntity> extends LitElement
         return ('description' in object) && ('project' in object);
     }
 
+    instanceOfSnippet = (object: any) => {
+        return ('description' in object) && ('content' in object);
+    }
+
+
     private async save() {
         try {
             await this.getBinder().submitTo(this.updateEntity);
@@ -132,6 +138,10 @@ export abstract class CrudView<EntityType extends BaseEntity> extends LitElement
                 if(this.instanceOfProject(entity)) {
                     store.projects = [...store.projects, entity];
                 }
+            }
+            const entity: any = this.getBinder().value;
+            if(this.instanceOfSnippet(entity)) {
+                store.projects = [... store.projects];
             }
             this.clearForm();
             this.refreshGrid();
@@ -172,6 +182,9 @@ export abstract class CrudView<EntityType extends BaseEntity> extends LitElement
                 }
                 if(this.instanceOfProject(entity)) {
                     store.projects = [... store.projects.filter( p => ! (p.id === deletedId))];
+                }
+                else if(this.instanceOfSnippet(entity)) {
+                    store.projects = [... store.projects];
                 }
                 this.clearForm();
                 this.refreshGrid();

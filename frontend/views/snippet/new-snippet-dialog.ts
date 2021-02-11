@@ -128,8 +128,8 @@ export class NewSnippetDialog extends LitElement {
         this.opened = e.detail.value;
     }
 
-    _saveClicked() {
-        this.save()
+    async _saveClicked() {
+        await this.save()
         this.opened = false;
         if (this.cbSave) {
             this.cbSave();
