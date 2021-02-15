@@ -4,7 +4,7 @@ import {customElement, html} from "lit-element";
 import {Binder, field} from '@vaadin/form';
 import Project from '../../generated/com/overwhale/colibri_so/domain/entity/Project';
 import ProjectModel from '../../generated/com/overwhale/colibri_so/domain/entity/ProjectModel';
-import * as ProjectEndpoint from '../../generated/ProjectEndpoint';
+//import * as ProjectEndpoint from '../../generated/ProjectEndpoint';
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
 import {render} from "lit-html";
 import * as moment from 'moment';
@@ -56,23 +56,28 @@ export class ProjectView extends CrudView<Project> {
     }
 
     protected getEntity(id: any): Promise<Project | undefined> {
-      return ProjectEndpoint.get(id);
+      return store.getProject(id);
+      //return ProjectEndpoint.get(id);
     }
 
     protected updateEntity(entity: Project): Promise<Project> {
-      return ProjectEndpoint.update(entity);
+      return store.updateProject(entity);
+      //return ProjectEndpoint.update(entity);
     }
 
     protected countEntities(): Promise<number> {
-      return ProjectEndpoint.count();
+      //return ProjectEndpoint.count();
+        return store.countProjects();
     }
 
     protected listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<Project>> {
-      return ProjectEndpoint.list(offset, limit, sortOrder);
+      //return ProjectEndpoint.list(offset, limit, sortOrder);
+        return store.listProjects(offset, limit, sortOrder);
     }
 
     protected deleteEntity(id: any): Promise<void> {
-      return ProjectEndpoint.delete(id);
+      //return ProjectEndpoint.delete(id);
+        return store.deleteProject(id);
     }
 
     private creationTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {

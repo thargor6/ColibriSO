@@ -22,7 +22,6 @@ import {html, property, query, TemplateResult, unsafeCSS} from 'lit-element';
 import styles from './crud-view.css';
 import {ConfirmationDialogElement} from "../components/confirmation-dialog";
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
-import {store} from "../../store";
 import {AbstractModel} from "@vaadin/form";
 import {MobxLitElement} from "@adobe/lit-mobx";
 
@@ -119,29 +118,13 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
         }
     }
 
-    instanceOfProject = (object: any) => {
-        return ('description' in object) && ('project' in object);
-    }
-
-    instanceOfSnippet = (object: any) => {
-        return ('description' in object) && ('content' in object);
-    }
-
-
     private async save() {
         try {
+            const entityId = this.getBinder().value.id;
             await this.getBinder().submitTo(this.updateEntity);
-            if (!this.getBinder().value.id) {
+            if (!entityId) {
                 // We added a new item
                 this.gridSize++;
-                const entity: any = this.getBinder().value;
-                if(this.instanceOfProject(entity)) {
-                    store.projects = [...store.projects, entity];
-                }
-            }
-            const entity: any = this.getBinder().value;
-            if(this.instanceOfSnippet(entity)) {
-                store.projects = [... store.projects];
             }
             this.clearForm();
             this.refreshGrid();
@@ -173,22 +156,10 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
         try {
             const entity = this.getBinder().value;
             if (entity.id) {
-                const deletedId = entity.id;
                 await this.deleteEntity(entity.id);
-
-                if (!entity.id) {
-                    // We removed a item
                     this.gridSize--;
-                }
-                if(this.instanceOfProject(entity)) {
-                    store.projects = [... store.projects.filter( p => ! (p.id === deletedId))];
-                }
-                else if(this.instanceOfSnippet(entity)) {
-                    store.projects = [... store.projects];
-                }
                 this.clearForm();
                 this.refreshGrid();
-
                 showNotification(`${this.objectName} was removed.`, {position: 'bottom-start'});
             }
         } catch (error) {

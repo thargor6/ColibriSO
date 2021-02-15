@@ -10,6 +10,7 @@ import {getSessionUserId} from "./auth";
 import UserDetail from "./generated/com/overwhale/colibri_so/domain/entity/UserDetail";
 import Intent from "./generated/com/overwhale/colibri_so/domain/entity/Intent";
 import Tag from "./generated/com/overwhale/colibri_so/domain/entity/Tag";
+import GridSorter from "./generated/org/vaadin/artur/helpers/GridSorter";
 
 class Store {
     private static _instance:Store = new Store();
@@ -129,6 +130,65 @@ class Store {
     clearSessionData() {
         this.sessionUser = {creationTime: undefined, enabled: false, id: undefined, passwordHash: "", username: ""};
         this.sessionUserDetail = {creationTime: undefined, userId: undefined};
+    }
+
+
+    public getProject(id: string): Promise<Project | undefined> {
+        const that = this;
+        return new Promise( resolve => {
+            setTimeout( ()=> {
+              const prj = that.projects.find( p => p.id === id );
+              resolve(prj);
+            });
+        } );
+    }
+
+    public updateProject(entity: Project): Promise<Project> {
+        const that = this;
+        return ProjectEndpoint.update(entity).then(
+             project => {
+                 const newProjects: Project[] = [];
+                 that.projects.map(t => newProjects.push(t.id === project.id ? project : t));
+                 if(!entity.id) {
+                     newProjects.push(entity);
+                 }
+                 entity.id = project.id;
+                 entity.creationTime = project.creationTime;
+                 entity.lastChangedTime = project.lastChangedTime;
+                 that.projects = newProjects;
+                 return entity;
+             }
+         );
+    }
+
+    public countProjects(): Promise<number> {
+        const that = this;
+        return new Promise(resolve => {
+            setTimeout( () => {
+                resolve(that.projects.length);
+            } );
+        });
+    }
+
+    public listProjects(_offset: number, _limit: number, _sortOrder: Array<GridSorter>): Promise<Array<Project>> {
+       const that = this;
+       return new Promise(resolve => {
+           setTimeout(() => {
+               const prj = [...that.projects];
+               resolve(
+                   prj);
+           })
+       })
+    }
+
+    public deleteProject(id: string): Promise<void> {
+        const that = this;
+        return ProjectEndpoint.delete(id).then(() => {
+            const newProjects: Project[] = [];
+            that.projects.map(t => (t.id !== id ? newProjects.push(t) : t));
+            that.projects = newProjects;
+            return;
+        });
     }
 }
 
