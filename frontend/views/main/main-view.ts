@@ -11,19 +11,14 @@ import '@vaadin/vaadin-menu-bar';
 import '@vaadin/vaadin-context-menu';
 import {MenuBarElement} from "@vaadin/vaadin-menu-bar";
 import {MobxLitElement} from "@adobe/lit-mobx";
-import {store} from "../../store";
+import {store, MenuTab} from "../../store";
 import {switchTheme} from "../utils/theme-utils";
-import {Router, Params} from "@vaadin/router";
+import {Router} from "@vaadin/router";
 import styles from './main-view.css'
 import '../snippet/new-snippet-dialog'
 import {NewSnippetDialog} from "../snippet/new-snippet-dialog";
 import * as SnippetEndpoint from '../../generated/SnippetEndpoint';
 
-interface MenuTab {
-  route: string;
-  name: string;
-  params?: Params
-}
 
 @customElement('main-view')
 export class MainView extends MobxLitElement {
@@ -63,7 +58,7 @@ export class MainView extends MobxLitElement {
     { route: 'snippet', name: 'Snippets' },
   ];
 
-  @property({ type: Array }) menuTabs: MenuTab[] = [];
+  @property({ type: Array }) menuTabs2: MenuTab[] = [];
 
   private allNamedRoutes: MenuTab[] = [
     { route: 'snippet', name: 'Snippets' },
@@ -113,7 +108,7 @@ export class MainView extends MobxLitElement {
           </div>
           <hr />
           <vaadin-tabs orientation="vertical" theme="minimal" id="tabs" .selected="${this.getIndexOfSelectedTab()}">
-            ${this.menuTabs.map(
+            ${store.menuTabs.map(
               (menuTab) => {
                 return html`
                 <vaadin-tab>
@@ -202,7 +197,7 @@ export class MainView extends MobxLitElement {
     if(userDetail && userDetail.uiTheme) {
       switchTheme(userDetail.uiTheme);
     }
-    this.menuTabs = await this.recalcMenuTabs();
+    this.menuTabs2 = await this.recalcMenuTabs();
   }
 
   private editProjects() {
@@ -293,8 +288,8 @@ export class MainView extends MobxLitElement {
     return newMenuTabs;
   }
 
-  private async execSavedNewSnippet() {
-    this.menuTabs = await this.recalcMenuTabs();
+  private execSavedNewSnippet() {
+    store.refreshMenuTabs();
   }
 
   private newSnippet() {

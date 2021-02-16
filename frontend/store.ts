@@ -11,6 +11,18 @@ import UserDetail from "./generated/com/overwhale/colibri_so/domain/entity/UserD
 import Intent from "./generated/com/overwhale/colibri_so/domain/entity/Intent";
 import Tag from "./generated/com/overwhale/colibri_so/domain/entity/Tag";
 import GridSorter from "./generated/org/vaadin/artur/helpers/GridSorter";
+import {Params} from "@vaadin/router";
+import * as SnippetEndpoint from "./generated/SnippetEndpoint";
+
+export interface MenuTab {
+    route: string;
+    name: string;
+    params?: Params
+}
+
+const baseMenuTabs: MenuTab[] = [
+    { route: 'snippet', name: 'Snippets' },
+];
 
 class Store {
     private static _instance:Store = new Store();
@@ -24,6 +36,7 @@ class Store {
         passwordHash: "",
         username: ""
     };
+    private _menuTabs: MenuTab[] = [];
 
     private _sessionUserDetail: UserDetail = {creationTime: undefined, userId: undefined};
 
@@ -46,7 +59,7 @@ class Store {
       this.projects = await ProjectEndpoint.list(0, 10000, []);
       this.intents = await IntentEndpoint.list(0, 10000, []);
       this.tags = await TagEndpoint.list(0, 10000, []);
-
+      this.menuTabs = await this.updateMenuTabs();
       const userId = getSessionUserId();
       if(userId) {
           const sessionUser = await UserEndpoint.get(userId);
@@ -59,6 +72,43 @@ class Store {
           }
       }
     }
+
+    private async updateMenuTabs() {
+        const newMenuTabs: MenuTab[] = [...baseMenuTabs];
+
+        const promises = new Array<Promise<void>>();
+        const counts = new Map();
+
+        const promise = SnippetEndpoint.count().then(c => {
+            counts.set('', c);
+        });
+        promises.push(promise);
+
+        store.projects.map( item => {
+            const projectId = store.projectByName(item.project);
+            if(projectId) {
+                const promise = SnippetEndpoint.countForProjectId(projectId.id).then(c => {
+                    counts.set(item.project, c);
+                });
+                promises.push(promise);
+            }
+        });
+        await Promise.all(promises);
+
+        const count = counts.get('');
+        newMenuTabs[0].name = 'Snippets' +  (count && count>0 ? ' ['+count+']' : '');
+
+        store.projects.map( item => {
+            const count = counts.get(item.project);
+            newMenuTabs.push( {
+                name: item.project + (count && count>0 ? ' ['+count+']' : ''),
+                route: "/snippet/:project",
+                params: {'project': item.project}
+            }  ) });
+
+        return newMenuTabs;
+    }
+
 
     get projects() {
         return this._projects;
@@ -73,8 +123,15 @@ class Store {
         return p && p.length > 0 ? p[0] : undefined;
     }
 
+    refreshMenuTabs() {
+        this.updateMenuTabs().then( newMenuTabs => {
+            this.menuTabs = newMenuTabs;
+        });
+    }
+
     set projects(newProjects: Project[]) {
         this._projects = newProjects;
+        this.refreshMenuTabs();
     }
 
     get intents() {
@@ -132,6 +189,13 @@ class Store {
         this.sessionUserDetail = {creationTime: undefined, userId: undefined};
     }
 
+    set menuTabs(newMenuTabs: MenuTab[]) {
+        this._menuTabs = newMenuTabs;
+    }
+
+    get menuTabs() {
+        return this._menuTabs;
+    }
 
     public getProject(id: string): Promise<Project | undefined> {
         const that = this;
@@ -173,6 +237,7 @@ class Store {
                  entity.creationTime = project.creationTime;
                  entity.lastChangedTime = project.lastChangedTime;
                  that.projects = newProjects;
+
                  return entity;
              }
          );

@@ -83,7 +83,9 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
     }
 
     protected deleteEntity(id: any): Promise<void> {
-        return SnippetEndpoint.delete(id);
+        return SnippetEndpoint.delete(id).then(()=> {
+          store.refreshMenuTabs();
+        })
     }
 
     private creationTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
