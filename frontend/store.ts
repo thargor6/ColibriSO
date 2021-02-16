@@ -137,13 +137,30 @@ class Store {
         const that = this;
         return new Promise( resolve => {
             setTimeout( ()=> {
-              const prj = that.projects.find( p => p.id === id );
-              resolve(prj);
+              resolve(that.projects.find( p => p.id === id ));
             });
         } );
     }
 
-    public updateProject(entity: Project): Promise<Project> {
+    public getTag(id: string): Promise<Tag | undefined> {
+        const that = this;
+        return new Promise( resolve => {
+            setTimeout( ()=> {
+                resolve(that.tags.find( p => p.id === id ));
+            });
+        } );
+    }
+
+    public getIntent(id: string): Promise<Intent | undefined> {
+        const that = this;
+        return new Promise( resolve => {
+            setTimeout( ()=> {
+                resolve(that.intents.find( p => p.id === id ));
+            });
+        } );
+    }
+
+    public updateProject(entity: Project) {
         const that = this;
         return ProjectEndpoint.update(entity).then(
              project => {
@@ -161,6 +178,42 @@ class Store {
          );
     }
 
+    public updateTag(entity: Tag) {
+        const that = this;
+        return TagEndpoint.update(entity).then(
+            tag => {
+                const newTags: Tag[] = [];
+                that.tags.map(t => newTags.push(t.id === tag.id ? tag : t));
+                if(!entity.id) {
+                    newTags.push(entity);
+                }
+                entity.id = tag.id;
+                entity.creationTime = tag.creationTime;
+                entity.lastChangedTime = tag.lastChangedTime;
+                that.tags = newTags;
+                return entity;
+            }
+        );
+    }
+
+    public updateIntent(entity: Intent) {
+        const that = this;
+        return IntentEndpoint.update(entity).then(
+            intent => {
+                const newIntents: Intent[] = [];
+                that.intents.map(t => newIntents.push(t.id === intent.id ? intent : t));
+                if(!entity.id) {
+                    newIntents.push(entity);
+                }
+                entity.id = intent.id;
+                entity.creationTime = intent.creationTime;
+                entity.lastChangedTime = intent.lastChangedTime;
+                that.intents = newIntents;
+                return entity;
+            }
+        );
+    }
+
     public countProjects(): Promise<number> {
         const that = this;
         return new Promise(resolve => {
@@ -170,23 +223,77 @@ class Store {
         });
     }
 
+    public countTags(): Promise<number> {
+        const that = this;
+        return new Promise(resolve => {
+            setTimeout( () => {
+                resolve(that.tags.length);
+            } );
+        });
+    }
+
+    public countIntents(): Promise<number> {
+        const that = this;
+        return new Promise(resolve => {
+            setTimeout( () => {
+                resolve(that.intents.length);
+            } );
+        });
+    }
+
     public listProjects(_offset: number, _limit: number, _sortOrder: Array<GridSorter>): Promise<Array<Project>> {
        const that = this;
        return new Promise(resolve => {
            setTimeout(() => {
-               const prj = [...that.projects];
-               resolve(
-                   prj);
+               resolve([...that.projects]);
            })
        })
+    }
+
+    public listTags(_offset: number, _limit: number, _sortOrder: Array<GridSorter>): Promise<Array<Tag>> {
+        const that = this;
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve([...that.tags]);
+            })
+        })
+    }
+
+    public listIntents(_offset: number, _limit: number, _sortOrder: Array<GridSorter>): Promise<Array<Intent>> {
+        const that = this;
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve([...that.intents]);
+            })
+        })
     }
 
     public deleteProject(id: string): Promise<void> {
         const that = this;
         return ProjectEndpoint.delete(id).then(() => {
             const newProjects: Project[] = [];
-            that.projects.map(t => (t.id !== id ? newProjects.push(t) : t));
+            that.projects.map(t => (t.id !== id ? newProjects.push(t) : t.id = undefined));
             that.projects = newProjects;
+            return;
+        });
+    }
+
+    public deleteTag(id: string): Promise<void> {
+        const that = this;
+        return TagEndpoint.delete(id).then(() => {
+            const newTags: Tag[] = [];
+            that.tags.map(t => (t.id !== id ? newTags.push(t) : t.id = undefined));
+            that.tags = newTags;
+            return;
+        });
+    }
+
+    public deleteIntent(id: string): Promise<void> {
+        const that = this;
+        return IntentEndpoint.delete(id).then(() => {
+            const newIntents: Intent[] = [];
+            that.intents.map(t => (t.id !== id ? newIntents.push(t) : t.id = undefined));
+            that.intents = newIntents;
             return;
         });
     }

@@ -4,7 +4,6 @@ import {customElement, html} from "lit-element";
 import {Binder, field} from '@vaadin/form';
 import Tag from '../../generated/com/overwhale/colibri_so/domain/entity/Tag';
 import TagModel from '../../generated/com/overwhale/colibri_so/domain/entity/TagModel';
-import * as TagEndpoint from '../../generated/TagEndpoint';
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
 import {render} from "lit-html";
 import * as moment from 'moment';
@@ -56,23 +55,23 @@ export class ProjectView extends CrudView<Tag> {
     }
 
     protected getEntity(id: any): Promise<Tag | undefined> {
-        return TagEndpoint.get(id);
+        return store.getTag(id);
     }
 
     protected updateEntity(entity: Tag): Promise<Tag> {
-        return TagEndpoint.update(entity);
+        return store.updateTag(entity);
     }
 
     protected countEntities(): Promise<number> {
-        return TagEndpoint.count();
+        return store.countTags();
     }
 
     protected listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<Tag>> {
-        return TagEndpoint.list(offset, limit, sortOrder);
+        return store.listTags(offset, limit, sortOrder);
     }
 
     protected deleteEntity(id: any): Promise<void> {
-        return TagEndpoint.delete(id);
+        return store.deleteTag(id);
     }
 
     private creationTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {

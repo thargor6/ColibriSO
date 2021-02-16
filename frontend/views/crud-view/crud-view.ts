@@ -157,7 +157,9 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
             const entity = this.getBinder().value;
             if (entity.id) {
                 await this.deleteEntity(entity.id);
+                if(!entity.id) {
                     this.gridSize--;
+                }
                 this.clearForm();
                 this.refreshGrid();
                 showNotification(`${this.objectName} was removed.`, {position: 'bottom-start'});

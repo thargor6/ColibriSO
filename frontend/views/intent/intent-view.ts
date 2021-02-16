@@ -4,7 +4,6 @@ import {customElement, html} from "lit-element";
 import {Binder, field} from '@vaadin/form';
 import Intent from '../../generated/com/overwhale/colibri_so/domain/entity/Intent';
 import IntentModel from '../../generated/com/overwhale/colibri_so/domain/entity/IntentModel';
-import * as IntentEndpoint from '../../generated/IntentEndpoint';
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
 import {render} from "lit-html";
 import * as moment from 'moment';
@@ -56,23 +55,23 @@ export class ProjectView extends CrudView<Intent> {
     }
 
     protected getEntity(id: any): Promise<Intent | undefined> {
-        return IntentEndpoint.get(id);
+        return store.getIntent(id);
     }
 
     protected updateEntity(entity: Intent): Promise<Intent> {
-        return IntentEndpoint.update(entity);
+        return store.updateIntent(entity);
     }
 
     protected countEntities(): Promise<number> {
-        return IntentEndpoint.count();
+        return store.countIntents();
     }
 
     protected listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<Intent>> {
-        return IntentEndpoint.list(offset, limit, sortOrder);
+        return store.listIntents(offset, limit, sortOrder);
     }
 
     protected deleteEntity(id: any): Promise<void> {
-        return IntentEndpoint.delete(id);
+        return store.deleteIntent(id);
     }
 
     private creationTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
