@@ -1,0 +1,65 @@
+.snippet-view vaadin-grid {
+    line-height: var(--lumo-line-height-m);
+}
+
+.vaadin-grid,
+.vaadin-grid-cell-content {
+    background-color: var(--lumo-contrast-5pct);
+}
+
+.card {
+    background-color: var(--lumo-base-color);
+    border-radius: var(--lumo-border-radius);
+    box-shadow: var(--lumo-box-shadow-xs);
+    padding: calc(var(--lumo-space-s) * 1.5) var(--lumo-space-m);
+}
+
+.img {
+    border-radius: 50%;
+    flex-shrink: 0;
+    height: var(--lumo-size-m);
+    margin-right: calc(var(--lumo-space-s) * 1.5);
+    width: var(--lumo-size-m);
+}
+
+.header {
+    align-items: baseline;
+}
+
+.name {
+    font-size: 20em;
+    font-size-o: var(--lumo-font-size-s);
+    font-weight: bold;
+    margin-right: var(--lumo-space-s);
+}
+
+.date {
+    color: var(--lumo-tertiary-text-color);
+    font-size: var(--lumo-font-size-xs);
+}
+
+.post {
+    color: var(--lumo-secondary-text-color);
+    font-size: var(--lumo-font-size-s);
+    margin-bottom: var(--lumo-space-s);
+    white-space: normal;
+}
+
+.actions {
+    align-items: center;
+}
+
+iron-icon {
+    color: var(--lumo-tertiary-text-color);
+    height: calc(var(--lumo-icon-size-s) * 0.8);
+    margin-right: var(--lumo-space-s);
+    width: calc(var(--lumo-icon-size-s) * 0.8);
+}
+
+.likes,
+.comments,
+.shares {
+    color: var(--lumo-tertiary-text-color);
+    font-size: var(--lumo-font-size-xs);
+    margin-right: var(--lumo-space-l);
+}

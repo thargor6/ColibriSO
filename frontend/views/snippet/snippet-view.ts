@@ -1,6 +1,5 @@
 import {CrudView} from "../crud-view/crud-view";
-import {customElement, html, property} from "lit-element";
-
+import {customElement, html, property, unsafeCSS} from "lit-element";
 import {Binder, field} from '@vaadin/form';
 import Snippet from '../../generated/com/overwhale/colibri_so/domain/entity/Snippet';
 import SnippetModel from '../../generated/com/overwhale/colibri_so/domain/entity/SnippetModel';
@@ -12,6 +11,9 @@ import * as moment from "moment";
 import {render} from "lit-html";
 import {store} from "../../store";
 import {Router, RouterLocation, PreventAndRedirectCommands, BeforeEnterObserver} from "@vaadin/router";
+import styles from './snippet-view.css';
+import base_styles from '../crud-view/crud-view.css';
+import {CSSModule} from '@vaadin/flow-frontend/css-utils';
 
 @customElement('snippet-view')
 export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserver {
@@ -20,6 +22,11 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
 
     constructor() {
         super('Snippet', 'snippet-view');
+    }
+
+    static get styles() {
+        return [CSSModule('lumo-typography'), unsafeCSS(base_styles), unsafeCSS(styles)];
+
     }
 
     protected getBinder() {
@@ -50,10 +57,14 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
 
     protected renderColumns = () => {
         return html`
+            <vaadin-grid-sort-column auto-width path="content" .renderer="${this.contentRenderer}"></vaadin-grid-sort-column>
+        <!--    
             <vaadin-grid-sort-column auto-width path="content"></vaadin-grid-sort-column>
             <vaadin-grid-sort-column auto-width path="description"></vaadin-grid-sort-column>
             <vaadin-grid-sort-column auto-width path="creationTime" .renderer="${this.creationTimeRenderer}"></vaadin-grid-sort-column>
-            <vaadin-grid-sort-column auto-width path="lastChangedTime" .renderer="${this.lastChangedTimeRenderer}"></vaadin-grid-sort-column>`;
+            <vaadin-grid-sort-column auto-width path="lastChangedTime" .renderer="${this.lastChangedTimeRenderer}"></vaadin-grid-sort-column>
+        -->
+        `;
     }
 
     protected getEntity(id: any): Promise<Snippet | undefined> {
@@ -89,16 +100,49 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
     }
 
     private creationTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
-        const user = model.item as Snippet;
-        const formattedTime = moment(user.creationTime).format('MM/DD/YYYY hh:mm:ss');
+        const snippet = model.item as Snippet;
+        const formattedTime = moment(snippet.creationTime).format('MM/DD/YYYY hh:mm:ss');
         render(html`<div>${formattedTime}</div>`, root);
     }
 
     private lastChangedTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
-        const user = model.item as Snippet;
-        const formattedTime = user.lastChangedTime ?  moment(user.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
+        const snippet = model.item as Snippet;
+        const formattedTime = snippet.lastChangedTime ?  moment(snippet.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
         render(html`<div>${formattedTime}</div>`, root);
     }
+
+    private contentRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
+        const snippet = model.item as Snippet;
+        const formattedCreationTime = 'created: ' + moment(snippet.creationTime).format('MM/DD/YYYY hh:mm:ss');
+        const formattedLastChangeTime = snippet.lastChangedTime ? 'modified:' + moment(snippet.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
+
+          render(html`
+                <vaadin-horizontal-layout theme="spacing-s" class="card">
+                    <iron-icon icon="vaadin:heart"></iron-icon>
+                    <vaadin-vertical-layout>
+                        <vaadin-horizontal-layout theme="spacing-s" class="header">
+                            <span class="name">${snippet.description}</span>
+                            <span class="date">${formattedCreationTime}</span>
+                            <span class="date">${formattedLastChangeTime}</span>
+                        </vaadin-horizontal-layout>
+                        <span class="post">${snippet.content}</span>
+                        <!--
+                        <vaadin-horizontal-layout theme="spacing-s" class="actions">
+                            <iron-icon icon="vaadin:heart"></iron-icon>
+                            <span class="likes">[[item.likes]]</span>
+                            <iron-icon icon="vaadin:comment"></iron-icon>
+                            <span class="comments">[[item.comments]]</span>
+                            <iron-icon icon="vaadin:connect"></iron-icon>
+                            <span class="shares">[[item.shares]]</span>
+                        </vaadin-horizontal-layout> -->
+                        
+                    </vaadin-vertical-layout>
+                </vaadin-horizontal-layout>
+
+        `, root);
+    }
+
+
 
     protected _routerLocationChanged() {
         console.log(window.location.search);
@@ -122,4 +166,5 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
             this.projectId = '';
         }
     }
+
 }
