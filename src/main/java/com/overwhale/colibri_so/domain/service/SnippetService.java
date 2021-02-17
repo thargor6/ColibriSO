@@ -1,6 +1,9 @@
 package com.overwhale.colibri_so.domain.service;
 
+import com.overwhale.colibri_so.domain.entity.Intent;
+import com.overwhale.colibri_so.domain.entity.Project;
 import com.overwhale.colibri_so.domain.entity.Snippet;
+import com.overwhale.colibri_so.domain.entity.Tag;
 import com.overwhale.colibri_so.domain.repository.SnippetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -44,4 +47,15 @@ public class SnippetService extends CrudService<Snippet, UUID> {
     return this.getRepository().findForProjectId(UUID.fromString(projectId), pageable);
   }
 
+  public Page<Intent> listIntentsForSnippetId(String snippetId, Pageable pageable) {
+    return this.getRepository().findIntentsForSnippet(UUID.fromString(snippetId), pageable);
+  }
+
+  public Page<Tag> listTagsForSnippetId(String snippetId, Pageable pageable) {
+    return this.getRepository().findTagsForSnippet(UUID.fromString(snippetId), pageable);
+  }
+
+  public Page<Project> listProjectsForSnippetId(String snippetId, Pageable pageable) {
+    return this.getRepository().findProjectsForSnippet(UUID.fromString(snippetId), pageable);
+  }
 }

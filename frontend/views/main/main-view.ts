@@ -289,7 +289,7 @@ export class MainView extends MobxLitElement {
   }
 
   private execSavedNewSnippet() {
-    store.refreshMenuTabs();
+    // nothing to do
   }
 
   private newSnippet() {

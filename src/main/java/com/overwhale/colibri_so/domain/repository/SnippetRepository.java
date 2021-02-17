@@ -1,6 +1,9 @@
 package com.overwhale.colibri_so.domain.repository;
 
+import com.overwhale.colibri_so.domain.entity.Intent;
+import com.overwhale.colibri_so.domain.entity.Project;
 import com.overwhale.colibri_so.domain.entity.Snippet;
+import com.overwhale.colibri_so.domain.entity.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +19,12 @@ public interface SnippetRepository extends JpaRepository<Snippet, UUID> {
     @Query("SELECT s FROM Snippet s, SnippetProject p WHERE p.projectId = ?1 AND p.snippetId = s.id")
     Page<Snippet> findForProjectId(UUID projectId, Pageable pageable);
 
+    @Query("SELECT i FROM Intent i, SnippetIntent s WHERE s.snippetId = ?1 AND s.intentId = i.id")
+    Page<Intent> findIntentsForSnippet(UUID snippetId, Pageable pageable);
+
+    @Query("SELECT t FROM Tag t, SnippetTag s WHERE s.snippetId = ?1 AND s.tagId = t.id")
+    Page<Tag> findTagsForSnippet(UUID snippetId, Pageable pageable);
+
+    @Query("SELECT p FROM Project p, SnippetProject s WHERE s.snippetId = ?1 AND s.projectId = p.id")
+    Page<Project> findProjectsForSnippet(UUID snippetId, Pageable pageable);
 }

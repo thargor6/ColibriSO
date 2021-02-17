@@ -57,7 +57,7 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
 
     protected renderColumns = () => {
         return html`
-            <vaadin-grid-sort-column auto-width path="content" .renderer="${this.contentRenderer}"></vaadin-grid-sort-column>
+            <vaadin-grid-sort-column auto-width path="content" .renderer="${this.contentRenderer.bind(this)}"></vaadin-grid-sort-column>
         <!--    
             <vaadin-grid-sort-column auto-width path="content"></vaadin-grid-sort-column>
             <vaadin-grid-sort-column auto-width path="description"></vaadin-grid-sort-column>
@@ -72,7 +72,10 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
     }
 
     protected updateEntity(entity: Snippet): Promise<Snippet> {
-        return SnippetEndpoint.update(entity);
+        return SnippetEndpoint.update(entity).then(entity => {
+            store.refreshMenuTabs();
+            return entity;
+        });
     }
 
     protected countEntities(): Promise<number> {
@@ -115,7 +118,9 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
         const snippet = model.item as Snippet;
         const formattedCreationTime = 'created: ' + moment(snippet.creationTime).format('MM/DD/YYYY hh:mm:ss');
         const formattedLastChangeTime = snippet.lastChangedTime ? 'modified:' + moment(snippet.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
-
+        const boundGetTags = this.getTags.bind(this, snippet.id);
+        const boundGetProjects = this.getProjects.bind(this, snippet.id);
+        const boundGetIntents = this.getIntents.bind(this, snippet.id);
           render(html`
                 <vaadin-horizontal-layout theme="spacing-s" class="card">
                     <iron-icon icon="vaadin:heart"></iron-icon>
@@ -126,21 +131,21 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
                             <span class="date">${formattedLastChangeTime}</span>
                         </vaadin-horizontal-layout>
                         <span class="post">${snippet.content}</span>
-                        <!--
                         <vaadin-horizontal-layout theme="spacing-s" class="actions">
                             <iron-icon icon="vaadin:heart"></iron-icon>
-                            <span class="likes">[[item.likes]]</span>
+                            <span class="projects">${boundGetProjects()}</span>
                             <iron-icon icon="vaadin:comment"></iron-icon>
-                            <span class="comments">[[item.comments]]</span>
+                            <span class="intents">${boundGetIntents()}</span>
                             <iron-icon icon="vaadin:connect"></iron-icon>
-                            <span class="shares">[[item.shares]]</span>
-                        </vaadin-horizontal-layout> -->
+                            <span class="tags">${boundGetTags()}</span>
+                        </vaadin-horizontal-layout> 
                         
                     </vaadin-vertical-layout>
                 </vaadin-horizontal-layout>
 
         `, root);
     }
+
 
 
 
@@ -167,4 +172,20 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
         }
     }
 
+
+    private getProjects(snippetId: string) {
+        return SnippetEndpoint.listProjectsForSnippetId(snippetId, 0, 10000, []).then(
+            projects => {
+                return 'Prj:' + projects.length
+            }
+        );
+    }
+
+    private  getIntents(snippetId: string) {
+        return  SnippetEndpoint.listIntentsForSnippetId(snippetId, 0, 10000, []);
+    }
+
+    private  getTags(snippetId: string) {
+        return  SnippetEndpoint.listTagsForSnippetId(snippetId, 0, 10000, []);
+    }
 }

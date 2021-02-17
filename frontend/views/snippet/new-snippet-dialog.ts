@@ -45,7 +45,6 @@ export class NewSnippetDialog extends LitElement {
             <vaadin-dialog
                     .opened=${this.opened}
                     .renderer=${this._boundDialogRenderer}
-                    modeless
                     resizable
                     draggable
                     @opened-changed="${this._onOpenedChanged}"
@@ -59,7 +58,12 @@ export class NewSnippetDialog extends LitElement {
             html`
                 <h2>Insert new snippet</h2>
                 <div style="display: flex; flex-direction: row;">
-                    <div style="flex-grow: 2; width: 100%; margin-right: 1.0em;">
+                    <div style="flex-grow: 1; width: 50%; margin-right: 1.0em; display: flex; flex-direction: column;">
+                        <vaadin-text-field
+                                label="Description"
+                                id="description"
+                                ...="${field(this.snippetBinder.model.description)}"
+                        ></vaadin-text-field>
                         <vaadin-text-area 
                                 style="width: 100%; height: 80%;"
                                 label="Content"
@@ -67,7 +71,7 @@ export class NewSnippetDialog extends LitElement {
                                 ...="${field(this.snippetBinder.model.content)}"
                         ></vaadin-text-area>
                     </div>
-                    <div style="flex-grow: 1; width: 50%;">
+                    <div style="flex-grow: 1; width: 25%;">
                         <vaadin-form-layout>
                             <vaadin-combo-box
                                     label="Project"
@@ -81,12 +85,6 @@ export class NewSnippetDialog extends LitElement {
                                     ...="${field(this.snippetIntentBinder.model.intentId)}"
                                     .items="${store.intentNames}"
                             ></vaadin-combo-box>
-        
-                            <vaadin-text-field
-                                    label="Description"
-                                    id="description"
-                                    ...="${field(this.snippetBinder.model.description)}"
-                            ></vaadin-text-field>
 
                             <vaadin-combo-box
                                     label="Tag 1"
@@ -228,6 +226,7 @@ export class NewSnippetDialog extends LitElement {
                 }
                 return new Promise((resolve) => { resolve(entity); });
             } );
+            store.refreshMenuTabs();
             showNotification(`Snippet stored succesfully.`, {position: 'bottom-start'});
         } catch (error) {
             if (error instanceof EndpointError) {
