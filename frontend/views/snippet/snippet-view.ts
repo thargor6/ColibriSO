@@ -14,6 +14,7 @@ import {Router, RouterLocation, PreventAndRedirectCommands, BeforeEnterObserver}
 import styles from './snippet-view.css';
 import base_styles from '../crud-view/crud-view.css';
 import {CSSModule} from '@vaadin/flow-frontend/css-utils';
+import {until} from "lit-html/directives/until";
 
 @customElement('snippet-view')
 export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserver {
@@ -57,13 +58,7 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
 
     protected renderColumns = () => {
         return html`
-            <vaadin-grid-sort-column auto-width path="content" .renderer="${this.contentRenderer.bind(this)}"></vaadin-grid-sort-column>
-        <!--    
-            <vaadin-grid-sort-column auto-width path="content"></vaadin-grid-sort-column>
-            <vaadin-grid-sort-column auto-width path="description"></vaadin-grid-sort-column>
-            <vaadin-grid-sort-column auto-width path="creationTime" .renderer="${this.creationTimeRenderer}"></vaadin-grid-sort-column>
-            <vaadin-grid-sort-column auto-width path="lastChangedTime" .renderer="${this.lastChangedTimeRenderer}"></vaadin-grid-sort-column>
-        -->
+            <vaadin-grid-sort-column auto-width path="content" .renderer="${this.boundContentRenderer}"></vaadin-grid-sort-column>
         `;
     }
 
@@ -102,25 +97,12 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
         })
     }
 
-    private creationTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
-        const snippet = model.item as Snippet;
-        const formattedTime = moment(snippet.creationTime).format('MM/DD/YYYY hh:mm:ss');
-        render(html`<div>${formattedTime}</div>`, root);
-    }
-
-    private lastChangedTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
-        const snippet = model.item as Snippet;
-        const formattedTime = snippet.lastChangedTime ?  moment(snippet.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
-        render(html`<div>${formattedTime}</div>`, root);
-    }
+    boundContentRenderer = this.contentRenderer.bind(this);
 
     private contentRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
         const snippet = model.item as Snippet;
         const formattedCreationTime = 'created: ' + moment(snippet.creationTime).format('MM/DD/YYYY hh:mm:ss');
         const formattedLastChangeTime = snippet.lastChangedTime ? 'modified:' + moment(snippet.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
-        const boundGetTags = this.getTags.bind(this, snippet.id);
-        const boundGetProjects = this.getProjects.bind(this, snippet.id);
-        const boundGetIntents = this.getIntents.bind(this, snippet.id);
           render(html`
                 <vaadin-horizontal-layout theme="spacing-s" class="card">
                     <iron-icon icon="vaadin:heart"></iron-icon>
@@ -133,11 +115,17 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
                         <span class="post">${snippet.content}</span>
                         <vaadin-horizontal-layout theme="spacing-s" class="actions">
                             <iron-icon icon="vaadin:heart"></iron-icon>
-                            <span class="projects">${boundGetProjects()}</span>
+                            <span class="projects">
+                                ${until(this.getProjects(snippet.id), html`<span>Loading...</span>`)}
+                            </span>
                             <iron-icon icon="vaadin:comment"></iron-icon>
-                            <span class="intents">${boundGetIntents()}</span>
+                            <span class="intents">
+                                ${until(this.getIntents(snippet.id), html`<span>Loading...</span>`)}
+                            </span>
                             <iron-icon icon="vaadin:connect"></iron-icon>
-                            <span class="tags">${boundGetTags()}</span>
+                            <span class="tags">
+                                ${until(this.getTags(snippet.id), html`<span>Loading...</span>`)}
+                            </span>
                         </vaadin-horizontal-layout> 
                         
                     </vaadin-vertical-layout>
@@ -145,9 +133,6 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
 
         `, root);
     }
-
-
-
 
     protected _routerLocationChanged() {
         console.log(window.location.search);
@@ -176,16 +161,48 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
     private getProjects(snippetId: string) {
         return SnippetEndpoint.listProjectsForSnippetId(snippetId, 0, 10000, []).then(
             projects => {
-                return 'Prj:' + projects.length
+                if(projects.length==0) {
+                    return '';
+                }
+                else if(projects.length==1) {
+                    return "Project: " + projects[0].project;
+                }
+                else {
+                    return "Projects: " + projects.map(prj => prj.project).join(',');
+                }
             }
         );
     }
 
     private  getIntents(snippetId: string) {
-        return  SnippetEndpoint.listIntentsForSnippetId(snippetId, 0, 10000, []);
+        return  SnippetEndpoint.listIntentsForSnippetId(snippetId, 0, 10000, []).then(
+            intents => {
+                if(intents.length==0) {
+                    return '';
+                }
+                else if(intents.length==1) {
+                    return "Intent: " + intents[0].intent;
+                }
+                else {
+                    return "Intents: " + intents.map(prj => prj.intent).join(',');
+                }
+            }
+        )
     }
 
     private  getTags(snippetId: string) {
-        return  SnippetEndpoint.listTagsForSnippetId(snippetId, 0, 10000, []);
+        return  SnippetEndpoint.listTagsForSnippetId(snippetId, 0, 10000, []).then(
+            tags => {
+                if(tags.length==0) {
+                    return '';
+                }
+                else if(tags.length==1) {
+                    return "Tag: " + tags[0].tag;
+                }
+                else {
+                    return "Tags: " + tags.map(prj => prj.tag).join(',');
+                }
+            }
+        );
     }
 }

@@ -35,6 +35,8 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
     @property({type: Number})
     private gridSize = 0;
     private gridDataProvider = this.getGridData.bind(this);
+    @property({type: String})
+    private editState = '';
 
     constructor(private objectName: string, private componentName: string) {
         super();
@@ -81,14 +83,14 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
                 </div>
                 <div id="editor-layout">
                     <div id="editor">
+                      <h4>${this.editState}</h4>  
                       ${this.renderForm()}
                     </div>
 
                     <vaadin-horizontal-layout id="button-layout" theme="spacing">
                         <vaadin-button theme="primary" @click="${this.save}">Save</vaadin-button>
-                        <vaadin-button theme="tertiary" @click="${this.cancel}">Cancel</vaadin-button>
-                        <vaadin-button theme="tertiary" @click="${this.delete}">Delete</vaadin-button>
-                        <vaadin-button @click="${this.create}">Create new ${this.objectName}</vaadin-button>
+                         <vaadin-button theme="tertiary" @click="${this.delete}">Delete</vaadin-button>
+                        <vaadin-button theme="primary" @click="${this.create}">Create new ${this.objectName}</vaadin-button>
                     </vaadin-horizontal-layout>
                 </div>
             </vaadin-split-layout>
@@ -113,6 +115,7 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
         if (item) {
             const fromBackend = await this.getEntity(item.id);
             fromBackend ? this.getBinder().read(fromBackend) : this.refreshGrid();
+            this.editState = 'Editing '+this.objectName;
         } else {
             this.clearForm();
         }
@@ -138,12 +141,9 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
         }
     }
 
-    private cancel() {
-        this.grid.activeItem = undefined;
-    }
-
     private create() {
         this.getBinder().read(this.createNewEntity());
+        this.editState = 'New ' + this.objectName;
     }
 
     private delete() {
@@ -175,6 +175,7 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
 
     private clearForm() {
         this.getBinder().clear();
+        this.editState = '';
     }
 
     private refreshGrid() {

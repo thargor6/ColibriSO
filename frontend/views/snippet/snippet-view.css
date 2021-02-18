@@ -27,7 +27,7 @@
 }
 
 .name {
-    font-size: 20em;
+    font-size: 1em;
     font-size-o: var(--lumo-font-size-s);
     font-weight: bold;
     margin-right: var(--lumo-space-s);
