@@ -6,6 +6,8 @@ import org.hibernate.annotations.Type;
 
 import javax.annotation.Nullable;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -34,5 +36,10 @@ public class Snippet {
   @Nullable private String content;
 
   @Nullable private String description;
+
+  @Enumerated(EnumType.STRING)
+  @NotNull private SnippetType snippetType;
+
+  @Nullable private String mimetype;
 
 }

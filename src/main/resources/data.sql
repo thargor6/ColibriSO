@@ -39,13 +39,16 @@ values ('bbd7b226-d1d3-4f00-afbe-d9979871417e', '43471800-10cd-41ce-9c1e-26fe608
 
 INSERT INTO INTENTS (ID, CREATION_TIME, INTENT, DESCRIPTION)
 values ('ebb5ad46-a012-46a1-8c60-f6723f0e515b', parsedatetime('06-02-2021 18:00:00.00', 'dd-MM-yyyy hh:mm:ss.SS'),
-       'Link', 'An link to some external resource');
+       'Reminder', 'A little reminder');
 INSERT INTO INTENTS (ID, CREATION_TIME, INTENT, DESCRIPTION)
 values ('4ffcd7b6-190a-4631-ad52-c7d63cd1b789', parsedatetime('06-02-2021 18:00:00.00', 'dd-MM-yyyy hh:mm:ss.SS'),
-        'Text', 'Some small text snippet');
+        'Information', 'Some bit of information');
 INSERT INTO INTENTS (ID, CREATION_TIME, INTENT, DESCRIPTION)
 values ('16825535-2ef7-4bda-a827-400570316cc4', parsedatetime('06-02-2021 18:00:00.00', 'dd-MM-yyyy hh:mm:ss.SS'),
-        'PDF', 'A pdf document');
+        'Note', 'A small note');
+INSERT INTO INTENTS (ID, CREATION_TIME, INTENT, DESCRIPTION)
+values ('0c2751b2-e892-47ba-a65e-5468382075c7', parsedatetime('06-02-2021 18:00:00.00', 'dd-MM-yyyy hh:mm:ss.SS'),
+        'Example', 'An example');
 
 /* Some default tags */
 INSERT INTO TAGS (ID, CREATION_TIME, TAG)
@@ -75,4 +78,7 @@ values ('fafe3a1c-6a06-42de-8174-bec06a7e1227', parsedatetime('06-02-2021 18:00:
 INSERT INTO PROJECTS (ID, CREATION_TIME, PROJECT)
 values ('9df1f06a-5468-40ab-abd9-d5b720a7639a', parsedatetime('06-02-2021 18:00:00.00', 'dd-MM-yyyy hh:mm:ss.SS'),
         'Household');
-
+/*
+INSERT INTO SNIPPETS (ID, CONTENT, CREATION_TIME, CREATOR_ID, DESCRIPTION, LAST_CHANGED_TIME, MIMETYPE, SNIPPET_TYPE)
+VALUES ('e8cb8b3e-4f34-48cd-9947-860d1a893f10', 'ddfd', '2021-02-20 00:33:46.623862', 'F2642591312A414A80ABE13E59B610F9', 'dfdgg', null, null, 'TEXT');
+ */
