@@ -10,11 +10,12 @@ import {GridItemModel} from "@vaadin/vaadin-grid";
 import * as moment from "moment";
 import {render} from "lit-html";
 import {store} from "../../store";
-import {Router, RouterLocation, PreventAndRedirectCommands, BeforeEnterObserver} from "@vaadin/router";
+import {BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation} from "@vaadin/router";
 import styles from './snippet-view.css';
 import base_styles from '../crud-view/crud-view.css';
 import {CSSModule} from '@vaadin/flow-frontend/css-utils';
 import {until} from "lit-html/directives/until";
+import SnippetType from "../../generated/com/overwhale/colibri_so/domain/entity/SnippetType";
 
 @customElement('snippet-view')
 export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserver {
@@ -36,12 +37,15 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
 
     protected createNewEntity(): Snippet {
         return {
-            creatorId: store.sessionUser.id
+            creatorId: store.sessionUser.id,
+            snippetType: SnippetType.TEXT
         }
     }
 
     protected renderForm = () => {
         return html`
+            
+            
             <vaadin-form-layout>
                 <vaadin-text-field
                         label="Content"
@@ -99,6 +103,45 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
 
     boundContentRenderer = this.contentRenderer.bind(this);
 
+
+    private parseYoutubeUrl(url: string) {
+        var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+        var match = url.match(regExp);
+        return (match&&match[7].length==11)? match[7] : '';
+    }
+
+    private renderSnippetContent(snippet: Snippet) {
+        if(SnippetType.YOUTUBE === snippet.snippetType) {
+
+            let videoCode = '';
+            if(snippet.content) {
+              videoCode = this.parseYoutubeUrl(snippet.content);
+              if(videoCode === '' && !snippet.content.includes('/')) {
+                  videoCode = snippet.content;
+              }
+            }
+            if(videoCode!=='') {
+                return html`
+                    <div>
+                        <iframe width="420" height="315" 
+                                src="https://www.youtube.com/embed/${videoCode}"
+                        ></iframe>
+                    </div>
+                  `;
+            }
+            else {
+                return html`
+                    <div></div>
+                  `;
+            }
+        }
+        else {
+            return html`
+                        <div>${snippet.content}</div>
+        `;
+        }
+    }
+
     private contentRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
         const snippet = model.item as Snippet;
         const formattedCreationTime = 'created: ' + moment(snippet.creationTime).format('MM/DD/YYYY hh:mm:ss');
@@ -112,7 +155,7 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
                             <span class="date">${formattedCreationTime}</span>
                             <span class="date">${formattedLastChangeTime}</span>
                         </vaadin-horizontal-layout>
-                        <span class="post">${snippet.content}</span>
+                        <span class="post">${this.renderSnippetContent(snippet)}</span>
                         <vaadin-horizontal-layout theme="spacing-s" class="actions">
                             <iron-icon icon="vaadin:heart"></iron-icon>
                             <span class="projects">

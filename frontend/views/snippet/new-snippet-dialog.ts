@@ -22,10 +22,15 @@ import SnippetIntent from "../../generated/com/overwhale/colibri_so/domain/entit
 import SnippetIntentModel from "../../generated/com/overwhale/colibri_so/domain/entity/SnippetIntentModel";
 import SnippetTag from "../../generated/com/overwhale/colibri_so/domain/entity/SnippetTag";
 import SnippetTagModel from "../../generated/com/overwhale/colibri_so/domain/entity/SnippetTagModel";
+import SnippetType from "../../generated/com/overwhale/colibri_so/domain/entity/SnippetType";
 
 @customElement('new-snippet-dialog')
 export class NewSnippetDialog extends LitElement {
     @property({type: Boolean}) opened = false;
+
+    @property({type: Object}) snippetType = SnippetType.TEXT;
+
+    @property({type: Array}) snippetTypes = [SnippetType.TEXT, SnippetType.YOUTUBE, SnippetType.FILE];
 
     public cbSave!: CallbackFunction;
     public cbCancel!: CallbackFunction;
@@ -59,6 +64,7 @@ export class NewSnippetDialog extends LitElement {
                 <h2>Insert new snippet</h2>
                 <div style="display: flex; flex-direction: row;">
                     <div style="flex-grow: 1; width: 50%; margin-right: 1.0em; display: flex; flex-direction: column;">
+                        
                         <vaadin-text-field
                                 label="Description"
                                 id="description"
@@ -74,27 +80,36 @@ export class NewSnippetDialog extends LitElement {
                     <div style="flex-grow: 1; width: 25%;">
                         <vaadin-form-layout>
                             <vaadin-combo-box
+                                    label="Type"
+                                    id="snippetType"
+                                    ...="${field(this.snippetBinder.model.snippetType)}"
+                                    .items="${this.snippetTypes}"
+                                    value="${this.snippetType}"
+                            ></vaadin-combo-box>
+                            <vaadin-combo-box
                                     label="Project"
                                     id="project"
                                     ...="${field(this.snippetProjectBinder.model.projectId)}"
                                     .items="${store.projectNames}"
                             ></vaadin-combo-box>
-                            <vaadin-combo-box
-                                    label="Intent"
-                                    id="intent"
-                                    ...="${field(this.snippetIntentBinder.model.intentId)}"
-                                    .items="${store.intentNames}"
-                            ></vaadin-combo-box>
+                            <div style="display:flex; flex-direction: row;">
+                                <vaadin-combo-box style="padding-right: 1em;"
+                                        label="Intent"
+                                        id="intent"
+                                        ...="${field(this.snippetIntentBinder.model.intentId)}"
+                                        .items="${store.intentNames}"
+                                ></vaadin-combo-box>
+    
+                                <vaadin-combo-box
+                                        label="Tag 1"
+                                        id="tag1"
+                                        .items="${store.tagNames}"
+                                        ...="${field(this.snippetTagBinder1.model.tagId)}"
+                                ></vaadin-combo-box>
+                            </div>
 
-                            <vaadin-combo-box
-                                    label="Tag 1"
-                                    id="tag1"
-                                    .items="${store.tagNames}"
-                                    ...="${field(this.snippetTagBinder1.model.tagId)}"
-                            ></vaadin-combo-box>
-
-
-                            <vaadin-combo-box
+                            <div style="display:flex; flex-direction: row;">
+                            <vaadin-combo-box style="padding-right: 1em;"
                                     label="Tag 2"
                                     id="tag2"
                                     .items="${store.tagNames}"
@@ -107,7 +122,7 @@ export class NewSnippetDialog extends LitElement {
                                     .items="${store.tagNames}"
                                     ...="${field(this.snippetTagBinder3.model.tagId)}"
                             ></vaadin-combo-box>
-                            
+                            </div>
                         </vaadin-form-layout>
                     </div>
                 </div>
@@ -144,7 +159,8 @@ export class NewSnippetDialog extends LitElement {
     public showDialog(cb: () => void) {
         this.cbSave = cb;
         this.snippetBinder.read({
-            creatorId: store.sessionUser.id
+            creatorId: store.sessionUser.id,
+            snippetType: SnippetType.TEXT
         });
         this.snippetProjectBinder.read({});
         this.snippetIntentBinder.read({});

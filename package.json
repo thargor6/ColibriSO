@@ -56,6 +56,7 @@
     "mobx": "^6.1.5",
     "moment": "^2.29.1",
     "open": "^7.2.1",
+    "openplayer": "^1.2.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -158,6 +159,6 @@
       "lit-css-loader": "0.0.4",
       "extract-loader": "5.1.0"
     },
-    "hash": "90a380f19daf6aae0ae605915ac369cb44a1cab13e0950c8a05a6dc41820f427"
+    "hash": "a6abbbc5b50282ec176165e7a639bfd9e939049982b6766899b85297d7650bda"
   }
 }
