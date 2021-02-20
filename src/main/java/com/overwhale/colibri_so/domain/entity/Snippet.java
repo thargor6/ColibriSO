@@ -44,4 +44,8 @@ public class Snippet {
 
   @Nullable private String mimetype;
 
+  @Nullable private Integer favouriteLevel;
+
+  @Nullable private String icon;
+
 }
