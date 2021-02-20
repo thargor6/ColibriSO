@@ -30,7 +30,7 @@ export class NewSnippetDialog extends LitElement {
 
     @property({type: Object}) snippetType = SnippetType.TEXT;
 
-    @property({type: Array}) snippetTypes = [SnippetType.TEXT, SnippetType.YOUTUBE, SnippetType.FILE];
+    @property({type: Array}) snippetTypes = [SnippetType.TEXT,  SnippetType.LINK, SnippetType.YOUTUBE, SnippetType.FILE];
 
     public cbSave!: CallbackFunction;
     public cbCancel!: CallbackFunction;

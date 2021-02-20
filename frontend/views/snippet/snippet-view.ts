@@ -135,6 +135,11 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
                   `;
             }
         }
+        else if(SnippetType.LINK === snippet.snippetType) {
+            return html`
+                        <a href="${snippet.content}" target="_blank">${snippet.content}</a>
+        `;
+        }
         else {
             return html`
                         <div>${snippet.content}</div>

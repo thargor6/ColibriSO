@@ -31,7 +31,9 @@ public class Snippet {
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
   private OffsetDateTime lastChangedTime;
 
-  @Nullable private UUID creatorId;
+  @Nullable
+  @Type(type = "uuid-char")
+  private UUID creatorId;
 
   @Nullable private String content;
 
