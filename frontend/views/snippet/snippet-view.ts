@@ -162,15 +162,15 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
                         </vaadin-horizontal-layout>
                         <span class="post">${this.renderSnippetContent(snippet)}</span>
                         <vaadin-horizontal-layout theme="spacing-s" class="actions">
-                            <iron-icon icon="vaadin:heart"></iron-icon>
+                            <iron-icon icon="vaadin:archive"></iron-icon>
                             <span class="projects">
                                 ${until(this.getProjects(snippet.id), html`<span>Loading...</span>`)}
                             </span>
-                            <iron-icon icon="vaadin:comment"></iron-icon>
+                            <iron-icon icon="vaadin:automation"></iron-icon>
                             <span class="intents">
                                 ${until(this.getIntents(snippet.id), html`<span>Loading...</span>`)}
                             </span>
-                            <iron-icon icon="vaadin:connect"></iron-icon>
+                            <iron-icon icon="vaadin:bullets"></iron-icon>
                             <span class="tags">
                                 ${until(this.getTags(snippet.id), html`<span>Loading...</span>`)}
                             </span>

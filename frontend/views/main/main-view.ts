@@ -92,18 +92,18 @@ export class MainView extends MobxLitElement {
           <vaadin-menu-bar id="main_menu"></vaadin-menu-bar>
           <div style="display: none";>
             <vaadin-item id="user_menu_item"><iron-icon style="width: 18px; color:${this.getAvatarColor()};" icon="${this.getAvatar()}"></iron-icon><span style="padding-left: 0.35em;">${this.getUsername()}</span></vaadin-item>
-            <vaadin-item @click="${this.newSnippet}" id="new_snippet_item">New</vaadin-item>
-            <vaadin-item @click="${this.editProjects}" id="edit_projects_item">Projects</vaadin-item>
-            <vaadin-item @click="${this.editTags}" id="edit_tags_item">Tags</vaadin-item>
-            <vaadin-item @click="${this.editIntents}" id="edit_intents_item">Intents</vaadin-item>
-            <vaadin-item @click="${this.editUsers}" id="edit_users_item">Edit Users</vaadin-item>
-            <vaadin-item @click="${this.editUserDetail}" id="user_detail_item">User Settings</vaadin-item>
-            <vaadin-item @click="${this.logout}" id="logout_item">Logout</vaadin-item>
+            <vaadin-item @click="${this.newSnippet}" id="new_snippet_item"><iron-icon style="padding-right: 1em;" icon="vaadin:plus-circle"></iron-icon>New</vaadin-item>
+            <vaadin-item @click="${this.editProjects}" id="edit_projects_item"><iron-icon style="padding-right: 1em;" icon="vaadin:archive"></iron-icon>Projects</vaadin-item>
+            <vaadin-item @click="${this.editTags}" id="edit_tags_item"><iron-icon style="padding-right: 1em;" icon="vaadin:bullets"></iron-icon>Tags</vaadin-item>
+            <vaadin-item @click="${this.editIntents}" id="edit_intents_item"><iron-icon style="padding-right: 1em;" icon="vaadin:automation"></iron-icon>Intents</vaadin-item>
+            <vaadin-item @click="${this.editUsers}" id="edit_users_item"><iron-icon style="padding-right: 1em;" icon="vaadin:female"></iron-icon>Edit Users</vaadin-item>
+            <vaadin-item @click="${this.editUserDetail}" id="user_detail_item"><iron-icon style="padding-right: 1em;" icon="vaadin:tools"></iron-icon>User Settings</vaadin-item>
+            <vaadin-item @click="${this.logout}" id="logout_item"><iron-icon style="padding-right: 1em;" icon="vaadin:exit"></iron-icon>Logout</vaadin-item>
           </div>
         </header>
 
         <div slot="drawer">
-          <div id="logo">
+          <div id="logo" style="cursor: pointer;" @click="${this.mainLogoClicked}">
             <img src="images/colibri.svg" alt="${this.projectName} logo" />
           </div>
           <hr />
@@ -294,5 +294,9 @@ export class MainView extends MobxLitElement {
 
   private newSnippet() {
     this.newSnippetDialog.showDialog(this.execSavedNewSnippet.bind(this));
+  }
+
+  private mainLogoClicked() {
+    Router.go('/');
   }
 }

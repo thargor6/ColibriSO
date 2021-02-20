@@ -28,7 +28,7 @@ values ('43471800-10cd-41ce-9c1e-26fe60814e26', 'user', 1,
         '2021-02-20 01:26:17.857762');
 
 insert INTO USER_DETAILS (USER_ID, AVATAR, AVATAR_COLOR, CREATION_TIME, EMAIL, FULL_NAME, UI_THEME)
-values ('43471800-10cd-41ce-9c1e-26fe60814e26', 'academy-cap', '#57a0d2',
+values ('43471800-10cd-41ce-9c1e-26fe60814e26', 'academy-cap', '#fce205',
         '2021-02-20 01:26:17.857762',
         'user@colibriso.com', 'Some User', 'light');
 
