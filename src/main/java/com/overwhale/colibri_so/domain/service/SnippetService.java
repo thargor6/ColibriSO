@@ -4,7 +4,10 @@ import com.overwhale.colibri_so.domain.entity.Intent;
 import com.overwhale.colibri_so.domain.entity.Project;
 import com.overwhale.colibri_so.domain.entity.Snippet;
 import com.overwhale.colibri_so.domain.entity.Tag;
+import com.overwhale.colibri_so.domain.repository.SnippetIntentRepository;
+import com.overwhale.colibri_so.domain.repository.SnippetProjectRepository;
 import com.overwhale.colibri_so.domain.repository.SnippetRepository;
+import com.overwhale.colibri_so.domain.repository.SnippetTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,9 +20,15 @@ import java.util.UUID;
 @Service
 public class SnippetService extends CrudService<Snippet, UUID> {
   private final SnippetRepository repository;
+  private final SnippetTagRepository tagRepository;
+  private final SnippetIntentRepository intentRepository;
+  private final SnippetProjectRepository projectRepository;
 
-  public SnippetService(@Autowired SnippetRepository repository) {
+  public SnippetService(SnippetRepository repository, SnippetTagRepository tagRepository, SnippetIntentRepository intentRepository, SnippetProjectRepository projectRepository) {
     this.repository = repository;
+    this.tagRepository = tagRepository;
+    this.intentRepository = intentRepository;
+    this.projectRepository = projectRepository;
   }
 
   @Override
@@ -57,5 +66,13 @@ public class SnippetService extends CrudService<Snippet, UUID> {
 
   public Page<Project> listProjectsForSnippetId(String snippetId, Pageable pageable) {
     return this.getRepository().findProjectsForSnippet(UUID.fromString(snippetId), pageable);
+  }
+
+  @Override
+  public void delete(UUID uuid) {
+    super.delete(uuid);
+    tagRepository.deleteBySnippetId(uuid);
+    projectRepository.deleteBySnippetId(uuid);
+    intentRepository.deleteBySnippetId(uuid);
   }
 }
