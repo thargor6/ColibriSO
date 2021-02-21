@@ -173,12 +173,12 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
         }
     }
 
-    private clearForm() {
+    protected clearForm() {
         this.getBinder().clear();
         this.editState = '';
     }
 
-    private refreshGrid() {
+    protected refreshGrid() {
         this.grid.selectedItems = [];
         this.grid.clearCache();
     }

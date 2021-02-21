@@ -17,6 +17,9 @@ import {CSSModule} from '@vaadin/flow-frontend/css-utils';
 import {until} from "lit-html/directives/until";
 import SnippetType from "../../generated/com/overwhale/colibri_so/domain/entity/SnippetType";
 
+const MAX_FAVOURITE_LEVEL = 4;
+const FAVOURITE_COLORS = ['#cccccc', '#660000', '#aa0000', '#ff0000'];
+
 @customElement('snippet-view')
 export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserver {
     private binder = new Binder<Snippet, SnippetModel>(this, SnippetModel);
@@ -28,7 +31,6 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
 
     static get styles() {
         return [CSSModule('lumo-typography'), unsafeCSS(base_styles), unsafeCSS(styles)];
-
     }
 
     protected getBinder() {
@@ -44,8 +46,6 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
 
     protected renderForm = () => {
         return html`
-            
-            
             <vaadin-form-layout>
                 <vaadin-text-field
                         label="Content"
@@ -149,11 +149,18 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
 
     private contentRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
         const snippet = model.item as Snippet;
+        const favouriteRawLevel = snippet.favouriteLevel ? snippet.favouriteLevel as number: 0;
+        const favouriteLevel = favouriteRawLevel >=0 && favouriteRawLevel<MAX_FAVOURITE_LEVEL ? favouriteRawLevel : 0;
+        const favouriteLevelCaption = favouriteLevel > 0 ? '(' + favouriteLevel + ')' : '';
+        const favouriteLevelColor = 'color: ' + FAVOURITE_COLORS[favouriteLevel] + ';';
         const formattedCreationTime = 'created: ' + moment(snippet.creationTime).format('MM/DD/YYYY hh:mm:ss');
         const formattedLastChangeTime = snippet.lastChangedTime ? 'modified:' + moment(snippet.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
           render(html`
                 <vaadin-horizontal-layout theme="spacing-s" class="card">
-                    <iron-icon icon="vaadin:heart"></iron-icon>
+                    <div>
+                    <iron-icon icon="vaadin:heart" style="${favouriteLevelColor}" @click="${this.toggleFavouriteLevel.bind(this, snippet.id)}"></iron-icon>
+                    <span style="font-size: small;">${favouriteLevelCaption}</span>
+                    </div>
                     <vaadin-vertical-layout>
                         <vaadin-horizontal-layout theme="spacing-s" class="header">
                             <span class="name">${snippet.description}</span>
@@ -252,5 +259,23 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
                 }
             }
         );
+    }
+
+    private async toggleFavouriteLevel(id: any) {
+        const snippet = await SnippetEndpoint.get(id) as Snippet;
+        if(snippet) {
+            if(snippet.favouriteLevel && snippet.favouriteLevel != 0) {
+                snippet.favouriteLevel = snippet.favouriteLevel + 1;
+            }
+            else {
+                snippet.favouriteLevel = 1;
+            }
+            if(snippet.favouriteLevel >= MAX_FAVOURITE_LEVEL) {
+                snippet.favouriteLevel = 0;
+            }
+        }
+        SnippetEndpoint.update(snippet);
+        this.clearForm();
+        this.refreshGrid();
     }
 }
