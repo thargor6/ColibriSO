@@ -156,8 +156,9 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
         try {
             const entity = this.getBinder().value;
             if (entity.id) {
+                const entityId = entity.id;
                 await this.deleteEntity(entity.id);
-                if(!entity.id) {
+                if(this.getEntity(entityId)) {
                     this.gridSize--;
                 }
                 this.clearForm();
