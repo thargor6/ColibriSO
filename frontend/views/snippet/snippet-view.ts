@@ -273,15 +273,16 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
     private async toggleFavouriteLevel(id: any) {
         const snippet = await SnippetEndpoint.get(id) as Snippet;
         if(snippet) {
-            if(snippet.favouriteLevel && snippet.favouriteLevel != 0) {
+            if(snippet.favouriteLevel && snippet.favouriteLevel >= 0) {
                 snippet.favouriteLevel = snippet.favouriteLevel + 1;
+                if(snippet.favouriteLevel >= MAX_FAVOURITE_LEVEL) {
+                    snippet.favouriteLevel = 0;
+                }
             }
             else {
                 snippet.favouriteLevel = 1;
             }
-            if(snippet.favouriteLevel >= MAX_FAVOURITE_LEVEL) {
-                snippet.favouriteLevel = 0;
-            }
+
         }
         SnippetEndpoint.update(snippet);
         this.clearForm();
