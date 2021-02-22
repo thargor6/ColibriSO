@@ -103,7 +103,7 @@ export class MainView extends MobxLitElement {
         </header>
 
         <div slot="drawer">
-          <div id="logo" style="cursor: pointer;" @click="${this.mainLogoClicked}">
+          <div style="background-color: #1a2637;" id="logo" style="cursor: pointer;" @click="${this.mainLogoClicked}">
             <img src="images/colibri.svg" alt="${this.projectName} logo" />
           </div>
           <hr />

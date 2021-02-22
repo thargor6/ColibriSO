@@ -14,7 +14,7 @@ import {BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation}
 import styles from './snippet-view.css';
 import base_styles from '../crud-view/crud-view.css';
 import {CSSModule} from '@vaadin/flow-frontend/css-utils';
-import {until} from "lit-html/directives/until";
+//import {until} from "lit-html/directives/until";
 import SnippetType from "../../generated/com/overwhale/colibri_so/domain/entity/SnippetType";
 
 const MAX_FAVOURITE_LEVEL = 4;
@@ -153,13 +153,14 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
         const favouriteLevel = favouriteRawLevel >=0 && favouriteRawLevel<MAX_FAVOURITE_LEVEL ? favouriteRawLevel : 0;
         const favouriteLevelCaption = favouriteLevel > 0 ? '(' + favouriteLevel + ')' : '';
         const favouriteLevelColor = 'color: ' + FAVOURITE_COLORS[favouriteLevel] + ';';
+        const favouriteLevelTextStyle  = 'font-size: small; color: ' + FAVOURITE_COLORS[favouriteLevel] + ';';
         const formattedCreationTime = 'created: ' + moment(snippet.creationTime).format('MM/DD/YYYY hh:mm:ss');
         const formattedLastChangeTime = snippet.lastChangedTime ? 'modified:' + moment(snippet.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
           render(html`
                 <vaadin-horizontal-layout theme="spacing-s" class="card">
-                    <div>
+                    <div style="display: flex; flex-direction: column;">
                     <iron-icon icon="vaadin:heart" style="${favouriteLevelColor}" @click="${this.toggleFavouriteLevel.bind(this, snippet.id)}"></iron-icon>
-                    <span style="font-size: small;">${favouriteLevelCaption}</span>
+                    <span style="${favouriteLevelTextStyle}">${favouriteLevelCaption}</span>
                     </div>
                     <vaadin-vertical-layout>
                         <vaadin-horizontal-layout theme="spacing-s" class="header">
@@ -171,15 +172,15 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
                         <vaadin-horizontal-layout theme="spacing-s" class="actions">
                             <iron-icon icon="vaadin:archive"></iron-icon>
                             <span class="projects">
-                                ${until(this.getProjects(snippet.id), html`<span>Loading...</span>`)}
+                                ${this.getProjects(snippet)}
                             </span>
                             <iron-icon icon="vaadin:automation"></iron-icon>
                             <span class="intents">
-                                ${until(this.getIntents(snippet.id), html`<span>Loading...</span>`)}
+                                ${this.getIntents(snippet)}
                             </span>
                             <iron-icon icon="vaadin:bullets"></iron-icon>
                             <span class="tags">
-                                ${until(this.getTags(snippet.id), html`<span>Loading...</span>`)}
+                                ${this.getTags(snippet)}
                             </span>
                         </vaadin-horizontal-layout> 
                         
@@ -212,8 +213,12 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
         }
     }
 
+/*
 
-    private getProjects(snippetId: string) {
+    <!--
+    ${until(this.getProjectsAsync(snippet.id), html`<span>Loading...</span>`)}
+    -->
+    private getProjectsAsync(snippetId: string) {
         return SnippetEndpoint.listProjectsForSnippetId(snippetId, 0, 10000, []).then(
             projects => {
                 if(projects.length==0) {
@@ -223,42 +228,46 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
                     return "Project: " + projects[0].project;
                 }
                 else {
-                    return "Projects: " + projects.map(prj => prj.project).join(',');
+                    return "Projects: " + projects.map(prj => prj.project).join(', ');
                 }
             }
         );
     }
-
-    private  getIntents(snippetId: string) {
-        return  SnippetEndpoint.listIntentsForSnippetId(snippetId, 0, 10000, []).then(
-            intents => {
-                if(intents.length==0) {
-                    return '';
-                }
-                else if(intents.length==1) {
-                    return "Intent: " + intents[0].intent;
-                }
-                else {
-                    return "Intents: " + intents.map(prj => prj.intent).join(',');
-                }
-            }
-        )
+*/
+    private getProjects(snippet: Snippet) {
+        if(!snippet.projects || snippet.projects.length==0) {
+            return '';
+        }
+        else if(snippet.projects.length==1) {
+            return "Project: " + snippet.projects[0].project;
+        }
+        else {
+            return "Projects: " + snippet.projects.map(prj => prj.project).join(', ');
+        }
     }
 
-    private  getTags(snippetId: string) {
-        return  SnippetEndpoint.listTagsForSnippetId(snippetId, 0, 10000, []).then(
-            tags => {
-                if(tags.length==0) {
-                    return '';
-                }
-                else if(tags.length==1) {
-                    return "Tag: " + tags[0].tag;
-                }
-                else {
-                    return "Tags: " + tags.map(prj => prj.tag).join(',');
-                }
-            }
-        );
+    private  getIntents(snippet: Snippet) {
+        if(!snippet.intents || snippet.intents.length==0) {
+            return '';
+        }
+        else if(snippet.intents.length==1) {
+            return "Intent: " + snippet.intents[0].intent;
+        }
+        else {
+            return "Intents: " + snippet.intents.map(i => i.intent).join(', ');
+        }
+    }
+
+    private  getTags(snippet: Snippet) {
+        if(!snippet.tags || snippet.tags.length==0) {
+            return '';
+        }
+        else if(snippet.tags.length==1) {
+            return "Tag: " + snippet.tags[0].tag;
+        }
+        else {
+            return "Tags: " + snippet.tags.map(t => t.tag).join(', ');
+        }
     }
 
     private async toggleFavouriteLevel(id: any) {
