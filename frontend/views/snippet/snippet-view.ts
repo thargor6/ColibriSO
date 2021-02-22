@@ -16,6 +16,7 @@ import base_styles from '../crud-view/crud-view.css';
 import {CSSModule} from '@vaadin/flow-frontend/css-utils';
 //import {until} from "lit-html/directives/until";
 import SnippetType from "../../generated/com/overwhale/colibri_so/domain/entity/SnippetType";
+import {EditMode} from "../utils/types";
 
 const MAX_FAVOURITE_LEVEL = 4;
 const FAVOURITE_COLORS = ['#cccccc', '#660000', '#aa0000', '#ff0000'];
@@ -44,26 +45,36 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
         }
     }
 
-    protected renderForm = () => {
-        return html`
-            <vaadin-form-layout>
-                <vaadin-text-field
-                        label="Content"
-                        id="content"
-                        ...="${field(this.binder.model.content)}"
-                ></vaadin-text-field>
-                <vaadin-text-field
-                        label="Description"
-                        id="description"
-                        ...="${field(this.binder.model.description)}"
-                ></vaadin-text-field>
-            </vaadin-form-layout>`;
+    protected renderForm = (editMode: EditMode) => {
+        if(editMode!==EditMode.CLOSE) {
+            return html`
+                <vaadin-form-layout>
+                    <vaadin-text-field
+                            label="Content"
+                            id="content"
+                            ...="${field(this.binder.model.content)}"
+                    ></vaadin-text-field>
+                    <vaadin-text-field
+                            label="Description"
+                            id="description"
+                            ...="${field(this.binder.model.description)}"
+                    ></vaadin-text-field>
+                </vaadin-form-layout>`;
+        }
+        else {
+            return html`
+              <div></div>`;
+        }
     }
 
     protected renderColumns = () => {
         return html`
             <vaadin-grid-sort-column auto-width path="content" .renderer="${this.boundContentRenderer}"></vaadin-grid-sort-column>
         `;
+    }
+
+    protected allowInsert() {
+        return false;
     }
 
     protected getEntity(id: any): Promise<Snippet | undefined> {

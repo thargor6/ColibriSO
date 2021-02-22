@@ -132,10 +132,7 @@ export class UserDetailView extends MobxLitElement {
     }
 
     private async publishChangedUserDetails(entity: UserDetail) {
-        console.log('OLD ITEM: ' + store.sessionUserDetail?.avatar);
-        console.log('HAS ENTITY' + entity.avatar);
         store.sessionUserDetail = entity;
-        console.log('NEW ITEM: ' + store.sessionUserDetail.avatar);
         if(entity && entity.uiTheme) {
             switchTheme(entity.uiTheme);
         }

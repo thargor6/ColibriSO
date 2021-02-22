@@ -11,6 +11,7 @@ import {GridColumnElement} from "@vaadin/vaadin-grid/vaadin-grid-column";
 import {GridItemModel} from "@vaadin/vaadin-grid";
 import {render} from "lit-html";
 import * as moment from 'moment';
+import {EditMode} from "../utils/types";
 
 @customElement('user-view')
 export class ProjectView extends CrudView<User> {
@@ -35,20 +36,26 @@ export class ProjectView extends CrudView<User> {
         }
     }
 
-    protected renderForm = () => {
-        return html`
-            <vaadin-form-layout>
-                <vaadin-text-field
-                        label="User name"
-                        id="username"
-                        ...="${field(this.binder.model.username)}"
-                ></vaadin-text-field>
-                <vaadin-checkbox
-                        label="Enabled"
-                        id="enabled"
-                        ...="${field(this.binder.model.enabled)}"
-                ></vaadin-checkbox>
-            </vaadin-form-layout>`;
+    protected renderForm = (editMode: EditMode) => {
+        if(editMode!==EditMode.CLOSE) {
+            return html`
+                <vaadin-form-layout>
+                    <vaadin-text-field
+                            label="User name"
+                            id="username"
+                            ...="${field(this.binder.model.username)}"
+                    ></vaadin-text-field>
+                    <vaadin-checkbox
+                            label="Enabled"
+                            id="enabled"
+                            ...="${field(this.binder.model.enabled)}"
+                    ></vaadin-checkbox>
+                </vaadin-form-layout>`;
+        }
+        else {
+            return html`
+              <div></div>`;
+        }
     }
 
     protected renderColumns = () => {

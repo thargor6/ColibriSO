@@ -19,7 +19,6 @@ import '../snippet/new-snippet-dialog'
 import {NewSnippetDialog} from "../snippet/new-snippet-dialog";
 import * as SnippetEndpoint from '../../generated/SnippetEndpoint';
 
-
 @customElement('main-view')
 export class MainView extends MobxLitElement {
   @property({ type: Object }) location = router.location;

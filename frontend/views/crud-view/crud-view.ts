@@ -2,7 +2,7 @@ import '@polymer/iron-icon';
 import {showNotification} from '@vaadin/flow-frontend/a-notification';
 import {EndpointError} from '@vaadin/flow-frontend/Connect';
 import {CSSModule} from '@vaadin/flow-frontend/css-utils';
-import {Binder} from '@vaadin/form';
+import {AbstractModel, Binder} from '@vaadin/form';
 import '@vaadin/vaadin-button/vaadin-button';
 import '@vaadin/vaadin-date-picker';
 import '@vaadin/vaadin-form-layout/vaadin-form-layout';
@@ -22,8 +22,8 @@ import {html, property, query, TemplateResult, unsafeCSS} from 'lit-element';
 import styles from './crud-view.css';
 import {ConfirmationDialogElement} from "../components/confirmation-dialog";
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
-import {AbstractModel} from "@vaadin/form";
 import {MobxLitElement} from "@adobe/lit-mobx";
+import {EditMode} from "../utils/types";
 
 interface BaseEntity {
     id?: string;
@@ -36,7 +36,9 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
     private gridSize = 0;
     private gridDataProvider = this.getGridData.bind(this);
     @property({type: String})
-    private editState = '';
+    private editCaption = '';
+    @property({type: Object})
+    private editMode = EditMode.CLOSE;
 
     constructor(private objectName: string, private componentName: string) {
         super();
@@ -50,7 +52,7 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
 
     protected abstract renderColumns: ()=> TemplateResult;
 
-    protected abstract renderForm: ()=> TemplateResult;
+    protected abstract renderForm: (editMode: EditMode)=> TemplateResult;
 
     protected abstract createNewEntity(): EntityType;
 
@@ -62,7 +64,11 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
 
     protected abstract listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<EntityType>>;
 
-    protected abstract  deleteEntity(id: any): Promise<void>;
+    protected abstract deleteEntity(id: any): Promise<void>;
+
+    protected allowInsert() {
+        return true;
+    }
 
     render() {
         return html`
@@ -83,18 +89,50 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
                 </div>
                 <div id="editor-layout">
                     <div id="editor">
-                      <h4>${this.editState}</h4>  
-                      ${this.renderForm()}
+                      <h4>${this.editCaption}</h4>  
+                      ${this.renderForm(this.editMode)}
                     </div>
 
                     <vaadin-horizontal-layout id="button-layout" theme="spacing">
-                        <vaadin-button theme="primary" @click="${this.save}">Save</vaadin-button>
-                         <vaadin-button theme="tertiary" @click="${this.delete}">Delete</vaadin-button>
-                        <vaadin-button theme="primary" @click="${this.create}">Create new ${this.objectName}</vaadin-button>
+                        ${this.renderButtons(this.editMode)}
                     </vaadin-horizontal-layout>
                 </div>
             </vaadin-split-layout>
         `;
+    }
+
+    protected renderButtons = (editMode: EditMode) => {
+        if(editMode===EditMode.EDIT) {
+            if(this.allowInsert()) {
+                return html`
+                    <vaadin-button theme="primary" @click="${this.save}">Save</vaadin-button>
+                    <vaadin-button theme="tertiary" @click="${this.delete}">Delete</vaadin-button>
+                    <vaadin-button theme="primary" @click="${this.create}">Create new ${this.objectName}
+                    </vaadin-button>`;
+            }
+            else {
+                return html`
+                    <vaadin-button theme="primary" @click="${this.save}">Save</vaadin-button>
+                    <vaadin-button theme="tertiary" @click="${this.delete}">Delete</vaadin-button>
+                    </vaadin-button>`;
+            }
+        }
+        else if(editMode===EditMode.NEW) {
+            return html`
+                <vaadin-button theme="primary" @click="${this.save}">Save</vaadin-button>
+                <vaadin-button theme="tertiary" @click="${this.cancel}">Cancel</vaadin-button>`;
+        }
+        else {
+            if(this.allowInsert()) {
+                return html`
+                    <vaadin-button theme="primary" @click="${this.create}">Create new ${this.objectName}
+                    </vaadin-button>`;
+            }
+            else {
+                return html`
+                    <div></div>`;
+            }
+        }
     }
 
     async connectedCallback() {
@@ -115,7 +153,8 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
         if (item) {
             const fromBackend = await this.getEntity(item.id);
             fromBackend ? this.getBinder().read(fromBackend) : this.refreshGrid();
-            this.editState = 'Editing '+this.objectName;
+            this.editCaption = 'Editing '+this.objectName;
+            this.editMode = EditMode.EDIT;
         } else {
             this.clearForm();
         }
@@ -143,7 +182,14 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
 
     private create() {
         this.getBinder().read(this.createNewEntity());
-        this.editState = 'New ' + this.objectName;
+        this.editCaption = 'New ' + this.objectName;
+        this.editMode = EditMode.NEW;
+    }
+
+    private cancel() {
+        this.getBinder().read(this.createNewEntity());
+        this.editCaption = '';
+        this.editMode = EditMode.CLOSE;
     }
 
     private delete() {
@@ -176,7 +222,8 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
 
     protected clearForm() {
         this.getBinder().clear();
-        this.editState = '';
+        this.editCaption = '';
+        this.editMode = EditMode.CLOSE;
     }
 
     protected refreshGrid() {
