@@ -34,4 +34,8 @@ public class Project {
   @NotNull private String project;
 
   @Nullable private String description;
+
+  @Nullable
+  @Type(type = "uuid-char")
+  private UUID parentProjectId;
 }

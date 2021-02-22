@@ -96,7 +96,7 @@ export class MainView extends MobxLitElement {
             <vaadin-item @click="${this.editProjects}" id="edit_projects_item"><iron-icon style="padding-right: 1em;" icon="vaadin:archive"></iron-icon>Projects</vaadin-item>
             <vaadin-item @click="${this.editTags}" id="edit_tags_item"><iron-icon style="padding-right: 1em;" icon="vaadin:bullets"></iron-icon>Tags</vaadin-item>
             <vaadin-item @click="${this.editIntents}" id="edit_intents_item"><iron-icon style="padding-right: 1em;" icon="vaadin:automation"></iron-icon>Intents</vaadin-item>
-            <vaadin-item @click="${this.editUsers}" id="edit_users_item"><iron-icon style="padding-right: 1em;" icon="vaadin:female"></iron-icon>Edit Users</vaadin-item>
+            <vaadin-item @click="${this.editUsers}" id="edit_users_item"><iron-icon style="padding-right: 1em;" icon="vaadin:user"></iron-icon>Edit Users</vaadin-item>
             <vaadin-item @click="${this.editUserDetail}" id="user_detail_item"><iron-icon style="padding-right: 1em;" icon="vaadin:tools"></iron-icon>User Settings</vaadin-item>
             <vaadin-item @click="${this.logout}" id="logout_item"><iron-icon style="padding-right: 1em;" icon="vaadin:exit"></iron-icon>Logout</vaadin-item>
           </div>
