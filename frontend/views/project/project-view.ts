@@ -1,10 +1,8 @@
 import {CrudView} from "../crud-view/crud-view";
 import {customElement, html} from "lit-element";
-
 import {Binder, field} from '@vaadin/form';
 import Project from '../../generated/com/overwhale/colibri_so/domain/entity/Project';
 import ProjectModel from '../../generated/com/overwhale/colibri_so/domain/entity/ProjectModel';
-//import * as ProjectEndpoint from '../../generated/ProjectEndpoint';
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
 import {render} from "lit-html";
 import * as moment from 'moment';
@@ -12,6 +10,7 @@ import {GridColumnElement} from "@vaadin/vaadin-grid/vaadin-grid-column";
 import {GridItemModel} from "@vaadin/vaadin-grid";
 import {store} from "../../store";
 import {EditMode} from "../utils/types";
+import '@vaadin/vaadin-combo-box';
 
 @customElement('project-view')
 export class ProjectView extends CrudView<Project> {
@@ -46,6 +45,13 @@ export class ProjectView extends CrudView<Project> {
                           id="description"
                           ...="${field(this.binder.model.description)}"
                   ></vaadin-text-field>
+                  <vaadin-combo-box label="Parent" .items="${store.projects}"
+                                    id="parentProjectId"
+                                    item-value-path="id"
+                                    item-label-path="project"
+                                    @change="${this.parentProjectIdChanged}"
+                                    ...="${field(this.binder.model.parentProjectId)}"
+                  ></vaadin-combo-box>
               </vaadin-form-layout>`;
       }
       else {
@@ -58,6 +64,7 @@ export class ProjectView extends CrudView<Project> {
         return html`
             <vaadin-grid-sort-column auto-width path="project"></vaadin-grid-sort-column>
             <vaadin-grid-sort-column auto-width path="description"></vaadin-grid-sort-column>
+            <vaadin-grid-sort-column auto-width path="parentProjectId"></vaadin-grid-sort-column>
             <vaadin-grid-sort-column auto-width path="creationTime" .renderer="${this.creationTimeRenderer}"></vaadin-grid-sort-column>
             <vaadin-grid-sort-column auto-width path="lastChangedTime" .renderer="${this.lastChangedTimeRenderer}"></vaadin-grid-sort-column>`;
     }
@@ -68,6 +75,11 @@ export class ProjectView extends CrudView<Project> {
     }
 
     protected updateEntity(entity: Project): Promise<Project> {
+      if(entity.parentProjectId && entity.parentProjectId.hasOwnProperty('id')) {
+          // workaround: the binder put the wohle object into this property, not just the key
+          // correct this
+          entity.parentProjectId = entity.parentProjectId.id;
+      }
       return store.updateProject(entity);
       //return ProjectEndpoint.update(entity);
     }
@@ -75,6 +87,11 @@ export class ProjectView extends CrudView<Project> {
     protected countEntities(): Promise<number> {
       //return ProjectEndpoint.count();
         return store.countProjects();
+    }
+
+    parentProjectIdChanged = (e: Event) => {
+        const newValue = (e.target as HTMLInputElement).value;
+        console.log('CHANGED: '+newValue);
     }
 
     protected listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<Project>> {
