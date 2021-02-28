@@ -7,8 +7,8 @@ import '@vaadin/vaadin-combo-box';
 import '@vaadin/vaadin-text-field/vaadin-text-area'
 import {CallbackFunction} from '../utils/types';
 import {Binder, field} from '@vaadin/form';
-import Snippet from '../../generated/com/overwhale/colibri_so/domain/entity/Snippet';
-import SnippetModel from '../../generated/com/overwhale/colibri_so/domain/entity/SnippetModel';
+import Snippet from '../../generated/com/overwhale/colibri_so/backend/entity/Snippet';
+import SnippetModel from '../../generated/com/overwhale/colibri_so/backend/entity/SnippetModel';
 import {store} from "../../store";
 import {showNotification} from '@vaadin/flow-frontend/a-notification';
 import {EndpointError} from '@vaadin/flow-frontend/Connect';
@@ -16,13 +16,13 @@ import * as SnippetEndpoint from "../../generated/SnippetEndpoint";
 import * as SnippetProjectEndpoint from "../../generated/SnippetProjectEndpoint";
 import * as SnippetIntentEndpoint from "../../generated/SnippetIntentEndpoint";
 import * as SnippetTagEndpoint from "../../generated/SnippetTagEndpoint";
-import SnippetProject from "../../generated/com/overwhale/colibri_so/domain/entity/SnippetProject";
-import SnippetProjectModel from "../../generated/com/overwhale/colibri_so/domain/entity/SnippetProjectModel";
-import SnippetIntent from "../../generated/com/overwhale/colibri_so/domain/entity/SnippetIntent";
-import SnippetIntentModel from "../../generated/com/overwhale/colibri_so/domain/entity/SnippetIntentModel";
-import SnippetTag from "../../generated/com/overwhale/colibri_so/domain/entity/SnippetTag";
-import SnippetTagModel from "../../generated/com/overwhale/colibri_so/domain/entity/SnippetTagModel";
-import SnippetType from "../../generated/com/overwhale/colibri_so/domain/entity/SnippetType";
+import SnippetProject from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetProject";
+import SnippetProjectModel from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetProjectModel";
+import SnippetIntent from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetIntent";
+import SnippetIntentModel from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetIntentModel";
+import SnippetTag from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetTag";
+import SnippetTagModel from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetTagModel";
+import SnippetType from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetType";
 
 @customElement('new-snippet-dialog')
 export class NewSnippetDialog extends LitElement {

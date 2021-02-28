@@ -12,8 +12,8 @@ import '@vaadin/vaadin-combo-box';
 import '@vaadin/vaadin-text-field/vaadin-email-field';
 import '@vaadin/vaadin-icons';
 import {Binder, field} from '@vaadin/form';
-import UserDetail from '../../generated/com/overwhale/colibri_so/domain/entity/UserDetail';
-import UserDetailModel from '../../generated/com/overwhale/colibri_so/domain/entity/UserDetailModel';
+import UserDetail from '../../generated/com/overwhale/colibri_so/backend/entity/UserDetail';
+import UserDetailModel from '../../generated/com/overwhale/colibri_so/backend/entity/UserDetailModel';
 import * as UserDetailEndpoint from '../../generated/UserDetailEndpoint';
 import styles from './user-detail-view.css';
 

@@ -1,8 +1,8 @@
 import {CrudView} from "../crud-view/crud-view";
 import {customElement, html, property, unsafeCSS} from "lit-element";
 import {Binder, field} from '@vaadin/form';
-import Snippet from '../../generated/com/overwhale/colibri_so/domain/entity/Snippet';
-import SnippetModel from '../../generated/com/overwhale/colibri_so/domain/entity/SnippetModel';
+import Snippet from '../../generated/com/overwhale/colibri_so/backend/entity/Snippet';
+import SnippetModel from '../../generated/com/overwhale/colibri_so/backend/entity/SnippetModel';
 import * as SnippetEndpoint from '../../generated/SnippetEndpoint';
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
 import {GridColumnElement} from "@vaadin/vaadin-grid/vaadin-grid-column";
@@ -15,7 +15,7 @@ import styles from './snippet-view.css';
 import base_styles from '../crud-view/crud-view.css';
 import {CSSModule} from '@vaadin/flow-frontend/css-utils';
 //import {until} from "lit-html/directives/until";
-import SnippetType from "../../generated/com/overwhale/colibri_so/domain/entity/SnippetType";
+import SnippetType from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetType";
 import {EditMode} from "../utils/types";
 
 const MAX_FAVOURITE_LEVEL = 4;

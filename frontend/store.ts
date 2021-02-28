@@ -1,15 +1,15 @@
 import {makeAutoObservable} from 'mobx';
-import Project from "./generated/com/overwhale/colibri_so/domain/entity/Project";
-import User from "./generated/com/overwhale/colibri_so/domain/entity/User";
+import Project from "./generated/com/overwhale/colibri_so/backend/entity/Project";
+import User from "./generated/com/overwhale/colibri_so/backend/entity/User";
 import * as ProjectEndpoint from './generated/ProjectEndpoint';
 import * as IntentEndpoint from './generated/IntentEndpoint';
 import * as TagEndpoint from './generated/TagEndpoint';
 import * as UserEndpoint from './generated/UserEndpoint';
 import * as UserDetailEndpoint from './generated/UserDetailEndpoint';
 import {getSessionUserId} from "./auth";
-import UserDetail from "./generated/com/overwhale/colibri_so/domain/entity/UserDetail";
-import Intent from "./generated/com/overwhale/colibri_so/domain/entity/Intent";
-import Tag from "./generated/com/overwhale/colibri_so/domain/entity/Tag";
+import UserDetail from "./generated/com/overwhale/colibri_so/backend/entity/UserDetail";
+import IntentDto from "./generated/com/overwhale/colibri_so/frontend/dto/IntentDto";
+import Tag from "./generated/com/overwhale/colibri_so/backend/entity/Tag";
 import GridSorter from "./generated/org/vaadin/artur/helpers/GridSorter";
 import {Params} from "@vaadin/router";
 import * as SnippetEndpoint from "./generated/SnippetEndpoint";
@@ -27,7 +27,7 @@ const baseMenuTabs: MenuTab[] = [
 class Store {
     private static _instance:Store = new Store();
     private _projects: Project[] = [];
-    private _intents: Intent[] = [];
+    private _intents: IntentDto[] = [];
     private _tags: Tag[] = [];
     private _sessionUser: User = {
         creationTime: undefined,
@@ -147,7 +147,7 @@ class Store {
         return p && p.length>0 ? p[0] : undefined;
     }
 
-    set intents(newIntents: Intent[]) {
+    set intents(newIntents: IntentDto[]) {
         this._intents = newIntents;
     }
 
@@ -215,7 +215,7 @@ class Store {
         } );
     }
 
-    public getIntent(id: string): Promise<Intent | undefined> {
+    public getIntent(id: string): Promise<IntentDto | undefined> {
         const that = this;
         return new Promise( resolve => {
             setTimeout( ()=> {
@@ -261,11 +261,11 @@ class Store {
         );
     }
 
-    public updateIntent(entity: Intent) {
+    public updateIntent(entity: IntentDto) {
         const that = this;
         return IntentEndpoint.update(entity).then(
             intent => {
-                const newIntents: Intent[] = [];
+                const newIntents: IntentDto[] = [];
                 that.intents.map(t => newIntents.push(t.id === intent.id ? intent : t));
                 if(!entity.id) {
                     newIntents.push(entity);
@@ -324,7 +324,7 @@ class Store {
         })
     }
 
-    public listIntents(_offset: number, _limit: number, _sortOrder: Array<GridSorter>): Promise<Array<Intent>> {
+    public listIntents(_offset: number, _limit: number, _sortOrder: Array<GridSorter>): Promise<Array<IntentDto>> {
         const that = this;
         return new Promise(resolve => {
             setTimeout(() => {
@@ -356,7 +356,7 @@ class Store {
     public deleteIntent(id: string): Promise<void> {
         const that = this;
         return IntentEndpoint.delete(id).then(() => {
-            const newIntents: Intent[] = [];
+            const newIntents: IntentDto[] = [];
             that.intents.map(t => (t.id !== id ? newIntents.push(t) : t.id = undefined));
             that.intents = newIntents;
             return;

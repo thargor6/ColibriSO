@@ -1,8 +1,8 @@
 import {CrudView} from "../crud-view/crud-view";
 import {customElement, html} from "lit-element";
 import {Binder, field} from '@vaadin/form';
-import User from '../../generated/com/overwhale/colibri_so/domain/entity/User';
-import UserModel from '../../generated/com/overwhale/colibri_so/domain/entity/UserModel';
+import User from '../../generated/com/overwhale/colibri_so/backend/entity/User';
+import UserModel from '../../generated/com/overwhale/colibri_so/backend/entity/UserModel';
 import * as UserEndpoint from '../../generated/UserEndpoint';
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
 import '@vaadin/vaadin-text-field'

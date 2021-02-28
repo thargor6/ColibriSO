@@ -1,8 +1,8 @@
 import {CrudView} from "../crud-view/crud-view";
 import {customElement, html} from "lit-element";
 import {Binder, field} from '@vaadin/form';
-import Project from '../../generated/com/overwhale/colibri_so/domain/entity/Project';
-import ProjectModel from '../../generated/com/overwhale/colibri_so/domain/entity/ProjectModel';
+import Project from '../../generated/com/overwhale/colibri_so/backend/entity/Project';
+import ProjectModel from '../../generated/com/overwhale/colibri_so/backend/entity/ProjectModel';
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
 import {render} from "lit-html";
 import * as moment from 'moment';

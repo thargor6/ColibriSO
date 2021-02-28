@@ -2,8 +2,8 @@ import {CrudView} from "../crud-view/crud-view";
 import {customElement, html} from "lit-element";
 
 import {Binder, field} from '@vaadin/form';
-import Intent from '../../generated/com/overwhale/colibri_so/domain/entity/Intent';
-import IntentModel from '../../generated/com/overwhale/colibri_so/domain/entity/IntentModel';
+import IntentDto from '../../generated/com/overwhale/colibri_so/frontend/dto/IntentDto';
+import IntentDtoModel from '../../generated/com/overwhale/colibri_so/frontend/dto/IntentDtoModel';
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
 import {render} from "lit-html";
 import * as moment from 'moment';
@@ -13,8 +13,8 @@ import {store} from "../../store";
 import {EditMode} from "../utils/types";
 
 @customElement('intent-view')
-export class ProjectView extends CrudView<Intent> {
-    private binder = new Binder<Intent, IntentModel>(this, IntentModel);
+export class ProjectView extends CrudView<IntentDto> {
+    private binder = new Binder<IntentDto, IntentDtoModel>(this, IntentDtoModel);
 
     constructor() {
         super('Intent', 'intent-view');
@@ -24,7 +24,7 @@ export class ProjectView extends CrudView<Intent> {
         return this.binder;
     }
 
-    protected createNewEntity(): Intent {
+    protected createNewEntity(): IntentDto {
         return {
             creatorId: store.sessionUser.id,
             intent: ''
@@ -61,11 +61,11 @@ export class ProjectView extends CrudView<Intent> {
             <vaadin-grid-sort-column auto-width path="lastChangedTime" .renderer="${this.lastChangedTimeRenderer}"></vaadin-grid-sort-column>`;
     }
 
-    protected getEntity(id: any): Promise<Intent | undefined> {
+    protected getEntity(id: any): Promise<IntentDto | undefined> {
         return store.getIntent(id);
     }
 
-    protected updateEntity(entity: Intent): Promise<Intent> {
+    protected updateEntity(entity: IntentDto): Promise<IntentDto> {
         return store.updateIntent(entity);
     }
 
@@ -73,7 +73,7 @@ export class ProjectView extends CrudView<Intent> {
         return store.countIntents();
     }
 
-    protected listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<Intent>> {
+    protected listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<IntentDto>> {
         return store.listIntents(offset, limit, sortOrder);
     }
 
@@ -82,13 +82,13 @@ export class ProjectView extends CrudView<Intent> {
     }
 
     private creationTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
-        const user = model.item as Intent;
+        const user = model.item as IntentDto;
         const formattedTime = moment(user.creationTime).format('MM/DD/YYYY hh:mm:ss');
         render(html`<div>${formattedTime}</div>`, root);
     }
 
     private lastChangedTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
-        const user = model.item as Intent;
+        const user = model.item as IntentDto;
         const formattedTime = user.lastChangedTime ?  moment(user.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
         render(html`<div>${formattedTime}</div>`, root);
     }

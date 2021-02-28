@@ -2,8 +2,8 @@ import {CrudView} from "../crud-view/crud-view";
 import {customElement, html} from "lit-element";
 
 import {Binder, field} from '@vaadin/form';
-import Tag from '../../generated/com/overwhale/colibri_so/domain/entity/Tag';
-import TagModel from '../../generated/com/overwhale/colibri_so/domain/entity/TagModel';
+import Tag from '../../generated/com/overwhale/colibri_so/backend/entity/Tag';
+import TagModel from '../../generated/com/overwhale/colibri_so/backend/entity/TagModel';
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
 import {render} from "lit-html";
 import * as moment from 'moment';

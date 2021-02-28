@@ -82,7 +82,7 @@ export class LoginView extends LitElement implements AfterEnterObserver {
   private get i18n(): LoginI18n {
     return {
       header: {
-        title: 'Colibri Snippet Organizer V0.31',
+        title: 'Colibri Snippet Organizer V0.33',
         description: 'Demo project to play around with Vaadin Fusion. Log in as admin/colibri42 or user/colibri42'
       },
       form: {
