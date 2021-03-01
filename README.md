@@ -2,13 +2,35 @@
 Colibri Snippet Organizer
 
 ## Description
-ColibriSO is a tool for organizing of informations of all kinds, based on Spring Boot and Vaadin Fusion.
+ColibriSO is a tool for organizing information-bits of all kinds. The application is based on Spring Boot and Vaadin Fusion.
 
 Currently, it is work-in-progress and not much more than a playground.
 
+### What is implemented so far
+ + basic CRUD for Projects, Tags and Intents
+ + basic editing of snippets
+ + basic snippet display (table)
+ + basic user handling
+ + basic user settings  
+ + spring security (jdbc implementation)  
+ + both in-memory state (e.g. for projects) and paging larger data (e.g. snippets)  
+ + MobX for state management
+ + flat Project-"tree" (only one hierarchy)
+ + "self-contained" examples (informations and tutorials for Vaadin Fusion and LitElement)
+### TODO's
+ + moving out all entities from the frontend and replace them by dtos
+ + fine-tune dto's for editing, and entities for the backend (currently there is kind of a "mix")
+ + inline display of pdf documents
+ + implements intents (e.g. reminders)
+ + search function
+ + upload documents
+ + user registration (email)
+ + roles and permissions
+ + ...
 ## Project
 
-The project is a standard Maven project, so you can import it to your IDE of choice. You'll need to have Java 8+ and Node.js 10+ installed.
+The project is a standard Maven project, so you can import it to your IDE of choice. 
+You'll need to have Java 8+ and Node.js 10+ installed.
 
 To run from the command line, use `mvn` and open [http://localhost:8080](http://localhost:8080) in your browser.
 
