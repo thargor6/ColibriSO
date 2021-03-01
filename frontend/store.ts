@@ -1,13 +1,13 @@
 import {makeAutoObservable} from 'mobx';
 import ProjectDto from "./generated/com/overwhale/colibri_so/frontend/dto/ProjectDto";
-import User from "./generated/com/overwhale/colibri_so/backend/entity/User";
+import UserDto from "./generated/com/overwhale/colibri_so/frontend/dto/UserDto";
 import * as ProjectEndpoint from './generated/ProjectEndpoint';
 import * as IntentEndpoint from './generated/IntentEndpoint';
 import * as TagEndpoint from './generated/TagEndpoint';
 import * as UserEndpoint from './generated/UserEndpoint';
 import * as UserDetailEndpoint from './generated/UserDetailEndpoint';
 import {getSessionUserId} from "./auth";
-import UserDetail from "./generated/com/overwhale/colibri_so/backend/entity/UserDetail";
+import UserDetailDto from "./generated/com/overwhale/colibri_so/frontend/dto/UserDetailDto";
 import IntentDto from "./generated/com/overwhale/colibri_so/frontend/dto/IntentDto";
 import TagDto from "./generated/com/overwhale/colibri_so/frontend/dto/TagDto";
 import GridSorter from "./generated/org/vaadin/artur/helpers/GridSorter";
@@ -29,7 +29,7 @@ class Store {
     private _projects: ProjectDto[] = [];
     private _intents: IntentDto[] = [];
     private _tags: TagDto[] = [];
-    private _sessionUser: User = {
+    private _sessionUser: UserDto = {
         creationTime: undefined,
         enabled: false,
         id: undefined,
@@ -38,7 +38,7 @@ class Store {
     };
     private _menuTabs: MenuTab[] = [];
 
-    private _sessionUserDetail: UserDetail = {creationTime: undefined, userId: undefined};
+    private _sessionUserDetail: UserDetailDto = {creationTime: undefined, userId: undefined};
 
     constructor() {
         if(Store._instance){
@@ -172,11 +172,11 @@ class Store {
             return this._sessionUser;
     }
 
-    set sessionUser(newUser: User) {
+    set sessionUser(newUser: UserDto) {
         this._sessionUser = newUser;
     }
 
-    set sessionUserDetail(newUserDetail: UserDetail) {
+    set sessionUserDetail(newUserDetail: UserDetailDto) {
         this._sessionUserDetail = newUserDetail;
     }
 

@@ -9,20 +9,24 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
-public class IntentDto {
-  @Nullable private UUID id;
+public class UserDetailDto {
+  @NotNull private UUID userId;
 
-  @Nullable
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  @NotNull
   private OffsetDateTime creationTime;
 
-  @Nullable
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  @Nullable
   private OffsetDateTime lastChangedTime;
 
-  @Nullable private UUID creatorId;
+  @Nullable private String email;
 
-  @NotNull private String intent;
+  @Nullable private String fullName;
 
-  @Nullable private String description;
+  @Nullable private String avatar;
+
+  @Nullable private String avatarColor;
+
+  @Nullable private String uiTheme;
 }

@@ -2,30 +2,27 @@ package com.overwhale.colibri_so.frontend.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import org.hibernate.annotations.Type;
 
 import javax.annotation.Nullable;
-import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
 public class TagDto {
-    @Nullable
-    private UUID id;
+  @Nullable private UUID id;
 
-    @Nullable
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-    private OffsetDateTime creationTime;
+  @Nullable
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  private OffsetDateTime creationTime;
 
-    @Nullable
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-    private OffsetDateTime lastChangedTime;
+  @Nullable
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  private OffsetDateTime lastChangedTime;
 
-    @Nullable private UUID creatorId;
+  @Nullable private UUID creatorId;
 
-    @NotNull private String tag;
+  @NotNull private String tag;
 
-    @Nullable private String description;
+  @Nullable private String description;
 }

@@ -1,8 +1,8 @@
 import {CrudView} from "../crud-view/crud-view";
 import {customElement, html} from "lit-element";
 import {Binder, field} from '@vaadin/form';
-import User from '../../generated/com/overwhale/colibri_so/backend/entity/User';
-import UserModel from '../../generated/com/overwhale/colibri_so/backend/entity/UserModel';
+import UserDto from '../../generated/com/overwhale/colibri_so/frontend/dto/UserDto';
+import UserDtoModel from '../../generated/com/overwhale/colibri_so/frontend/dto/UserDtoModel';
 import * as UserEndpoint from '../../generated/UserEndpoint';
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
 import '@vaadin/vaadin-text-field'
@@ -14,8 +14,8 @@ import * as moment from 'moment';
 import {EditMode} from "../utils/types";
 
 @customElement('user-view')
-export class ProjectView extends CrudView<User> {
-    private binder = new Binder<User, UserModel>(this, UserModel);
+export class ProjectView extends CrudView<UserDto> {
+    private binder = new Binder<UserDto, UserDtoModel>(this, UserDtoModel);
 
     constructor() {
         super('User', 'user-view');
@@ -25,7 +25,7 @@ export class ProjectView extends CrudView<User> {
         return this.binder;
     }
 
-    protected createNewEntity(): User {
+    protected createNewEntity(): UserDto {
         return {
             id: '',
             creationTime: '',
@@ -66,11 +66,11 @@ export class ProjectView extends CrudView<User> {
             <vaadin-grid-sort-column auto-width path="lastChangedTime" .renderer="${this.lastChangedTimeRenderer}"></vaadin-grid-sort-column>`;
     }
 
-    protected getEntity(id: any): Promise<User | undefined> {
+    protected getEntity(id: any): Promise<UserDto | undefined> {
         return UserEndpoint.get(id);
     }
 
-    protected updateEntity(entity: User): Promise<User> {
+    protected updateEntity(entity: UserDto): Promise<UserDto> {
         return UserEndpoint.update(entity);
     }
 
@@ -78,7 +78,7 @@ export class ProjectView extends CrudView<User> {
         return UserEndpoint.count();
     }
 
-    protected listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<User>> {
+    protected listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<UserDto>> {
         return UserEndpoint.list(offset, limit, sortOrder);
     }
 
@@ -87,13 +87,13 @@ export class ProjectView extends CrudView<User> {
     }
 
     private creationTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
-        const user = model.item as User;
+        const user = model.item as UserDto;
         const formattedTime = moment(user.creationTime).format('MM/DD/YYYY hh:mm:ss');
         render(html`<div>${formattedTime}</div>`, root);
     }
 
     private lastChangedTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
-        const user = model.item as User;
+        const user = model.item as UserDto;
         const formattedTime = user.lastChangedTime ?  moment(user.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
         render(html`<div>${formattedTime}</div>`, root);
     }

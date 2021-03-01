@@ -12,8 +12,8 @@ import '@vaadin/vaadin-combo-box';
 import '@vaadin/vaadin-text-field/vaadin-email-field';
 import '@vaadin/vaadin-icons';
 import {Binder, field} from '@vaadin/form';
-import UserDetail from '../../generated/com/overwhale/colibri_so/backend/entity/UserDetail';
-import UserDetailModel from '../../generated/com/overwhale/colibri_so/backend/entity/UserDetailModel';
+import UserDetailDto from '../../generated/com/overwhale/colibri_so/frontend/dto/UserDetailDto';
+import UserDetailDtoModel from '../../generated/com/overwhale/colibri_so/frontend/dto/UserDetailDtoModel';
 import * as UserDetailEndpoint from '../../generated/UserDetailEndpoint';
 import styles from './user-detail-view.css';
 
@@ -32,7 +32,7 @@ const DFLT_SELECTED_COLOR = '#ffffff';
 
 @customElement('user-detail-view')
 export class UserDetailView extends MobxLitElement {
-    private binder = new Binder<UserDetail, UserDetailModel>(this, UserDetailModel);
+    private binder = new Binder<UserDetailDto, UserDetailDtoModel>(this, UserDetailDtoModel);
 
     @property({type: Array})
     private uiThemeItems: string[] = ['light', 'dark'];
@@ -120,7 +120,7 @@ export class UserDetailView extends MobxLitElement {
         }
     }
 
-    protected updateEntity(entity: UserDetail): Promise<UserDetail> {
+    protected updateEntity(entity: UserDetailDto): Promise<UserDetailDto> {
         if(this.editMode==EditMode.INSERT) {
             entity.userId = this.currUserId;
             entity.creationTime = new Date().toISOString();
@@ -131,7 +131,7 @@ export class UserDetailView extends MobxLitElement {
         return UserDetailEndpoint.update(entity);
     }
 
-    private async publishChangedUserDetails(entity: UserDetail) {
+    private async publishChangedUserDetails(entity: UserDetailDto) {
         store.sessionUserDetail = entity;
         if(entity && entity.uiTheme) {
             switchTheme(entity.uiTheme);
