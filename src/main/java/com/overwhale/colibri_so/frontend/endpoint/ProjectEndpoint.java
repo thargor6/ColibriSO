@@ -1,14 +1,14 @@
 package com.overwhale.colibri_so.frontend.endpoint;
 
-import com.overwhale.colibri_so.backend.entity.Project;
-import com.overwhale.colibri_so.backend.service.ProjectService;
+import com.overwhale.colibri_so.frontend.dto.ProjectDto;
+import com.overwhale.colibri_so.frontend.service.ProjectService;
 import com.vaadin.flow.server.connect.Endpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.UUID;
 
 @Endpoint
-public class ProjectEndpoint extends CrudEndpoint<Project, UUID> {
+public class ProjectEndpoint extends CrudEndpoint<ProjectDto, UUID> {
   private final ProjectService service;
 
   public ProjectEndpoint(@Autowired ProjectService service) {

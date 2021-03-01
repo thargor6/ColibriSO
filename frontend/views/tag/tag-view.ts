@@ -2,8 +2,8 @@ import {CrudView} from "../crud-view/crud-view";
 import {customElement, html} from "lit-element";
 
 import {Binder, field} from '@vaadin/form';
-import Tag from '../../generated/com/overwhale/colibri_so/backend/entity/Tag';
-import TagModel from '../../generated/com/overwhale/colibri_so/backend/entity/TagModel';
+import TagDto from '../../generated/com/overwhale/colibri_so/frontend/dto/TagDto';
+import TagDtoModel from '../../generated/com/overwhale/colibri_so/frontend/dto/TagDtoModel';
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
 import {render} from "lit-html";
 import * as moment from 'moment';
@@ -13,8 +13,8 @@ import {store} from "../../store";
 import {EditMode} from "../utils/types";
 
 @customElement('tag-view')
-export class ProjectView extends CrudView<Tag> {
-    private binder = new Binder<Tag, TagModel>(this, TagModel);
+export class ProjectView extends CrudView<TagDto> {
+    private binder = new Binder<TagDto, TagDtoModel>(this, TagDtoModel);
 
     constructor() {
         super('Tag', 'tag-view');
@@ -24,7 +24,7 @@ export class ProjectView extends CrudView<Tag> {
         return this.binder;
     }
 
-    protected createNewEntity(): Tag {
+    protected createNewEntity(): TagDto {
         return {
             creatorId: store.sessionUser.id,
             tag: ''
@@ -61,11 +61,11 @@ export class ProjectView extends CrudView<Tag> {
             <vaadin-grid-sort-column auto-width path="lastChangedTime" .renderer="${this.lastChangedTimeRenderer}"></vaadin-grid-sort-column>`;
     }
 
-    protected getEntity(id: any): Promise<Tag | undefined> {
+    protected getEntity(id: any): Promise<TagDto | undefined> {
         return store.getTag(id);
     }
 
-    protected updateEntity(entity: Tag): Promise<Tag> {
+    protected updateEntity(entity: TagDto): Promise<TagDto> {
         return store.updateTag(entity);
     }
 
@@ -73,7 +73,7 @@ export class ProjectView extends CrudView<Tag> {
         return store.countTags();
     }
 
-    protected listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<Tag>> {
+    protected listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<TagDto>> {
         return store.listTags(offset, limit, sortOrder);
     }
 
@@ -82,13 +82,13 @@ export class ProjectView extends CrudView<Tag> {
     }
 
     private creationTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
-        const user = model.item as Tag;
+        const user = model.item as TagDto;
         const formattedTime = moment(user.creationTime).format('MM/DD/YYYY hh:mm:ss');
         render(html`<div>${formattedTime}</div>`, root);
     }
 
     private lastChangedTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
-        const user = model.item as Tag;
+        const user = model.item as TagDto;
         const formattedTime = user.lastChangedTime ?  moment(user.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
         render(html`<div>${formattedTime}</div>`, root);
     }

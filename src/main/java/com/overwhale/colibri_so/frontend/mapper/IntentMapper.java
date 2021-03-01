@@ -7,7 +7,9 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface IntentMapper {
-    IntentMapper INSTANCE = Mappers.getMapper( IntentMapper.class );
-    Intent dtoToEntiy(IntentDto dto);
-    IntentDto entityToDto(Intent entity);
+  IntentMapper INSTANCE = Mappers.getMapper(IntentMapper.class);
+
+  Intent dtoToEntiy(IntentDto dto);
+
+  IntentDto entityToDto(Intent entity);
 }

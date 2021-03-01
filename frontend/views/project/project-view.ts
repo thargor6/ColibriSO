@@ -1,8 +1,8 @@
 import {CrudView} from "../crud-view/crud-view";
 import {customElement, html} from "lit-element";
 import {Binder, field} from '@vaadin/form';
-import Project from '../../generated/com/overwhale/colibri_so/backend/entity/Project';
-import ProjectModel from '../../generated/com/overwhale/colibri_so/backend/entity/ProjectModel';
+import ProjectDto from '../../generated/com/overwhale/colibri_so/frontend/dto/ProjectDto';
+import ProjectDtoModel from '../../generated/com/overwhale/colibri_so/frontend/dto/ProjectDtoModel';
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
 import {render} from "lit-html";
 import * as moment from 'moment';
@@ -13,8 +13,8 @@ import {EditMode} from "../utils/types";
 import '@vaadin/vaadin-combo-box';
 
 @customElement('project-view')
-export class ProjectView extends CrudView<Project> {
-  private binder = new Binder<Project, ProjectModel>(this, ProjectModel);
+export class ProjectView extends CrudView<ProjectDto> {
+  private binder = new Binder<ProjectDto, ProjectDtoModel>(this, ProjectDtoModel);
 
   constructor() {
       super('Project', 'project-view');
@@ -24,7 +24,7 @@ export class ProjectView extends CrudView<Project> {
       return this.binder;
   }
 
-  protected createNewEntity(): Project {
+  protected createNewEntity(): ProjectDto {
       return {
           creatorId: store.sessionUser.id,
           project: ''
@@ -69,12 +69,12 @@ export class ProjectView extends CrudView<Project> {
             <vaadin-grid-sort-column auto-width path="lastChangedTime" .renderer="${this.lastChangedTimeRenderer}"></vaadin-grid-sort-column>`;
     }
 
-    protected getEntity(id: any): Promise<Project | undefined> {
+    protected getEntity(id: any): Promise<ProjectDto | undefined> {
       return store.getProject(id);
       //return ProjectEndpoint.get(id);
     }
 
-    protected updateEntity(entity: Project): Promise<Project> {
+    protected updateEntity(entity: ProjectDto): Promise<ProjectDto> {
       if(entity.parentProjectId && entity.parentProjectId.hasOwnProperty('id')) {
           // workaround: the binder put the wohle object into this property, not just the key
           // correct this
@@ -94,7 +94,7 @@ export class ProjectView extends CrudView<Project> {
         console.log('CHANGED: '+newValue);
     }
 
-    protected listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<Project>> {
+    protected listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<ProjectDto>> {
       //return ProjectEndpoint.list(offset, limit, sortOrder);
         return store.listProjects(offset, limit, sortOrder);
     }
@@ -105,13 +105,13 @@ export class ProjectView extends CrudView<Project> {
     }
 
     private creationTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
-        const user = model.item as Project;
+        const user = model.item as ProjectDto;
         const formattedTime = moment(user.creationTime).format('MM/DD/YYYY hh:mm:ss');
         render(html`<div>${formattedTime}</div>`, root);
     }
 
     private lastChangedTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
-        const user = model.item as Project;
+        const user = model.item as ProjectDto;
         const formattedTime = user.lastChangedTime ?  moment(user.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
         render(html`<div>${formattedTime}</div>`, root);
     }

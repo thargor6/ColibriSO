@@ -1,5 +1,5 @@
 import {makeAutoObservable} from 'mobx';
-import Project from "./generated/com/overwhale/colibri_so/backend/entity/Project";
+import ProjectDto from "./generated/com/overwhale/colibri_so/frontend/dto/ProjectDto";
 import User from "./generated/com/overwhale/colibri_so/backend/entity/User";
 import * as ProjectEndpoint from './generated/ProjectEndpoint';
 import * as IntentEndpoint from './generated/IntentEndpoint';
@@ -9,7 +9,7 @@ import * as UserDetailEndpoint from './generated/UserDetailEndpoint';
 import {getSessionUserId} from "./auth";
 import UserDetail from "./generated/com/overwhale/colibri_so/backend/entity/UserDetail";
 import IntentDto from "./generated/com/overwhale/colibri_so/frontend/dto/IntentDto";
-import Tag from "./generated/com/overwhale/colibri_so/backend/entity/Tag";
+import TagDto from "./generated/com/overwhale/colibri_so/frontend/dto/TagDto";
 import GridSorter from "./generated/org/vaadin/artur/helpers/GridSorter";
 import {Params} from "@vaadin/router";
 import * as SnippetEndpoint from "./generated/SnippetEndpoint";
@@ -26,9 +26,9 @@ const baseMenuTabs: MenuTab[] = [
 
 class Store {
     private static _instance:Store = new Store();
-    private _projects: Project[] = [];
+    private _projects: ProjectDto[] = [];
     private _intents: IntentDto[] = [];
-    private _tags: Tag[] = [];
+    private _tags: TagDto[] = [];
     private _sessionUser: User = {
         creationTime: undefined,
         enabled: false,
@@ -129,7 +129,7 @@ class Store {
         });
     }
 
-    set projects(newProjects: Project[]) {
+    set projects(newProjects: ProjectDto[]) {
         this._projects = newProjects;
         this.refreshMenuTabs();
     }
@@ -164,7 +164,7 @@ class Store {
         return p && p.length>0 ? p[0] : undefined;
     }
 
-    set tags(newTags: Tag[]) {
+    set tags(newTags: TagDto[]) {
         this._tags = newTags;
     }
 
@@ -197,7 +197,7 @@ class Store {
         return this._menuTabs;
     }
 
-    public getProject(id: string): Promise<Project | undefined> {
+    public getProject(id: string): Promise<ProjectDto | undefined> {
         const that = this;
         return new Promise( resolve => {
             setTimeout( ()=> {
@@ -206,7 +206,7 @@ class Store {
         } );
     }
 
-    public getTag(id: string): Promise<Tag | undefined> {
+    public getTag(id: string): Promise<TagDto | undefined> {
         const that = this;
         return new Promise( resolve => {
             setTimeout( ()=> {
@@ -224,11 +224,11 @@ class Store {
         } );
     }
 
-    public updateProject(entity: Project) {
+    public updateProject(entity: ProjectDto) {
         const that = this;
         return ProjectEndpoint.update(entity).then(
              project => {
-                 const newProjects: Project[] = [];
+                 const newProjects: ProjectDto[] = [];
                  that.projects.map(t => newProjects.push(t.id === project.id ? project : t));
                  if(!entity.id) {
                      newProjects.push(entity);
@@ -243,11 +243,11 @@ class Store {
          );
     }
 
-    public updateTag(entity: Tag) {
+    public updateTag(entity: TagDto) {
         const that = this;
         return TagEndpoint.update(entity).then(
             tag => {
-                const newTags: Tag[] = [];
+                const newTags: TagDto[] = [];
                 that.tags.map(t => newTags.push(t.id === tag.id ? tag : t));
                 if(!entity.id) {
                     newTags.push(entity);
@@ -306,7 +306,7 @@ class Store {
         });
     }
 
-    public listProjects(_offset: number, _limit: number, _sortOrder: Array<GridSorter>): Promise<Array<Project>> {
+    public listProjects(_offset: number, _limit: number, _sortOrder: Array<GridSorter>): Promise<Array<ProjectDto>> {
        const that = this;
        return new Promise(resolve => {
            setTimeout(() => {
@@ -315,7 +315,7 @@ class Store {
        })
     }
 
-    public listTags(_offset: number, _limit: number, _sortOrder: Array<GridSorter>): Promise<Array<Tag>> {
+    public listTags(_offset: number, _limit: number, _sortOrder: Array<GridSorter>): Promise<Array<TagDto>> {
         const that = this;
         return new Promise(resolve => {
             setTimeout(() => {
@@ -336,7 +336,7 @@ class Store {
     public deleteProject(id: string): Promise<void> {
         const that = this;
         return ProjectEndpoint.delete(id).then(() => {
-            const newProjects: Project[] = [];
+            const newProjects: ProjectDto[] = [];
             that.projects.map(t => (t.id !== id ? newProjects.push(t) : t.id = undefined));
             that.projects = newProjects;
             return;
@@ -346,7 +346,7 @@ class Store {
     public deleteTag(id: string): Promise<void> {
         const that = this;
         return TagEndpoint.delete(id).then(() => {
-            const newTags: Tag[] = [];
+            const newTags: TagDto[] = [];
             that.tags.map(t => (t.id !== id ? newTags.push(t) : t.id = undefined));
             that.tags = newTags;
             return;

@@ -1,9 +1,9 @@
 package com.overwhale.colibri_so.frontend.service;
 
-import com.overwhale.colibri_so.frontend.dto.IntentDto;
 import com.overwhale.colibri_so.backend.entity.Intent;
-import com.overwhale.colibri_so.frontend.mapper.IntentMapper;
 import com.overwhale.colibri_so.backend.repository.IntentRepository;
+import com.overwhale.colibri_so.frontend.dto.IntentDto;
+import com.overwhale.colibri_so.frontend.mapper.IntentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class IntentService extends CrudService<IntentDto, UUID>  {
+public class IntentService extends CrudService<IntentDto, UUID> {
   private final IntentRepository repository;
 
   public IntentService(@Autowired IntentRepository repository) {
@@ -40,7 +40,7 @@ public class IntentService extends CrudService<IntentDto, UUID>  {
   }
 
   public Optional<IntentDto> get(UUID id) {
-    return repository.findById(id).map( e -> IntentMapper.INSTANCE.entityToDto(e) );
+    return repository.findById(id).map(e -> IntentMapper.INSTANCE.entityToDto(e));
   }
 
   public void delete(UUID id) {
@@ -48,10 +48,10 @@ public class IntentService extends CrudService<IntentDto, UUID>  {
   }
 
   public Page<IntentDto> list(Pageable pageable) {
-    return repository.findAll(pageable).map( e -> IntentMapper.INSTANCE.entityToDto(e) );
+    return repository.findAll(pageable).map(e -> IntentMapper.INSTANCE.entityToDto(e));
   }
 
   public int count() {
-    return (int)repository.count();
+    return (int) repository.count();
   }
 }

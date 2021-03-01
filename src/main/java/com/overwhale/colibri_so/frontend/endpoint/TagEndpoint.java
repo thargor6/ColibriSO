@@ -1,14 +1,14 @@
 package com.overwhale.colibri_so.frontend.endpoint;
 
-import com.overwhale.colibri_so.backend.entity.Tag;
-import com.overwhale.colibri_so.backend.service.TagService;
+import com.overwhale.colibri_so.frontend.dto.TagDto;
+import com.overwhale.colibri_so.frontend.service.TagService;
 import com.vaadin.flow.server.connect.Endpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.UUID;
 
 @Endpoint
-public class TagEndpoint extends CrudEndpoint<Tag, UUID> {
+public class TagEndpoint extends CrudEndpoint<TagDto, UUID> {
   private final TagService service;
 
   public TagEndpoint(@Autowired TagService service) {
