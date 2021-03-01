@@ -28,9 +28,8 @@ public class TagService extends CrudService<TagDto, UUID> {
     if (entity.getId() == null) {
       entity.setCreationTime(OffsetDateTime.now());
       entity.setId(UUID.randomUUID());
-    } else {
-      entity.setLastChangedTime(OffsetDateTime.now());
     }
+    entity.setLastChangedTime(OffsetDateTime.now());
     return TagMapper.INSTANCE.entityToDto(repository.save(entity));
   }
 

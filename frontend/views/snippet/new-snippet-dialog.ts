@@ -7,8 +7,8 @@ import '@vaadin/vaadin-combo-box';
 import '@vaadin/vaadin-text-field/vaadin-text-area'
 import {CallbackFunction} from '../utils/types';
 import {Binder, field} from '@vaadin/form';
-import Snippet from '../../generated/com/overwhale/colibri_so/backend/entity/Snippet';
-import SnippetModel from '../../generated/com/overwhale/colibri_so/backend/entity/SnippetModel';
+import SnippetDto from '../../generated/com/overwhale/colibri_so/frontend/dto/SnippetDto';
+import SnippetDtoModel from '../../generated/com/overwhale/colibri_so/frontend/dto/SnippetDtoModel';
 import {store} from "../../store";
 import {showNotification} from '@vaadin/flow-frontend/a-notification';
 import {EndpointError} from '@vaadin/flow-frontend/Connect';
@@ -16,13 +16,14 @@ import * as SnippetEndpoint from "../../generated/SnippetEndpoint";
 import * as SnippetProjectEndpoint from "../../generated/SnippetProjectEndpoint";
 import * as SnippetIntentEndpoint from "../../generated/SnippetIntentEndpoint";
 import * as SnippetTagEndpoint from "../../generated/SnippetTagEndpoint";
-import SnippetProject from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetProject";
-import SnippetProjectModel from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetProjectModel";
-import SnippetIntent from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetIntent";
-import SnippetIntentModel from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetIntentModel";
-import SnippetTag from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetTag";
-import SnippetTagModel from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetTagModel";
+import SnippetProjectDto from "../../generated/com/overwhale/colibri_so/frontend/dto/SnippetProjectDto";
+import SnippetProjectDtoModel from "../../generated/com/overwhale/colibri_so/frontend/dto/SnippetProjectDtoModel";
+import SnippetIntentDto from "../../generated/com/overwhale/colibri_so/frontend/dto/SnippetIntentDto";
+import SnippetIntentDtoModel from "../../generated/com/overwhale/colibri_so/frontend/dto/SnippetIntentDtoModel";
+import SnippetTagDto from "../../generated/com/overwhale/colibri_so/frontend/dto/SnippetTagDto";
+import SnippetTagDtoModel from "../../generated/com/overwhale/colibri_so/frontend/dto/SnippetTagDtoModel";
 import SnippetType from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetType";
+
 
 @customElement('new-snippet-dialog')
 export class NewSnippetDialog extends LitElement {
@@ -37,12 +38,12 @@ export class NewSnippetDialog extends LitElement {
 
     private _boundDialogRenderer = this._dialogRenderer.bind(this);
 
-    private snippetBinder = new Binder<Snippet, SnippetModel>(this, SnippetModel);
-    private snippetProjectBinder = new Binder<SnippetProject, SnippetProjectModel>(this, SnippetProjectModel);
-    private snippetIntentBinder = new Binder<SnippetIntent, SnippetIntentModel>(this, SnippetIntentModel);
-    private snippetTagBinder1 = new Binder<SnippetTag, SnippetTagModel>(this, SnippetTagModel);
-    private snippetTagBinder2 = new Binder<SnippetTag, SnippetTagModel>(this, SnippetTagModel);
-    private snippetTagBinder3 = new Binder<SnippetTag, SnippetTagModel>(this, SnippetTagModel);
+    private snippetBinder = new Binder<SnippetDto, SnippetDtoModel>(this, SnippetDtoModel);
+    private snippetProjectBinder = new Binder<SnippetProjectDto, SnippetProjectDtoModel>(this, SnippetProjectDtoModel);
+    private snippetIntentBinder = new Binder<SnippetIntentDto, SnippetIntentDtoModel>(this, SnippetIntentDtoModel);
+    private snippetTagBinder1 = new Binder<SnippetTagDto, SnippetTagDtoModel>(this, SnippetTagDtoModel);
+    private snippetTagBinder2 = new Binder<SnippetTagDto, SnippetTagDtoModel>(this, SnippetTagDtoModel);
+    private snippetTagBinder3 = new Binder<SnippetTagDto, SnippetTagDtoModel>(this, SnippetTagDtoModel);
 
 
     render() {
@@ -160,7 +161,7 @@ export class NewSnippetDialog extends LitElement {
         this.cbSave = cb;
         this.snippetBinder.read({
             creatorId: store.sessionUser.id,
-            snippetType: SnippetType.TEXT
+            snippetType: SnippetType.TEXT,
         });
         this.snippetProjectBinder.read({});
         this.snippetIntentBinder.read({});
@@ -172,7 +173,7 @@ export class NewSnippetDialog extends LitElement {
 
     private async save() {
         try {
-            const snippet: Snippet = await this.snippetBinder.submitTo(SnippetEndpoint.update) as Snippet;
+            const snippet: SnippetDto = await this.snippetBinder.submitTo(SnippetEndpoint.update) as SnippetDto;
             await this.snippetProjectBinder.submitTo( entity => {
                 // hack: because object-comboboxes seem not to work yet, we must map the
                 // caption to the id:

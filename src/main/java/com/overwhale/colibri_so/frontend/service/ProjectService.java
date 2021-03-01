@@ -28,9 +28,8 @@ public class ProjectService extends CrudService<ProjectDto, UUID> {
     if (entity.getId() == null) {
       entity.setCreationTime(OffsetDateTime.now());
       entity.setId(UUID.randomUUID());
-    } else {
-      entity.setLastChangedTime(OffsetDateTime.now());
     }
+    entity.setLastChangedTime(OffsetDateTime.now());
     return ProjectMapper.INSTANCE.entityToDto(repository.save(entity));
   }
 

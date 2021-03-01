@@ -1,8 +1,8 @@
 import {CrudView} from "../crud-view/crud-view";
 import {customElement, html, property, unsafeCSS} from "lit-element";
 import {Binder, field} from '@vaadin/form';
-import Snippet from '../../generated/com/overwhale/colibri_so/backend/entity/Snippet';
-import SnippetModel from '../../generated/com/overwhale/colibri_so/backend/entity/SnippetModel';
+import SnippetDto from '../../generated/com/overwhale/colibri_so/frontend/dto/SnippetDto';
+import SnippetDtoModel from '../../generated/com/overwhale/colibri_so/frontend/dto/SnippetDtoModel';
 import * as SnippetEndpoint from '../../generated/SnippetEndpoint';
 import GridSorter from "../../generated/org/vaadin/artur/helpers/GridSorter";
 import {GridColumnElement} from "@vaadin/vaadin-grid/vaadin-grid-column";
@@ -22,8 +22,8 @@ const MAX_FAVOURITE_LEVEL = 4;
 const FAVOURITE_COLORS = ['#cccccc', '#660000', '#aa0000', '#ff0000'];
 
 @customElement('snippet-view')
-export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserver {
-    private binder = new Binder<Snippet, SnippetModel>(this, SnippetModel);
+export class ProjectView extends CrudView<SnippetDto>  implements BeforeEnterObserver {
+    private binder = new Binder<SnippetDto, SnippetDtoModel>(this, SnippetDtoModel);
     @property({type: String}) projectId = '';
 
     constructor() {
@@ -38,7 +38,7 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
         return this.binder;
     }
 
-    protected createNewEntity(): Snippet {
+    protected createNewEntity(): SnippetDto {
         return {
             creatorId: store.sessionUser.id,
             snippetType: SnippetType.TEXT
@@ -77,11 +77,11 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
         return false;
     }
 
-    protected getEntity(id: any): Promise<Snippet | undefined> {
+    protected getEntity(id: any): Promise<SnippetDto | undefined> {
         return SnippetEndpoint.get(id);
     }
 
-    protected updateEntity(entity: Snippet): Promise<Snippet> {
+    protected updateEntity(entity: SnippetDto): Promise<SnippetDto> {
         return SnippetEndpoint.update(entity).then(entity => {
             store.refreshMenuTabs();
             return entity;
@@ -97,7 +97,7 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
         }
     }
 
-    protected listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<Snippet>> {
+    protected listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<SnippetDto>> {
         if(this.projectId) {
             return SnippetEndpoint.listForProjectId(this.projectId, offset, limit, sortOrder);
         }
@@ -121,7 +121,7 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
         return (match&&match[7].length==11)? match[7] : '';
     }
 
-    private renderSnippetContent(snippet: Snippet) {
+    private renderSnippetContent(snippet: SnippetDto) {
         if(SnippetType.YOUTUBE === snippet.snippetType) {
 
             let videoCode = '';
@@ -159,7 +159,7 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
     }
 
     private contentRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
-        const snippet = model.item as Snippet;
+        const snippet = model.item as SnippetDto;
         const favouriteRawLevel = snippet.favouriteLevel ? snippet.favouriteLevel as number: 0;
         const favouriteLevel = favouriteRawLevel >=0 && favouriteRawLevel<MAX_FAVOURITE_LEVEL ? favouriteRawLevel : 0;
         const favouriteLevelCaption = favouriteLevel > 0 ? '(' + favouriteLevel + ')' : '';
@@ -245,7 +245,7 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
         );
     }
 */
-    private getProjects(snippet: Snippet) {
+    private getProjects(snippet: SnippetDto) {
         if(!snippet.projects || snippet.projects.length==0) {
             return '';
         }
@@ -257,7 +257,7 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
         }
     }
 
-    private  getIntents(snippet: Snippet) {
+    private  getIntents(snippet: SnippetDto) {
         if(!snippet.intents || snippet.intents.length==0) {
             return '';
         }
@@ -269,7 +269,7 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
         }
     }
 
-    private  getTags(snippet: Snippet) {
+    private  getTags(snippet: SnippetDto) {
         if(!snippet.tags || snippet.tags.length==0) {
             return '';
         }
@@ -282,7 +282,7 @@ export class ProjectView extends CrudView<Snippet>  implements BeforeEnterObserv
     }
 
     private async toggleFavouriteLevel(id: any) {
-        const snippet = await SnippetEndpoint.get(id) as Snippet;
+        const snippet = await SnippetEndpoint.get(id) as SnippetDto;
         if(snippet) {
             if(snippet.favouriteLevel && snippet.favouriteLevel >= 0) {
                 snippet.favouriteLevel = snippet.favouriteLevel + 1;

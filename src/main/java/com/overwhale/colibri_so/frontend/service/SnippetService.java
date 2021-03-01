@@ -1,4 +1,4 @@
-package com.overwhale.colibri_so.backend.service;
+package com.overwhale.colibri_so.frontend.service;
 
 import com.overwhale.colibri_so.backend.entity.Intent;
 import com.overwhale.colibri_so.backend.entity.Project;
@@ -8,70 +8,88 @@ import com.overwhale.colibri_so.backend.repository.SnippetIntentRepository;
 import com.overwhale.colibri_so.backend.repository.SnippetProjectRepository;
 import com.overwhale.colibri_so.backend.repository.SnippetRepository;
 import com.overwhale.colibri_so.backend.repository.SnippetTagRepository;
+import com.overwhale.colibri_so.frontend.dto.SnippetDto;
+import com.overwhale.colibri_so.frontend.mapper.SnippetMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class SnippetService extends CrudService<Snippet, UUID> {
+public class SnippetService extends CrudService<SnippetDto, UUID> {
   private final SnippetRepository repository;
   private final SnippetTagRepository tagRepository;
   private final SnippetIntentRepository intentRepository;
   private final SnippetProjectRepository projectRepository;
 
-  public SnippetService(SnippetRepository repository, SnippetTagRepository tagRepository, SnippetIntentRepository intentRepository, SnippetProjectRepository projectRepository) {
+  public SnippetService(
+      SnippetRepository repository,
+      SnippetTagRepository tagRepository,
+      SnippetIntentRepository intentRepository,
+      SnippetProjectRepository projectRepository) {
     this.repository = repository;
     this.tagRepository = tagRepository;
     this.intentRepository = intentRepository;
     this.projectRepository = projectRepository;
   }
 
-  @Override
-  public Snippet update(Snippet entity) {
+  public SnippetDto update(SnippetDto dto) {
+    Snippet entity = SnippetMapper.INSTANCE.dtoToEntiy(dto);
     if (entity.getId() == null) {
       entity.setCreationTime(OffsetDateTime.now());
       entity.setId(UUID.randomUUID());
-    }
-    else {
+    } else {
       entity.setLastChangedTime(OffsetDateTime.now());
     }
-    return super.update(entity);
+    return SnippetMapper.INSTANCE.entityToDto(repository.save(entity));
   }
 
   @Override
-  protected SnippetRepository getRepository() {
-    return repository;
+  protected JpaRepository<SnippetDto, UUID> getRepository() {
+    return null;
+  }
+
+  public Optional<SnippetDto> get(UUID id) {
+    return repository.findById(id).map(e -> SnippetMapper.INSTANCE.entityToDto(e));
+  }
+
+  public void delete(UUID id) {
+    repository.deleteById(id);
+    tagRepository.deleteBySnippetId(id);
+    projectRepository.deleteBySnippetId(id);
+    intentRepository.deleteBySnippetId(id);
+  }
+
+  public Page<SnippetDto> list(Pageable pageable) {
+    return repository.findAll(pageable).map(e -> SnippetMapper.INSTANCE.entityToDto(e));
+  }
+
+  public int count() {
+    return (int) repository.count();
   }
 
   public int countForProjectId(String projectId) {
-    return (int)this.getRepository().countForProjectId(UUID.fromString(projectId));
+    return (int) repository.countForProjectId(UUID.fromString(projectId));
   }
 
   public Page<Snippet> listForProjectId(String projectId, Pageable pageable) {
-    return this.getRepository().findForProjectId(UUID.fromString(projectId), pageable);
+    return repository.findForProjectId(UUID.fromString(projectId), pageable);
   }
 
   public Page<Intent> listIntentsForSnippetId(String snippetId, Pageable pageable) {
-    return this.getRepository().findIntentsForSnippet(UUID.fromString(snippetId), pageable);
+    return repository.findIntentsForSnippet(UUID.fromString(snippetId), pageable);
   }
 
   public Page<Tag> listTagsForSnippetId(String snippetId, Pageable pageable) {
-    return this.getRepository().findTagsForSnippet(UUID.fromString(snippetId), pageable);
+    return repository.findTagsForSnippet(UUID.fromString(snippetId), pageable);
   }
 
   public Page<Project> listProjectsForSnippetId(String snippetId, Pageable pageable) {
-    return this.getRepository().findProjectsForSnippet(UUID.fromString(snippetId), pageable);
-  }
-
-  @Override
-  public void delete(UUID uuid) {
-    super.delete(uuid);
-    tagRepository.deleteBySnippetId(uuid);
-    projectRepository.deleteBySnippetId(uuid);
-    intentRepository.deleteBySnippetId(uuid);
+    return repository.findProjectsForSnippet(UUID.fromString(snippetId), pageable);
   }
 }

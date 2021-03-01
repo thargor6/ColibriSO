@@ -18,8 +18,7 @@ Currently, it is work-in-progress and not much more than a playground.
  + flat Project-"tree" (only one hierarchy)
  + "self-contained" examples (informations and tutorials for Vaadin Fusion and LitElement)
 ### TODO's
- + moving out all entities from the frontend and replace them by dtos
- + fine-tune dto's for editing, and entities for the backend (currently there is kind of a "mix")
+ + fine-tune dto's for editing and validation, and entities for the backend, clean up annotations (json, jpa)
  + inline display of pdf documents
  + implements intents (e.g. reminders)
  + search function

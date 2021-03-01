@@ -1,6 +1,6 @@
 package com.overwhale.colibri_so.frontend.endpoint;
 
-import com.overwhale.colibri_so.backend.service.SnippetService;
+import com.overwhale.colibri_so.frontend.service.SnippetService;
 import com.vaadin.flow.server.connect.Endpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 

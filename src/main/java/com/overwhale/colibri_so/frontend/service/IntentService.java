@@ -28,9 +28,8 @@ public class IntentService extends CrudService<IntentDto, UUID> {
     if (entity.getId() == null) {
       entity.setCreationTime(OffsetDateTime.now());
       entity.setId(UUID.randomUUID());
-    } else {
-      entity.setLastChangedTime(OffsetDateTime.now());
     }
+    entity.setLastChangedTime(OffsetDateTime.now());
     return IntentMapper.INSTANCE.entityToDto(repository.save(entity));
   }
 
