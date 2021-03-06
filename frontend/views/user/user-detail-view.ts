@@ -11,6 +11,7 @@ import '@vaadin/vaadin-text-field';
 import '@vaadin/vaadin-combo-box';
 import '@vaadin/vaadin-text-field/vaadin-email-field';
 import '@vaadin/vaadin-icons';
+import '@vaadin/vaadin-checkbox';
 import {Binder, field} from '@vaadin/form';
 import UserDetailDto from '../../generated/com/overwhale/colibri_so/frontend/dto/UserDetailDto';
 import UserDetailDtoModel from '../../generated/com/overwhale/colibri_so/frontend/dto/UserDetailDtoModel';
@@ -90,6 +91,12 @@ export class UserDetailView extends MobxLitElement {
                                               @change="${this.uiThemeValueChanged}"
                                               ...="${field(this.binder.model.uiTheme)}"    
                             ></vaadin-combo-box>
+                            <vaadin-checkbox
+                                    label="Async table refresh" 
+                                    id="asyncTableRefresh"
+                                    ...="${field(this.binder.model.asyncTableRefresh)}"
+                            >Async table refresh
+                            </vaadin-checkbox>
 
                             
                         </vaadin-form-layout>

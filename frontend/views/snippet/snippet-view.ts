@@ -14,7 +14,7 @@ import {BeforeEnterObserver, PreventAndRedirectCommands, Router, RouterLocation}
 import styles from './snippet-view.css';
 import base_styles from '../crud-view/crud-view.css';
 import {CSSModule} from '@vaadin/flow-frontend/css-utils';
-//import {until} from "lit-html/directives/until";
+import {until} from "lit-html/directives/until";
 import SnippetType from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetType";
 import {EditMode} from "../utils/types";
 
@@ -183,15 +183,15 @@ export class ProjectView extends CrudView<SnippetDto>  implements BeforeEnterObs
                         <vaadin-horizontal-layout theme="spacing-s" class="actions">
                             <iron-icon icon="vaadin:archive"></iron-icon>
                             <span class="projects">
-                                ${this.getProjects(snippet)}
+                                ${this.renderProjects(snippet)}
                             </span>
                             <iron-icon icon="vaadin:automation"></iron-icon>
                             <span class="intents">
-                                ${this.getIntents(snippet)}
+                                ${this.renderIntents(snippet)}
                             </span>
                             <iron-icon icon="vaadin:bullets"></iron-icon>
                             <span class="tags">
-                                ${this.getTags(snippet)}
+                                ${this.renderTags(snippet)}
                             </span>
                         </vaadin-horizontal-layout> 
                         
@@ -224,13 +224,21 @@ export class ProjectView extends CrudView<SnippetDto>  implements BeforeEnterObs
         }
     }
 
-/*
+    private renderProjects(snippet: SnippetDto) {
+         if(store.sessionUserDetail.asyncTableRefresh) {
+          return html`
+            ${until(this.getProjectsAsync(snippet), html`<span>Loading...</span>`)}
+            `;
+        }
+        else {
+             return html`
+               ${this.getProjectsSync(snippet)}
+            `;
+        }
+    }
 
-    <!--
-    ${until(this.getProjectsAsync(snippet.id), html`<span>Loading...</span>`)}
-    -->
-    private getProjectsAsync(snippetId: string) {
-        return SnippetEndpoint.listProjectsForSnippetId(snippetId, 0, 10000, []).then(
+    private getProjectsAsync(snippet: SnippetDto) {
+        return SnippetEndpoint.listProjectsForSnippetId(snippet.id, 0, 10000, []).then(
             projects => {
                 if(projects.length==0) {
                     return '';
@@ -244,8 +252,8 @@ export class ProjectView extends CrudView<SnippetDto>  implements BeforeEnterObs
             }
         );
     }
-*/
-    private getProjects(snippet: SnippetDto) {
+
+    private getProjectsSync(snippet: SnippetDto) {
         if(!snippet.projects || snippet.projects.length==0) {
             return '';
         }
@@ -257,7 +265,36 @@ export class ProjectView extends CrudView<SnippetDto>  implements BeforeEnterObs
         }
     }
 
-    private  getIntents(snippet: SnippetDto) {
+    private renderIntents(snippet: SnippetDto) {
+        if(store.sessionUserDetail.asyncTableRefresh) {
+            return html`
+            ${until(this.getIntentsAsync(snippet), html`<span>Loading...</span>`)}
+            `;
+        }
+        else {
+            return html`
+               ${this.getIntentsSync(snippet)}
+            `;
+        }
+    }
+
+    private getIntentsAsync(snippet: SnippetDto) {
+        return SnippetEndpoint.listIntentsForSnippetId(snippet.id, 0, 10000, []).then(
+            intents => {
+                if(intents.length==0) {
+                    return '';
+                }
+                else if(intents.length==1) {
+                    return "Intent: " + intents[0].intent;
+                }
+                else {
+                    return "Intents: " + intents.map(intent => intent.intent).join(', ');
+                }
+            }
+        );
+    }
+
+    private getIntentsSync(snippet: SnippetDto) {
         if(!snippet.intents || snippet.intents.length==0) {
             return '';
         }
@@ -269,7 +306,36 @@ export class ProjectView extends CrudView<SnippetDto>  implements BeforeEnterObs
         }
     }
 
-    private  getTags(snippet: SnippetDto) {
+    private renderTags(snippet: SnippetDto) {
+        if(store.sessionUserDetail.asyncTableRefresh) {
+            return html`
+            ${until(this.getTagsAsync(snippet), html`<span>Loading...</span>`)}
+            `;
+        }
+        else {
+            return html`
+               ${this.getTagsSync(snippet)}
+            `;
+        }
+    }
+
+    private getTagsAsync(snippet: SnippetDto) {
+        return SnippetEndpoint.listTagsForSnippetId(snippet.id, 0, 10000, []).then(
+            tags => {
+                if(tags.length==0) {
+                    return '';
+                }
+                else if(tags.length==1) {
+                    return "Tag: " + tags[0].tag;
+                }
+                else {
+                    return "Tags: " + tags.map(tag => tag.tag).join(', ');
+                }
+            }
+        );
+    }
+
+    private getTagsSync(snippet: SnippetDto) {
         if(!snippet.tags || snippet.tags.length==0) {
             return '';
         }
