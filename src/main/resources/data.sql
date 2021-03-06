@@ -4,10 +4,10 @@ INSERT INTO USERS (ID, USERNAME, ENABLED, PASSWORD_HASH, CREATION_TIME)
           '$2y$12$sE1zfriusl2MWpVsqcvR7ewUiJ2xqS0776AZS4oGFUQ6sCSgH5Mgu',
           '2021-02-20 01:26:17.857762');
 
-insert INTO USER_DETAILS (USER_ID, AVATAR, AVATAR_COLOR, CREATION_TIME, EMAIL, FULL_NAME, UI_THEME)
+insert INTO USER_DETAILS (USER_ID, AVATAR, AVATAR_COLOR, CREATION_TIME, EMAIL, FULL_NAME, UI_THEME, ASYNC_TABLE_REFRESH)
 values ('f2642591-312a-414a-80ab-e13e59b610f9', 'cubes', '#c21807',
         '2021-02-20 01:26:17.857762',
-        'admin@colibriso.com', 'Admin', 'light');
+        'admin@colibriso.com', 'Admin', 'light', 1);
 
 INSERT INTO AUTHORITIES (ID, AUTHORITY)
   values ('00030e6c-8daf-40c7-9793-875c17db93c5', 'ADMIN');
@@ -27,10 +27,10 @@ values ('43471800-10cd-41ce-9c1e-26fe60814e26', 'user', 1,
         '$2y$12$Aa7VN/csWw/Doqv4k9Nh0ezZmfaw843kabQv/M5Xtnit9s1vor.TK',
         '2021-02-20 01:26:17.857762');
 
-insert INTO USER_DETAILS (USER_ID, AVATAR, AVATAR_COLOR, CREATION_TIME, EMAIL, FULL_NAME, UI_THEME)
+insert INTO USER_DETAILS (USER_ID, AVATAR, AVATAR_COLOR, CREATION_TIME, EMAIL, FULL_NAME, UI_THEME, ASYNC_TABLE_REFRESH)
 values ('43471800-10cd-41ce-9c1e-26fe60814e26', 'academy-cap', '#fce205',
         '2021-02-20 01:26:17.857762',
-        'user@colibriso.com', 'Some User', 'light');
+        'user@colibriso.com', 'Some User', 'light', 0);
 
 INSERT INTO USER_AUTHORITIES (AUTHORITY_ID, USER_ID)
 values ('bbd7b226-d1d3-4f00-afbe-d9979871417e', '43471800-10cd-41ce-9c1e-26fe60814e26');

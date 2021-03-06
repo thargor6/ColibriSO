@@ -29,4 +29,6 @@ public class UserDetailDto {
   @Nullable private String avatarColor;
 
   @Nullable private String uiTheme;
+
+  @NotNull private boolean asyncTableRefresh;
 }

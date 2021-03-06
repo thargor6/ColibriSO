@@ -1,6 +1,5 @@
 package com.overwhale.colibri_so.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,13 +21,9 @@ public class User {
   @NotNull
   private UUID id;
 
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-  @Nullable
-  private OffsetDateTime creationTime;
+  @NotNull private OffsetDateTime creationTime;
 
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-  @Nullable
-  private OffsetDateTime lastChangedTime;
+  @Nullable private OffsetDateTime lastChangedTime;
 
   @NotNull private String username;
 

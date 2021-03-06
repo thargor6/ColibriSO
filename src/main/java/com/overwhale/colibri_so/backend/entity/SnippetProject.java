@@ -3,11 +3,11 @@ package com.overwhale.colibri_so.backend.entity;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
-import javax.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Entity
@@ -15,15 +15,12 @@ import java.util.UUID;
 @Table(name = "snippet_projects")
 @IdClass(SnippetProjectKey.class)
 public class SnippetProject {
-  // TODO: create dtos for editing, so that the entities can have the appropriate NotNull-settings
-  // for key-fields
-
-  @Nullable
+  @NotNull
   @Id
   @Type(type = "uuid-char")
   private UUID snippetId;
 
-  @Nullable
+  @NotNull
   @Id
   @Type(type = "uuid-char")
   private UUID projectId;

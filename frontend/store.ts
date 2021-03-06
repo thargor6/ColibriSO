@@ -38,7 +38,8 @@ class Store {
     };
     private _menuTabs: MenuTab[] = [];
 
-    private _sessionUserDetail: UserDetailDto = {creationTime: undefined, userId: undefined};
+    private _sessionUserDetail: UserDetailDto = {
+        creationTime: undefined, userId: undefined, asyncTableRefresh: false};
 
     constructor() {
         if(Store._instance){
@@ -186,7 +187,7 @@ class Store {
 
     clearSessionData() {
         this.sessionUser = {creationTime: undefined, enabled: false, id: undefined, passwordHash: "", username: ""};
-        this.sessionUserDetail = {creationTime: undefined, userId: undefined};
+        this.sessionUserDetail = {creationTime: undefined, userId: undefined, asyncTableRefresh: false};
     }
 
     set menuTabs(newMenuTabs: MenuTab[]) {

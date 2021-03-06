@@ -1,6 +1,5 @@
 package com.overwhale.colibri_so.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
@@ -21,13 +20,9 @@ public class UserDetail {
   @Type(type = "uuid-char")
   private UUID userId;
 
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-  @NotNull
-  private OffsetDateTime creationTime;
+  @NotNull private OffsetDateTime creationTime;
 
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-  @Nullable
-  private OffsetDateTime lastChangedTime;
+  @Nullable private OffsetDateTime lastChangedTime;
 
   @Nullable private String email;
 
@@ -38,4 +33,6 @@ public class UserDetail {
   @Nullable private String avatarColor;
 
   @Nullable private String uiTheme;
+
+  @NotNull private boolean asyncTableRefresh;
 }
