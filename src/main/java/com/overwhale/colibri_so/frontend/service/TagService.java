@@ -4,7 +4,6 @@ import com.overwhale.colibri_so.backend.entity.Tag;
 import com.overwhale.colibri_so.backend.repository.TagRepository;
 import com.overwhale.colibri_so.frontend.dto.TagDto;
 import com.overwhale.colibri_so.frontend.mapper.TagMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,19 +17,21 @@ import java.util.UUID;
 @Service
 public class TagService extends CrudService<TagDto, UUID> {
   private final TagRepository repository;
+  private final TagMapper tagMapper;
 
-  public TagService(@Autowired TagRepository repository) {
+  public TagService(TagRepository repository, TagMapper tagMapper) {
     this.repository = repository;
+    this.tagMapper = tagMapper;
   }
 
   public TagDto update(TagDto dto) {
-    Tag entity = TagMapper.INSTANCE.dtoToEntiy(dto);
+    Tag entity = tagMapper.dtoToEntiy(dto);
     if (entity.getId() == null) {
       entity.setCreationTime(OffsetDateTime.now());
       entity.setId(UUID.randomUUID());
     }
     entity.setLastChangedTime(OffsetDateTime.now());
-    return TagMapper.INSTANCE.entityToDto(repository.save(entity));
+    return tagMapper.entityToDto(repository.save(entity));
   }
 
   @Override
@@ -39,7 +40,7 @@ public class TagService extends CrudService<TagDto, UUID> {
   }
 
   public Optional<TagDto> get(UUID id) {
-    return repository.findById(id).map(e -> TagMapper.INSTANCE.entityToDto(e));
+    return repository.findById(id).map(e -> tagMapper.entityToDto(e));
   }
 
   public void delete(UUID id) {
@@ -47,7 +48,7 @@ public class TagService extends CrudService<TagDto, UUID> {
   }
 
   public Page<TagDto> list(Pageable pageable) {
-    return repository.findAll(pageable).map(e -> TagMapper.INSTANCE.entityToDto(e));
+    return repository.findAll(pageable).map(e -> tagMapper.entityToDto(e));
   }
 
   public int count() {

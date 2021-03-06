@@ -4,7 +4,6 @@ import com.overwhale.colibri_so.backend.entity.UserDetail;
 import com.overwhale.colibri_so.backend.repository.UserDetailRepository;
 import com.overwhale.colibri_so.frontend.dto.UserDetailDto;
 import com.overwhale.colibri_so.frontend.mapper.UserDetailMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,14 +16,16 @@ import java.util.UUID;
 @Service
 public class UserDetailService extends CrudService<UserDetailDto, UUID> {
   private final UserDetailRepository repository;
+  private final UserDetailMapper userDetailMapper;
 
-  public UserDetailService(@Autowired UserDetailRepository repository) {
+  public UserDetailService(UserDetailRepository repository, UserDetailMapper userDetailMapper) {
     this.repository = repository;
+    this.userDetailMapper = userDetailMapper;
   }
 
   public UserDetailDto update(UserDetailDto dto) {
-    UserDetail entity = UserDetailMapper.INSTANCE.dtoToEntiy(dto);
-    return UserDetailMapper.INSTANCE.entityToDto(repository.save(entity));
+    UserDetail entity = userDetailMapper.dtoToEntiy(dto);
+    return userDetailMapper.entityToDto(repository.save(entity));
   }
 
   @Override
@@ -33,7 +34,7 @@ public class UserDetailService extends CrudService<UserDetailDto, UUID> {
   }
 
   public Optional<UserDetailDto> get(UUID id) {
-    return repository.findById(id).map(e -> UserDetailMapper.INSTANCE.entityToDto(e));
+    return repository.findById(id).map(e -> userDetailMapper.entityToDto(e));
   }
 
   public void delete(UUID id) {
@@ -41,7 +42,7 @@ public class UserDetailService extends CrudService<UserDetailDto, UUID> {
   }
 
   public Page<UserDetailDto> list(Pageable pageable) {
-    return repository.findAll(pageable).map(e -> UserDetailMapper.INSTANCE.entityToDto(e));
+    return repository.findAll(pageable).map(e -> userDetailMapper.entityToDto(e));
   }
 
   public int count() {

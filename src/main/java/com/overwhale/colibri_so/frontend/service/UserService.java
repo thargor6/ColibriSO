@@ -18,19 +18,21 @@ import java.util.UUID;
 @Service
 public class UserService extends CrudService<UserDto, UUID> {
   private final UserRepository repository;
+  private final UserMapper userMapper;
 
-  public UserService(@Autowired UserRepository repository) {
+  public UserService(@Autowired UserRepository repository, UserMapper userMapper) {
     this.repository = repository;
+    this.userMapper = userMapper;
   }
 
   public UserDto update(UserDto dto) {
-    User entity = UserMapper.INSTANCE.dtoToEntiy(dto);
+    User entity = userMapper.dtoToEntiy(dto);
     if (entity.getId() == null) {
       entity.setCreationTime(OffsetDateTime.now());
       entity.setId(UUID.randomUUID());
     }
     entity.setLastChangedTime(OffsetDateTime.now());
-    return UserMapper.INSTANCE.entityToDto(repository.save(entity));
+    return userMapper.entityToDto(repository.save(entity));
   }
 
   @Override
@@ -39,7 +41,7 @@ public class UserService extends CrudService<UserDto, UUID> {
   }
 
   public Optional<UserDto> get(UUID id) {
-    return repository.findById(id).map(e -> UserMapper.INSTANCE.entityToDto(e));
+    return repository.findById(id).map(e -> userMapper.entityToDto(e));
   }
 
   public void delete(UUID id) {
@@ -47,11 +49,11 @@ public class UserService extends CrudService<UserDto, UUID> {
   }
 
   public Page<UserDto> list(Pageable pageable) {
-    return repository.findAll(pageable).map(e -> UserMapper.INSTANCE.entityToDto(e));
+    return repository.findAll(pageable).map(e -> userMapper.entityToDto(e));
   }
 
   public UserDto getByUsername(String username) {
-    return UserMapper.INSTANCE.entityToDto(repository.getByUsername(username));
+    return userMapper.entityToDto(repository.getByUsername(username));
   }
 
   public int count() {

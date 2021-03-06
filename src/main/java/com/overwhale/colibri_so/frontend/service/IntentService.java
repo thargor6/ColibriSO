@@ -4,7 +4,6 @@ import com.overwhale.colibri_so.backend.entity.Intent;
 import com.overwhale.colibri_so.backend.repository.IntentRepository;
 import com.overwhale.colibri_so.frontend.dto.IntentDto;
 import com.overwhale.colibri_so.frontend.mapper.IntentMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,20 +16,22 @@ import java.util.UUID;
 
 @Service
 public class IntentService extends CrudService<IntentDto, UUID> {
+  private final IntentMapper mapper;
   private final IntentRepository repository;
 
-  public IntentService(@Autowired IntentRepository repository) {
+  public IntentService(IntentMapper mapper, IntentRepository repository) {
+    this.mapper = mapper;
     this.repository = repository;
   }
 
   public IntentDto update(IntentDto dto) {
-    Intent entity = IntentMapper.INSTANCE.dtoToEntiy(dto);
+    Intent entity = mapper.dtoToEntiy(dto);
     if (entity.getId() == null) {
       entity.setCreationTime(OffsetDateTime.now());
       entity.setId(UUID.randomUUID());
     }
     entity.setLastChangedTime(OffsetDateTime.now());
-    return IntentMapper.INSTANCE.entityToDto(repository.save(entity));
+    return mapper.entityToDto(repository.save(entity));
   }
 
   @Override
@@ -39,7 +40,7 @@ public class IntentService extends CrudService<IntentDto, UUID> {
   }
 
   public Optional<IntentDto> get(UUID id) {
-    return repository.findById(id).map(e -> IntentMapper.INSTANCE.entityToDto(e));
+    return repository.findById(id).map(e -> mapper.entityToDto(e));
   }
 
   public void delete(UUID id) {
@@ -47,7 +48,7 @@ public class IntentService extends CrudService<IntentDto, UUID> {
   }
 
   public Page<IntentDto> list(Pageable pageable) {
-    return repository.findAll(pageable).map(e -> IntentMapper.INSTANCE.entityToDto(e));
+    return repository.findAll(pageable).map(e -> mapper.entityToDto(e));
   }
 
   public int count() {

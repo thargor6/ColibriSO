@@ -1,7 +1,5 @@
 package com.overwhale.colibri_so.frontend.endpoint;
 
-
-
 import com.overwhale.colibri_so.frontend.dto.IntentDto;
 import com.overwhale.colibri_so.frontend.dto.ProjectDto;
 import com.overwhale.colibri_so.frontend.dto.SnippetDto;
@@ -22,37 +20,72 @@ import java.util.UUID;
 
 @AnonymousAllowed
 @EndpointExposed
-public abstract class SnippetCrudEndpoint extends CrudEndpoint<SnippetDto, UUID>{
+public abstract class SnippetCrudEndpoint extends CrudEndpoint<SnippetDto, UUID> {
+  private final IntentMapper intentMapper;
+  private final SnippetMapper snippetMapper;
+  private final ProjectMapper projectMapper;
+  private final TagMapper tagMapper;
 
-    protected SnippetService getSnippetService() {
-        return (SnippetService) getService();
-    }
+  protected SnippetCrudEndpoint(
+      IntentMapper intentMapper,
+      SnippetMapper snippetMapper,
+      ProjectMapper projectMapper,
+      TagMapper tagMapper) {
+    this.intentMapper = intentMapper;
+    this.snippetMapper = snippetMapper;
+    this.projectMapper = projectMapper;
+    this.tagMapper = tagMapper;
+  }
 
-    public int countForProjectId(String projectId) {
-        return getSnippetService().countForProjectId(projectId);
-    }
+  protected SnippetService getSnippetService() {
+    return (SnippetService) getService();
+  }
 
-    public List<SnippetDto> listForProjectId(String projectId, int offset, int limit, List<GridSorter> sortOrder) {
-        Page<SnippetDto> page =
-                getSnippetService().listForProjectId(projectId, PagingUtil.offsetLimitTypeScriptSortOrdersToPageable(offset, limit, sortOrder)).map(e -> SnippetMapper.INSTANCE.entityToDto(e));
-        return page.getContent();
-    }
+  public int countForProjectId(String projectId) {
+    return getSnippetService().countForProjectId(projectId);
+  }
 
-    public List<ProjectDto> listProjectsForSnippetId(String snippetId, int offset, int limit, List<GridSorter> sortOrder) {
-        Page<ProjectDto> page =
-                getSnippetService().listProjectsForSnippetId(snippetId, PagingUtil.offsetLimitTypeScriptSortOrdersToPageable(offset, limit, sortOrder)).map(e -> ProjectMapper.INSTANCE.entityToDto(e));
-        return page.getContent();
-    }
+  public List<SnippetDto> listForProjectId(
+      String projectId, int offset, int limit, List<GridSorter> sortOrder) {
+    Page<SnippetDto> page =
+        getSnippetService()
+            .listForProjectId(
+                projectId,
+                PagingUtil.offsetLimitTypeScriptSortOrdersToPageable(offset, limit, sortOrder))
+            .map(e -> snippetMapper.entityToDto(e));
+    return page.getContent();
+  }
 
-    public List<TagDto> listTagsForSnippetId(String snippetId, int offset, int limit, List<GridSorter> sortOrder) {
-        Page<TagDto> page =
-                getSnippetService().listTagsForSnippetId(snippetId, PagingUtil.offsetLimitTypeScriptSortOrdersToPageable(offset, limit, sortOrder)).map(e -> TagMapper.INSTANCE.entityToDto(e));
-        return page.getContent();
-    }
+  public List<ProjectDto> listProjectsForSnippetId(
+      String snippetId, int offset, int limit, List<GridSorter> sortOrder) {
+    Page<ProjectDto> page =
+        getSnippetService()
+            .listProjectsForSnippetId(
+                snippetId,
+                PagingUtil.offsetLimitTypeScriptSortOrdersToPageable(offset, limit, sortOrder))
+            .map(e -> projectMapper.entityToDto(e));
+    return page.getContent();
+  }
 
-    public List<IntentDto> listIntentsForSnippetId(String snippetId, int offset, int limit, List<GridSorter> sortOrder) {
-        Page<IntentDto> page =
-                getSnippetService().listIntentsForSnippetId(snippetId, PagingUtil.offsetLimitTypeScriptSortOrdersToPageable(offset, limit, sortOrder)).map(e -> IntentMapper.INSTANCE.entityToDto(e));
-        return page.getContent();
-    }
+  public List<TagDto> listTagsForSnippetId(
+      String snippetId, int offset, int limit, List<GridSorter> sortOrder) {
+    Page<TagDto> page =
+        getSnippetService()
+            .listTagsForSnippetId(
+                snippetId,
+                PagingUtil.offsetLimitTypeScriptSortOrdersToPageable(offset, limit, sortOrder))
+            .map(e -> tagMapper.entityToDto(e));
+    return page.getContent();
+  }
+
+  public List<IntentDto> listIntentsForSnippetId(
+      String snippetId, int offset, int limit, List<GridSorter> sortOrder) {
+    Page<IntentDto> page =
+        getSnippetService()
+            .listIntentsForSnippetId(
+                snippetId,
+                PagingUtil.offsetLimitTypeScriptSortOrdersToPageable(offset, limit, sortOrder))
+            .map(e -> intentMapper.entityToDto(e));
+    return page.getContent();
+  }
 }

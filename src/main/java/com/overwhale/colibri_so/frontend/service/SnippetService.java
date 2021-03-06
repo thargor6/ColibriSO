@@ -26,27 +26,30 @@ public class SnippetService extends CrudService<SnippetDto, UUID> {
   private final SnippetTagRepository tagRepository;
   private final SnippetIntentRepository intentRepository;
   private final SnippetProjectRepository projectRepository;
+  private final SnippetMapper snippetMapper;
 
   public SnippetService(
       SnippetRepository repository,
       SnippetTagRepository tagRepository,
       SnippetIntentRepository intentRepository,
-      SnippetProjectRepository projectRepository) {
+      SnippetProjectRepository projectRepository,
+      SnippetMapper snippetMapper) {
     this.repository = repository;
     this.tagRepository = tagRepository;
     this.intentRepository = intentRepository;
     this.projectRepository = projectRepository;
+    this.snippetMapper = snippetMapper;
   }
 
   public SnippetDto update(SnippetDto dto) {
-    Snippet entity = SnippetMapper.INSTANCE.dtoToEntiy(dto);
+    Snippet entity = snippetMapper.dtoToEntiy(dto);
     if (entity.getId() == null) {
       entity.setCreationTime(OffsetDateTime.now());
       entity.setId(UUID.randomUUID());
     } else {
       entity.setLastChangedTime(OffsetDateTime.now());
     }
-    return SnippetMapper.INSTANCE.entityToDto(repository.save(entity));
+    return snippetMapper.entityToDto(repository.save(entity));
   }
 
   @Override
@@ -55,7 +58,7 @@ public class SnippetService extends CrudService<SnippetDto, UUID> {
   }
 
   public Optional<SnippetDto> get(UUID id) {
-    return repository.findById(id).map(e -> SnippetMapper.INSTANCE.entityToDto(e));
+    return repository.findById(id).map(e -> snippetMapper.entityToDto(e));
   }
 
   public void delete(UUID id) {
@@ -66,7 +69,7 @@ public class SnippetService extends CrudService<SnippetDto, UUID> {
   }
 
   public Page<SnippetDto> list(Pageable pageable) {
-    return repository.findAll(pageable).map(e -> SnippetMapper.INSTANCE.entityToDto(e));
+    return repository.findAll(pageable).map(e -> snippetMapper.entityToDto(e));
   }
 
   public int count() {

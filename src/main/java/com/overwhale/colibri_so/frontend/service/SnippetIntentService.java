@@ -4,7 +4,6 @@ import com.overwhale.colibri_so.backend.entity.SnippetIntent;
 import com.overwhale.colibri_so.backend.repository.SnippetIntentRepository;
 import com.overwhale.colibri_so.frontend.dto.SnippetIntentDto;
 import com.overwhale.colibri_so.frontend.mapper.SnippetIntentMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,14 +16,16 @@ import java.util.UUID;
 @Service
 public class SnippetIntentService extends CrudService<SnippetIntentDto, UUID> {
   private final SnippetIntentRepository repository;
+  private final SnippetIntentMapper snippetIntentMapper;
 
-  public SnippetIntentService(@Autowired SnippetIntentRepository repository) {
+  public SnippetIntentService(SnippetIntentRepository repository, SnippetIntentMapper snippetIntentMapper) {
     this.repository = repository;
+    this.snippetIntentMapper = snippetIntentMapper;
   }
 
   public SnippetIntentDto update(SnippetIntentDto dto) {
-    SnippetIntent entity = SnippetIntentMapper.INSTANCE.dtoToEntiy(dto);
-    return SnippetIntentMapper.INSTANCE.entityToDto(repository.save(entity));
+    SnippetIntent entity = snippetIntentMapper.dtoToEntiy(dto);
+    return snippetIntentMapper.entityToDto(repository.save(entity));
   }
 
   @Override
@@ -33,7 +34,7 @@ public class SnippetIntentService extends CrudService<SnippetIntentDto, UUID> {
   }
 
   public Optional<SnippetIntentDto> get(UUID id) {
-    return repository.findById(id).map(e -> SnippetIntentMapper.INSTANCE.entityToDto(e));
+    return repository.findById(id).map(e -> snippetIntentMapper.entityToDto(e));
   }
 
   public void delete(UUID id) {
@@ -41,7 +42,7 @@ public class SnippetIntentService extends CrudService<SnippetIntentDto, UUID> {
   }
 
   public Page<SnippetIntentDto> list(Pageable pageable) {
-    return repository.findAll(pageable).map(e -> SnippetIntentMapper.INSTANCE.entityToDto(e));
+    return repository.findAll(pageable).map(e -> snippetIntentMapper.entityToDto(e));
   }
 
   public int count() {
