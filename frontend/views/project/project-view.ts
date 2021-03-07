@@ -45,13 +45,17 @@ export class ProjectView extends CrudView<ProjectDto> {
                           id="description"
                           ...="${field(this.binder.model.description)}"
                   ></vaadin-text-field>
-                  <vaadin-combo-box label="Parent" .items="${store.projects}"
-                                    id="parentProjectId"
-                                    item-value-path="id"
-                                    item-label-path="project"
-                                    @change="${this.parentProjectIdChanged}"
+                  <vaadin-text-field 
+                                    id="parentProjectId" 
+                                     hidden
+                                    readonly
                                     ...="${field(this.binder.model.parentProjectId)}"
-                  ></vaadin-combo-box>
+                  ></vaadin-text-field>
+                  <vaadin-text-field label="Parent"
+                                     id="parentProjectCaption"
+                                     readonly
+                                     value="${this._boundRenderParentProjectCaption()}"
+                  ></vaadin-text-field>
               </vaadin-form-layout>`;
       }
       else {
@@ -64,14 +68,13 @@ export class ProjectView extends CrudView<ProjectDto> {
         return html`
             <vaadin-grid-sort-column auto-width path="project"></vaadin-grid-sort-column>
             <vaadin-grid-sort-column auto-width path="description"></vaadin-grid-sort-column>
-            <vaadin-grid-sort-column auto-width path="parentProjectId"></vaadin-grid-sort-column>
+            <vaadin-grid-sort-column auto-width path="parentProjectId" .renderer="${this.parentProjectRenderer}"></vaadin-grid-sort-column>
             <vaadin-grid-sort-column auto-width path="creationTime" .renderer="${this.creationTimeRenderer}"></vaadin-grid-sort-column>
             <vaadin-grid-sort-column auto-width path="lastChangedTime" .renderer="${this.lastChangedTimeRenderer}"></vaadin-grid-sort-column>`;
     }
 
     protected getEntity(id: any): Promise<ProjectDto | undefined> {
       return store.getProject(id);
-      //return ProjectEndpoint.get(id);
     }
 
     protected updateEntity(entity: ProjectDto): Promise<ProjectDto> {
@@ -81,26 +84,17 @@ export class ProjectView extends CrudView<ProjectDto> {
           entity.parentProjectId = entity.parentProjectId.id;
       }
       return store.updateProject(entity);
-      //return ProjectEndpoint.update(entity);
     }
 
     protected countEntities(): Promise<number> {
-      //return ProjectEndpoint.count();
         return store.countProjects();
     }
 
-    parentProjectIdChanged = (e: Event) => {
-        const newValue = (e.target as HTMLInputElement).value;
-        console.log('CHANGED: '+newValue);
-    }
-
     protected listEntities(offset: number, limit: number, sortOrder: Array<GridSorter>): Promise<Array<ProjectDto>> {
-      //return ProjectEndpoint.list(offset, limit, sortOrder);
         return store.listProjects(offset, limit, sortOrder);
     }
 
     protected deleteEntity(id: any): Promise<void> {
-      //return ProjectEndpoint.delete(id);
         return store.deleteProject(id);
     }
 
@@ -110,9 +104,43 @@ export class ProjectView extends CrudView<ProjectDto> {
         render(html`<div>${formattedTime}</div>`, root);
     }
 
+    _boundRenderParentProjectCaption = this.renderParentProjectCaption.bind(this);
+
+    private renderParentProjectCaption() {
+        const project = this.getBinder().value as ProjectDto;
+        return project?.parentProjectId ? store.projectById(project?.parentProjectId)!.project : '';
+    }
+
+    private parentProjectRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
+        const project = model.item as ProjectDto;
+        const caption = project?.parentProjectId ? store.projectById(project?.parentProjectId)!.project : '';
+        render(html`<div>${caption}</div>`, root);
+    }
+
     private lastChangedTimeRenderer(root: HTMLElement, _column: GridColumnElement, model: GridItemModel) {
         const user = model.item as ProjectDto;
         const formattedTime = user.lastChangedTime ?  moment(user.lastChangedTime).format('MM/DD/YYYY hh:mm:ss') : '';
         render(html`<div>${formattedTime}</div>`, root);
+    }
+
+    protected renderButtons(editMode: EditMode) {
+        if(editMode===EditMode.EDIT) {
+            return html`
+                ${super.renderButtons(editMode)}
+                <vaadin-button @click="${this.createNewSubProject}">Create new Sub-Project</vaadin-button>
+            `;
+        }
+        else {
+            return super.renderButtons(editMode);
+        }
+    }
+
+    private createNewSubProject() {
+        const dto = this.createNewEntity();
+        const parent = this.getBinder().value;
+        dto.parentProjectId = parent.id;
+        this.getBinder().read(dto);
+        this.editCaption = 'New sub-project';
+        this.editMode = EditMode.NEW;
     }
 }

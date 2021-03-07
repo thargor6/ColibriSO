@@ -124,6 +124,11 @@ class Store {
         return p && p.length > 0 ? p[0] : undefined;
     }
 
+    projectById(projectId: string) {
+        const p = this.projects.filter( p => p.id === projectId);
+        return p && p.length > 0 ? p[0] : undefined;
+    }
+
     refreshMenuTabs() {
         this.updateMenuTabs().then( newMenuTabs => {
             this.menuTabs = newMenuTabs;

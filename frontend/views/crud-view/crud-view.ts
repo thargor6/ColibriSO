@@ -36,9 +36,9 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
     private gridSize = 0;
     private gridDataProvider = this.getGridData.bind(this);
     @property({type: String})
-    private editCaption = '';
+    protected editCaption = '';
     @property({type: Object})
-    private editMode = EditMode.CLOSE;
+    protected editMode = EditMode.CLOSE;
 
     constructor(private objectName: string, private componentName: string) {
         super();
@@ -101,32 +101,33 @@ export abstract class CrudView<EntityType extends BaseEntity> extends MobxLitEle
         `;
     }
 
-    protected renderButtons = (editMode: EditMode) => {
+    protected renderButtons(editMode: EditMode) {
         if(editMode===EditMode.EDIT) {
             if(this.allowInsert()) {
                 return html`
                     <vaadin-button theme="primary" @click="${this.save}">Save</vaadin-button>
                     <vaadin-button theme="tertiary" @click="${this.delete}">Delete</vaadin-button>
-                    <vaadin-button theme="primary" @click="${this.create}">Create new ${this.objectName}
-                    </vaadin-button>`;
+                    <vaadin-button theme="primary" @click="${this.create}">Create new ${this.objectName}</vaadin-button>
+                `;
             }
             else {
                 return html`
                     <vaadin-button theme="primary" @click="${this.save}">Save</vaadin-button>
                     <vaadin-button theme="tertiary" @click="${this.delete}">Delete</vaadin-button>
-                    </vaadin-button>`;
+                `;
             }
         }
         else if(editMode===EditMode.NEW) {
             return html`
                 <vaadin-button theme="primary" @click="${this.save}">Save</vaadin-button>
-                <vaadin-button theme="tertiary" @click="${this.cancel}">Cancel</vaadin-button>`;
+                <vaadin-button theme="tertiary" @click="${this.cancel}">Cancel</vaadin-button>
+            `;
         }
         else {
             if(this.allowInsert()) {
                 return html`
-                    <vaadin-button theme="primary" @click="${this.create}">Create new ${this.objectName}
-                    </vaadin-button>`;
+                    <vaadin-button theme="primary" @click="${this.create}">Create new ${this.objectName}</vaadin-button>
+                `;
             }
             else {
                 return html`
