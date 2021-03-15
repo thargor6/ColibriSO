@@ -17,7 +17,6 @@ import {Router} from "@vaadin/router";
 import styles from './main-view.css'
 import '../snippet/new-snippet-dialog'
 import {NewSnippetDialog} from "../snippet/new-snippet-dialog";
-import * as SnippetEndpoint from '../../generated/SnippetEndpoint';
 
 @customElement('main-view')
 export class MainView extends MobxLitElement {
@@ -56,8 +55,6 @@ export class MainView extends MobxLitElement {
   baseMenuTabs: MenuTab[] = [
     { route: 'snippet', name: 'Snippets' },
   ];
-
-  @property({ type: Array }) menuTabs2: MenuTab[] = [];
 
   private allNamedRoutes: MenuTab[] = [
     { route: 'snippet', name: 'Snippets' },
@@ -196,7 +193,6 @@ export class MainView extends MobxLitElement {
     if(userDetail && userDetail.uiTheme) {
       switchTheme(userDetail.uiTheme);
     }
-    this.menuTabs2 = await this.recalcMenuTabs();
   }
 
   private editProjects() {
@@ -249,42 +245,6 @@ export class MainView extends MobxLitElement {
     else {
       return "";
     }
-  }
-
-  private async recalcMenuTabs() {
-    const newMenuTabs: MenuTab[] = [...this.baseMenuTabs];
-
-    const promises = new Array<Promise<void>>();
-    const counts = new Map();
-
-    const promise = SnippetEndpoint.count().then(c => {
-      counts.set('', c);
-    });
-    promises.push(promise);
-
-    store.projects.map( item => {
-      const projectId = store.projectByName(item.project);
-      if(projectId) {
-        const promise = SnippetEndpoint.countForProjectId(projectId.id).then(c => {
-          counts.set(item.project, c);
-        });
-        promises.push(promise);
-      }
-    });
-    await Promise.all(promises);
-
-    const count = counts.get('');
-    newMenuTabs[0].name = 'Snippets' +  (count && count>0 ? ' ['+count+']' : '');
-
-    store.projects.map( item => {
-       const count = counts.get(item.project);
-       newMenuTabs.push( {
-        name: item.project + (count && count>0 ? ' ['+count+']' : ''),
-        route: "/snippet/:project",
-        params: {'project': item.project}
-      }  ) });
-
-    return newMenuTabs;
   }
 
   private execSavedNewSnippet() {

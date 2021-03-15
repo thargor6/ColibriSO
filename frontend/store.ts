@@ -74,6 +74,27 @@ class Store {
       }
     }
 
+    private addMenuItems(newMenuTabs: MenuTab[], level: number, parentId: any, counts: Map<string, number>) {
+        if(level>10) {
+            console.log('Recursion level overflow')
+            return;
+        }
+        var prefix = '';
+        for(var i=0;i<level;i++) {
+            prefix = '.  ' + prefix;
+        }
+        store.projects.filter(p => p.parentProjectId === parentId).map( item => {
+            const count = counts.get(item.project);
+            newMenuTabs.push( {
+                name: prefix + item.project + (count && count>0 ? ' ['+count+']' : ''),
+                route: "/snippet/:project",
+                params: {'project': item.project}
+            }  );
+            this.addMenuItems(newMenuTabs, level + 1, item.id, counts);
+        });
+
+    }
+
     private async updateMenuTabs() {
         const newMenuTabs: MenuTab[] = [...baseMenuTabs];
 
@@ -97,8 +118,16 @@ class Store {
         await Promise.all(promises);
 
         const count = counts.get('');
-        newMenuTabs[0].name = 'Snippets' +  (count && count>0 ? ' ['+count+']' : '');
+        newMenuTabs[0].name = 'All Snippets' +  (count && count>0 ? ' ['+count+']' : '');
 
+        newMenuTabs.push( {
+            name: '............................',
+            route: "/snippet/",
+            params: {'project': ''}
+        }  );
+
+        this.addMenuItems(newMenuTabs, 1, null, counts);
+/*
         store.projects.map( item => {
             const count = counts.get(item.project);
             newMenuTabs.push( {
@@ -106,7 +135,7 @@ class Store {
                 route: "/snippet/:project",
                 params: {'project': item.project}
             }  ) });
-
+*/
         return newMenuTabs;
     }
 
