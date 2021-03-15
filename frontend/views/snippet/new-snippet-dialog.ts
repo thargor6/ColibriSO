@@ -23,7 +23,8 @@ import SnippetIntentDtoModel from "../../generated/com/overwhale/colibri_so/fron
 import SnippetTagDto from "../../generated/com/overwhale/colibri_so/frontend/dto/SnippetTagDto";
 import SnippetTagDtoModel from "../../generated/com/overwhale/colibri_so/frontend/dto/SnippetTagDtoModel";
 import SnippetType from "../../generated/com/overwhale/colibri_so/backend/entity/SnippetType";
-
+import '@vaadin/vaadin-ordered-layout/vaadin-vertical-layout'
+import '@vaadin/vaadin-ordered-layout/vaadin-horizontal-layout'
 
 @customElement('new-snippet-dialog')
 export class NewSnippetDialog extends LitElement {
@@ -63,7 +64,7 @@ export class NewSnippetDialog extends LitElement {
         render(
             html`
                 <h2>Insert new snippet</h2>
-                <div style="display: flex; flex-direction: row;">
+                <vaadin-horizontal-layout>
                     <div style="flex-grow: 1; width: 50%; margin-right: 1.0em; display: flex; flex-direction: column;">
                         
                         <vaadin-text-field
@@ -126,7 +127,7 @@ export class NewSnippetDialog extends LitElement {
                             </div>
                         </vaadin-form-layout>
                     </div>
-                </div>
+                </vaadin-horizontal-layout>
           
                 
                 <vaadin-button @click=${this._saveClicked} theme="primary">Save</vaadin-button>
