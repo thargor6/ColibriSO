@@ -1,0 +1,19 @@
+python -m venv venv
+
+venv\Scripts\activate.bat
+
+
+pip install streamlit
+pip install python-dotenv
+pip install langchain
+pip install openai
+pip install newspaper3k
+
+pip install matplotlib
+pip install numpy
+pip install pandas
+pip install altair
+pip install graphviz
+
+
+streamlit run app.py
