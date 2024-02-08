@@ -1,7 +1,0 @@
-:host {
-  display: flex;
-}
-
-vaadin-split-layout {
-  padding: 1.0em;
-}
