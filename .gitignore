@@ -3,3 +3,4 @@ history/
 streamlit_demo.py
 .env
 venv/
+colibri_database.db
