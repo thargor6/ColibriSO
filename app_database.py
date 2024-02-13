@@ -11,25 +11,22 @@ SQL_CREATE_LOOKUPS_TABLE = """ CREATE TABLE IF NOT EXISTS lookups (
 SQL_CREATE_LOOKUP_TEXTS_TABLE = """ CREATE TABLE IF NOT EXISTS lookup_texts (
                                         id integer PRIMARY KEY,
                                         lookup_id text NOT NULL,
+                                        language_id text NOT NULL,
                                         lookup_text text NOT NULL
-                                    ); """
-
-
-SQL_CREATE_LANGUAGES_TABLE = """ CREATE TABLE IF NOT EXISTS languages (
-                                        id integer PRIMARY KEY,
-                                        language_code text NOT NULL
                                     ); """
 
 
 SQL_CREATE_SNIPPETS_TABLE = """ CREATE TABLE IF NOT EXISTS snippets (
                                         id integer PRIMARY KEY,
+                                        begin_date text,
                                         caption text NOT NULL
                                     ); """
 
 SQL_CREATE_SNIPPET_PARTS_TABLE = """ CREATE TABLE IF NOT EXISTS snippet_parts (
                                         id integer PRIMARY KEY,
                                         snippet_id integer NOT NULL,
-                                        language_id integer NOT NULL,
+                                        snippet_type text NOT NULL,
+                                        language_id text NOT NULL,
                                         content text NOT NULL
                                     ); """
 
@@ -79,31 +76,14 @@ def populate_lookup_texts(conn):
         c.execute("select count(*) from lookup_texts")
         count = c.fetchone()[0]
         if count == 0:
-            c.execute("INSERT INTO lookup_texts (lookup_id, lookup_text) VALUES ('de', 'German')")
-            c.execute("INSERT INTO lookup_texts (lookup_id, lookup_text) VALUES ('en', 'English')")
-            c.execute("INSERT INTO lookup_texts (lookup_id, lookup_text) VALUES ('fa', 'Persian')")
+            c.execute("INSERT INTO lookup_texts (lookup_id, language_id, lookup_text) VALUES ('de', 'en', ''German')")
+            c.execute("INSERT INTO lookup_texts (lookup_id, language_id, lookup_text) VALUES ('en', 'en', ''English')")
+            c.execute("INSERT INTO lookup_texts (lookup_id, language_id, lookup_text) VALUES ('fa', 'en', ''Persian')")
             conn.commit()
 
     except Error as e:
         print(e)
 
-def populate_languages(conn):
-    """ created default lookup texts
-    :param conn: Connection object
-    :return:
-    """
-    try:
-        c = conn.cursor()
-        c.execute("select count(*) from languages")
-        count = c.fetchone()[0]
-        if count == 0:
-            c.execute("INSERT INTO languages (language_code) VALUES ('de')")
-            c.execute("INSERT INTO languages (language_code) VALUES ('en')")
-            c.execute("INSERT INTO languages (language_code) VALUES ('fa')")
-            conn.commit()
-
-    except Error as e:
-        print(e)
 
 def connect_to_colibri_db():
     """ connect to the database and initilize it, if necessary
@@ -116,8 +96,6 @@ def connect_to_colibri_db():
         populate_lookups(conn)
         create_table(conn, SQL_CREATE_LOOKUP_TEXTS_TABLE)
         populate_lookup_texts(conn)
-        create_table(conn, SQL_CREATE_LANGUAGES_TABLE)
-        populate_languages(conn)
         create_table(conn, SQL_CREATE_SNIPPETS_TABLE)
         create_table(conn, SQL_CREATE_SNIPPET_PARTS_TABLE)
         create_table(conn, SQL_CREATE_PROJECTS_TABLE)

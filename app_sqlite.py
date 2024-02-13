@@ -59,3 +59,32 @@ def create_task(conn, task):
     conn.commit()
 
     return cur.lastrowid
+
+
+def create_snippet(conn, snippet):
+    """
+    Create a new snippet into the snippet table
+    :param conn:
+    :param project:
+    :return: snippet id
+    """
+    sql = ''' INSERT INTO snippets(caption, begin_date)
+              VALUES(?,?) '''
+    cur = conn.cursor()
+    cur.execute(sql, snippet)
+    conn.commit()
+    return cur.lastrowid
+
+def create_snippet_part(conn, snippet_part):
+    """
+    Create a new snippet into the snippet table
+    :param conn:
+    :param project:
+    :return: snippet id
+    """
+    sql = ''' INSERT INTO snippet_parts(snippet_id, snippet_type, language_id, content)
+              VALUES(?,?,?,?) '''
+    cur = conn.cursor()
+    cur.execute(sql, snippet_part)
+    conn.commit()
+    return cur.lastrowid

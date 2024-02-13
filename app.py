@@ -5,8 +5,7 @@ from app_openai import simple_chat, simple_summary
 
 from langchain_community.document_loaders import NewsURLLoader
 
-from app_sqlite import create_connection, create_project, create_task, create_table
-
+from app_sqlite import create_project, create_task, create_snippet, create_snippet_part
 
 language = st.selectbox('add a language', ['German', 'Persian', 'English', 'French'])
 
@@ -24,10 +23,23 @@ if st.button('Get News'):
     ]
     loader = NewsURLLoader(urls=urls)
     data = loader.load()
+
+    conn = connect_to_colibri_db()
+    snippet = ('URL Content ', '2015-01-01');
+    snippet_id = create_snippet(conn, snippet)
+    snippet_part_url = (snippet_id, 'URL', 'en', url);
+    create_snippet_part(conn, snippet_part_url)
+
     st.header("Content")
+    snippet_part_content = (snippet_id, 'content', 'en', data[0].page_content);
+    create_snippet_part(conn, snippet_part_content)
     st.write(data[0].page_content)
+
     st.header("Summary")
-    st.write(simple_summary(language, data[0].page_content))
+    summary = simple_summary(language, data[0].page_content)
+    snippet_part_summary = (snippet_id, 'summary', language, summary);
+    create_snippet_part(conn, snippet_part_summary)
+    st.write(summary)
 
 
 if st.button('Insert Shit'):
