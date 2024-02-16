@@ -1,4 +1,5 @@
 from langchain_community.llms import OpenAI
+from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 
@@ -6,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-llm = OpenAI()
+llm = ChatOpenAI(model_name='gpt-4')
 
 
 def simple_chat(prompt, language):
@@ -27,4 +28,6 @@ def simple_summary(language, text):
   code_chain = LLMChain(
     llm=llm, prompt=code_prompt)
   result = code_chain({"language": language, "text": text})
+  print(result)
+
   return result["text"]
