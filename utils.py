@@ -12,7 +12,7 @@ def inject_custom_css():
 
 def get_current_route():
     try:
-        return st.query_params()['nav'][0]
+        return st.experimental_get_query_params()['nav'][0]
     except:
         return None
 
