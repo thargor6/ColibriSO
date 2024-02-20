@@ -44,7 +44,9 @@ SQL_CREATE_USERS_TABLE = """ CREATE TABLE IF NOT EXISTS users (
                                         id integer PRIMARY KEY,
                                         creation_time text NOT NULL,
                                         user_name text NOT NULL,
-                                        pw_hash text NOT NULL                                        
+                                        pw_hash text NOT NULL,
+                                        email text NOT NULL,
+                                        open_ai_api_key text NULL                                                                                
                                     ); """
 
 SQL_CREATE_USER_SESSIONS_TABLE = """ CREATE TABLE IF NOT EXISTS user_sessions (
@@ -60,7 +62,7 @@ def populate_users_table(conn):
     cursor.execute(rowsQuery)
     numberOfRows = cursor.fetchone()[0]
     if numberOfRows == 0:
-      create_user(conn, (datetime.now(), 'thargor6', encrypt_password('software1')))
+      create_user(conn, (datetime.now(), 'thargor6', encrypt_password('software1'), "thargor6@googlemail.com"))
 
 def connect_to_colibri_db():
     """ connect to the database and initialize it, if necessary
@@ -85,13 +87,24 @@ def create_user(conn, user):
     :param project:
     :return: user id
     """
-    sql = ''' INSERT INTO users(creation_time,user_name,pw_hash)
-              VALUES(?,?,?) '''
+    sql = ''' INSERT INTO users(creation_time, user_name, pw_hash, email)
+              VALUES(?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, user)
     conn.commit()
     return cur.lastrowid
 
+def update_user(conn, user_id, open_ai_api_key):
+    """
+    Update a user in the users table
+    :param conn:
+    :param project:
+    :return: user id
+    """
+    sql = ''' UPDATE users set open_ai_api_key = ? where id = ? '''
+    cur = conn.cursor()
+    cur.execute(sql, (open_ai_api_key, user_id))
+    conn.commit()
 
 def select_user_by_user_name(conn, user_id):
     """

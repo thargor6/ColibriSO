@@ -21,18 +21,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import streamlit as st
 from langchain_community.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
+import app_constants as const
 
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
-load_dotenv()
+#load_dotenv()
 
-llm = ChatOpenAI(model_name='gpt-4')
 
 def simple_chat(prompt, language):
+  llm = ChatOpenAI(model_name='gpt-4', api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
   code_prompt = PromptTemplate(
     template="Write a short " + prompt + ", in {language}",
     input_variables=["language"]
@@ -43,6 +45,7 @@ def simple_chat(prompt, language):
   return result["text"]
 
 def simple_summary(language, text):
+  llm = ChatOpenAI(model_name='gpt-4', api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
   code_prompt = PromptTemplate(
     template="Write a short summary of the following text in {language}:\n {text}",
     input_variables=["language", "text"]

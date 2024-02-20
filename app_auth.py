@@ -23,6 +23,7 @@
 
 import streamlit as st
 from datetime import datetime
+import app_constants as const
 
 from app_database import connect_to_colibri_db, select_session_by_session_id, create_session, select_user_by_user_name, \
     compare_password_hash, select_user_by_user_id
@@ -77,9 +78,15 @@ def check_password_db():
                     del st.session_state["password"]  # Don't store the username or password.
                     del st.session_state["username"]
                     st.session_state["password_correct"] = True
-                    st.session_state["user_id"] = user_id
+                    user_data_to_session(user_data)
         finally:
             conn.close()
+
+    def user_data_to_session(user_data):
+        st.session_state[const.SESSION_USER_ID] = user_data[0]
+        st.session_state[const.SESSION_USER_EMAIL] = user_data[4]
+        st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] = user_data[5]
+
     if st.session_state.get("password_correct", False):
         return True
 
@@ -93,6 +100,7 @@ def check_password_db():
         user_data = select_user_by_user_id(conn, session_data[2])
         if user_data is not None:
           user_id = user_data[0]
+          user_data_to_session(user_data)
         else:
           user_id = None
       else:
@@ -100,12 +108,15 @@ def check_password_db():
     finally:
         conn.close()
 
-    print("user_id", user_id)
-
     if user_id is None:
       login_form()
       if "password_correct" in st.session_state:
         st.error("😕 User not known or password incorrect")
         return False
     else:
+
+        print("user_id", st.session_state[const.SESSION_USER_ID])
+        print("user_email", st.session_state[const.SESSION_USER_EMAIL])
+        print("user_api_key", st.session_state[const.SESSION_USER_OPEN_AI_API_KEY])
+
         return True
