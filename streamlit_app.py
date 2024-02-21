@@ -23,11 +23,11 @@
 
 import streamlit as st
 import utils as utl
-from app_auth import get_session_id, clear_cache, check_password_db
+from app_auth import clear_cache, check_password_db
 from views import home,about,analysis,options,configuration, add_url
+import app_constants as const
 
-st.set_page_config(layout="wide", page_title='Navbar sample')
-st.set_option('deprecation.showPyplotGlobalUse', False)
+st.set_page_config(layout="wide", page_title=const.APP_NAME)
 
 utl.inject_custom_css()
 utl.navbar_component()

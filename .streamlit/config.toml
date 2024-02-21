@@ -1,0 +1,26 @@
+# https://docs.streamlit.io/library/advanced-features/configuration#view-all-configuration-options
+
+[theme]
+# https://hslpicker.com/#ebaa05
+primaryColor="#0C0E24"
+backgroundColor="#7A787A"
+secondaryBackgroundColor="#A2A0A2"
+textColor="#ebbd05"
+font="sans serif"
+base="dark"
+
+[client]
+# hide the depcration warning
+showErrorDetails = false
+
+
+[logger]
+# Level of logging: 'error', 'warning', 'info', or 'debug'.
+# Default: 'info'
+level = "info"
+# String format for logging messages. If logger.datetimeFormat is set,
+# logger messages will default to `%(asctime)s.%(msecs)03d %(message)s`. See
+# Python's documentation for available attributes:
+# https://docs.python.org/2.6/library/logging.html#formatter-objects
+# Default: "%(asctime)s %(message)s"
+messageFormat = "%(asctime)s %(message)s"

@@ -22,6 +22,9 @@
 # SOFTWARE.
 
 # Language Constants
+APP_NAME = "ColibriSO"
+
+
 LANGUAGE_EN = 'en'
 LANGUAGE_FA = 'fa'
 LANGUAGE_DE = 'de'
