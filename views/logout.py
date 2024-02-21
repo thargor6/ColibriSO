@@ -22,13 +22,11 @@
 # SOFTWARE.
 
 import streamlit as st
-import utils as utl
-import app_constants as const
-from views import main
+from app_auth import clear_cache
 
-st.set_page_config(layout="wide", page_title=const.APP_NAME)
+def load_view():
+    if st.button("Logout user"):
+        clear_cache()
+        st.success("Logged out successfully")
+        st.rerun()
 
-utl.inject_custom_css()
-utl.navbar_component()
-
-main.load_view()

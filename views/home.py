@@ -32,8 +32,8 @@ def load_view():
 
     prompt = st.text_input('enter your prompt')
 
-    if st.button('Ask ChatGPT'):
-      result = simple_chat(prompt, language)
+    if st.button('Generate'):
+      result = simple_chat(prompt, const.getLanguageName(language))
       st.write(result)
 
       return True

@@ -21,14 +21,29 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import streamlit as st
+from app_auth import check_password_db
+from views import home, about, analysis, options, configuration, add_url, logout
 import utils as utl
-import app_constants as const
-from views import main
 
-st.set_page_config(layout="wide", page_title=const.APP_NAME)
+def navigation():
+    route = utl.get_current_route()
+    if route == "home":
+        home.load_view()
+    elif route == "about":
+        about.load_view()
+    elif route == "analysis":
+        analysis.load_view()
+    elif route == "options":
+        options.load_view()
+    elif route == "configuration":
+        configuration.load_view()
+    elif route == "add_url":
+        add_url.load_view()
+    elif route == "logout":
+        logout.load_view()
+    elif route == None:
+        home.load_view()
 
-utl.inject_custom_css()
-utl.navbar_component()
-
-main.load_view()
+def load_view():
+    if check_password_db():
+        navigation()

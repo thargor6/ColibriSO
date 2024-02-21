@@ -36,7 +36,7 @@ import app_constants as const
 def simple_chat(prompt, language):
   llm = ChatOpenAI(model_name='gpt-4', api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
   code_prompt = PromptTemplate(
-    template="Write a short " + prompt + ", in {language}",
+    template="Write a short " + prompt + ", in {language}. After that, repeat the same in English",
     input_variables=["language"]
   )
   code_chain = LLMChain(

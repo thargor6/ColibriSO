@@ -40,6 +40,7 @@ METADATA_LANGUAGE = 'language'
 SESSION_USER_ID = "user_id"
 SESSION_USER_EMAIL = "user_email"
 SESSION_USER_OPEN_AI_API_KEY = "user_open_ai_api_key"
+SESSION_PASSWORD_CORRECT = "password_correct"
 
 def getLanguageName(language_id):
     if language_id == LANGUAGE_EN:

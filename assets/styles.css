@@ -1,3 +1,7 @@
+h1 {
+    font-size: 1.2rem !important;
+}
+
 .navbar{
     font-family: 'Trebuchet MS', sans-serif;
     position: fixed;
