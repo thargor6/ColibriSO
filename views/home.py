@@ -26,8 +26,16 @@ import streamlit as st
 from app_openai import simple_chat
 import app_constants as const
 
+import pandas as pd
+
 def load_view():
     st.title('Home Page')
+
+    df = pd.DataFrame({'col1': [1.0, 2.0, 3], 'col2': [4, 5, 6]})
+    st.dataframe(df)
+
+
+"""
     language = st.selectbox('add a language', [const.LANGUAGE_DE, const.LANGUAGE_FA, const.LANGUAGE_EN, const.LANGUAGE_FR])
 
     prompt = st.text_input('enter your prompt')
@@ -37,3 +45,4 @@ def load_view():
       st.write(result)
 
       return True
+"""
