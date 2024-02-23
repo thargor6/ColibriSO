@@ -44,15 +44,15 @@ def simple_chat(prompt, language):
   result = code_chain({"language": language})
   return result["text"]
 
-def simple_summary(language, text):
+def simple_summary(language, text, brief=True):
   llm = ChatOpenAI(model_name='gpt-4', api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
   code_prompt = PromptTemplate(
-    template="Write a short summary of the following text in {language}:\n {text}",
-    input_variables=["language", "text"]
+    template="Write a {summary_type} summary of the following text in {language}:\n {text}",
+    input_variables=["summary_type", "language", "text"]
   )
   code_chain = LLMChain(
     llm=llm, prompt=code_prompt)
-  result = code_chain({"language": language, "text": text})
+  result = code_chain({"summary_type": "brief" if brief is True else "comprehensive", "language": language, "text": text})
   print(result)
 
   return result["text"]

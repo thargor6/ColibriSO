@@ -26,7 +26,7 @@ import utils as utl
 import app_constants as const
 from views import main
 
-st.set_page_config(layout="wide", page_title=const.APP_NAME)
+st.set_page_config(layout="wide", page_title="{appName} - v{appVersion} ({appVersionDate})".format(appName = const.APP_NAME, appVersion = const.APP_VERSION, appVersionDate = const.APP_VERSION_DATE))
 
 utl.inject_custom_css()
 utl.navbar_component()

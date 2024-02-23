@@ -23,7 +23,8 @@
 
 # Language Constants
 APP_NAME = "ColibriSO"
-
+APP_VERSION = "0.1.0"
+APP_VERSION_DATE = "2024-02-22"
 
 LANGUAGE_EN = 'en'
 LANGUAGE_FA = 'fa'
@@ -32,7 +33,9 @@ LANGUAGE_FR = 'fr'
 
 PART_URL = 'url'
 PART_CONTENT = 'content'
-PART_SUMMARY = 'summary'
+PART_SUMMARY_BRIEF = 'summary_brief'
+PART_SUMMARY_COMPREHENSIVE = 'summary_comprehensive'
+PART_PRIMARY = 'primary'
 
 METADATA_TITLE = 'title'
 METADATA_LANGUAGE = 'language'
@@ -41,6 +44,16 @@ SESSION_USER_ID = "user_id"
 SESSION_USER_EMAIL = "user_email"
 SESSION_USER_OPEN_AI_API_KEY = "user_open_ai_api_key"
 SESSION_PASSWORD_CORRECT = "password_correct"
+
+ROUTE_HOME = "home"
+ROUTE_ABOUT = "about"
+ROUTE_ADD_PDF = "add_pdf"
+ROUTE_OPTIONS = "options"
+ROUTE_CONFIGURATION = "configuration"
+ROUTE_ADD_URL = "add_url"
+ROUTE_LOGOUT = "logout"
+
+MIMETYPE_PDF = "application/pdf"
 
 def getLanguageName(language_id):
     if language_id == LANGUAGE_EN:

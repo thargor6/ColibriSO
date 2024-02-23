@@ -23,15 +23,11 @@
 
 import streamlit as st
 
-from app_database import connect_to_colibri_db, create_snippet, create_snippet_part
+from app_database import connect_to_colibri_db, create_snippet, create_snippet_part_with_text_content
 from app_openai import simple_summary
 from datetime import datetime
 
 from langchain_community.document_loaders import NewsURLLoader
-#from langchain_community.document_loaders import PyPDFLoader
-#from PyPDF2 import PdfReader
-
-
 import app_constants as const
 
 def load_view():
@@ -60,31 +56,41 @@ def load_view():
             data.metadata = ""
 
         conn = connect_to_colibri_db()
-        snippet = (title, datetime.now());
-        snippet_id = create_snippet(conn, snippet)
+        try:
+            snippet = (title, datetime.now());
+            snippet_id = create_snippet(conn, snippet)
 
-        snippet_part_url = (snippet_id, const.PART_URL, const.LANGUAGE_DE, url);
-        create_snippet_part(conn, snippet_part_url)
+            snippet_part_url = (snippet_id, const.PART_URL, None, url);
+            create_snippet_part_with_text_content(conn, snippet_part_url)
 
-        content_language = data.metadata[const.METADATA_LANGUAGE]
-        if content_language is None:
-            content_language = const.LANGUAGE_EN
-        snippet_part_content = (snippet_id, const.PART_CONTENT, content_language, data.page_content);
-        create_snippet_part(conn, snippet_part_content)
+            content_language = data.metadata[const.METADATA_LANGUAGE]
+            if content_language is None:
+                content_language = const.LANGUAGE_EN
+            snippet_part_content = (snippet_id, const.PART_CONTENT, content_language, data.page_content);
+            create_snippet_part_with_text_content(conn, snippet_part_content)
 
-        st.header("Metadata")
-        st.write(data.metadata)
-        st.header("Content")
-        st.write(data.page_content)
-        print(data.page_content)
+            st.header("Metadata")
+            st.write(data.metadata)
+            st.header("Content")
+            st.write(data.page_content)
+            print(data.page_content)
 
-        if with_summary:
-          with st.spinner('Creating summary...'):
-              summary = simple_summary(const.getLanguageName(summary_language), data.page_content)
-              snippet_part_summary = (snippet_id, const.PART_SUMMARY, summary_language, summary);
-              create_snippet_part(conn, snippet_part_summary)
+            if with_summary:
+              with st.spinner('Creating brief summary...'):
+                  brief_summary = simple_summary(const.getLanguageName(summary_language), data.page_content, True)
+                  snippet_part_brief_summary = (snippet_id, const.PART_SUMMARY_BRIEF, summary_language, brief_summary);
+                  create_snippet_part_with_text_content(conn, snippet_part_brief_summary)
 
-              st.header("Summary")
-              st.write(summary)
+                  st.header("Brief Summary")
+                  st.write(brief_summary)
+              with st.spinner('Creating comprehensive summary...'):
+                  comprehensive_summary = simple_summary(const.getLanguageName(summary_language), data.page_content, False)
+                  snippet_part_comprehensive_summary = (snippet_id, const.PART_SUMMARY_COMPREHENSIVE, summary_language, brief_summary);
+                  create_snippet_part_with_text_content(conn, snippet_part_comprehensive_summary)
+
+                  st.header("Comphrehensive Summary")
+                  st.write(comprehensive_summary)
+        finally:
+            conn.close()
 
 

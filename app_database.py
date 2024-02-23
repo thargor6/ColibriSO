@@ -28,7 +28,7 @@ DATABASE = r"colibri_database.db"
 
 SQL_CREATE_SNIPPETS_TABLE = """ CREATE TABLE IF NOT EXISTS snippets (
                                         id integer PRIMARY KEY,
-                                        begin_date text,
+                                        creation_date text,
                                         caption text NOT NULL
                                     ); """
 
@@ -36,8 +36,11 @@ SQL_CREATE_SNIPPET_PARTS_TABLE = """ CREATE TABLE IF NOT EXISTS snippet_parts (
                                         id integer PRIMARY KEY,
                                         snippet_id integer NOT NULL,
                                         snippet_type text NOT NULL,
-                                        language_id text NOT NULL,
-                                        content text NOT NULL
+                                        language_id text NULL,
+                                        text_content text NULL,
+                                        filename text NULL,
+                                        blob_content blob NULL,
+                                        mime_type text NULL
                                     ); """
 
 SQL_CREATE_USERS_TABLE = """ CREATE TABLE IF NOT EXISTS users (
@@ -153,38 +156,6 @@ def create_session(conn, session):
     conn.commit()
     return cur.lastrowid
 
-def create_project(conn, project):
-    """
-    Create a new project into the projects table
-    :param conn:
-    :param project:
-    :return: project id
-    """
-    sql = ''' INSERT INTO projects(name,begin_date,end_date)
-              VALUES(?,?,?) '''
-    cur = conn.cursor()
-    cur.execute(sql, project)
-    conn.commit()
-    return cur.lastrowid
-
-
-def create_task(conn, task):
-    """
-    Create a new task
-    :param conn:
-    :param task:
-    :return:
-    """
-
-    sql = ''' INSERT INTO tasks(name,priority,status_id,project_id,begin_date,end_date)
-              VALUES(?,?,?,?,?,?) '''
-    cur = conn.cursor()
-    cur.execute(sql, task)
-    conn.commit()
-
-    return cur.lastrowid
-
-
 def create_snippet(conn, snippet):
     """
     Create a new snippet into the snippet table
@@ -192,22 +163,36 @@ def create_snippet(conn, snippet):
     :param project:
     :return: snippet id
     """
-    sql = ''' INSERT INTO snippets(caption, begin_date)
+    sql = ''' INSERT INTO snippets(caption, creation_date)
               VALUES(?,?) '''
     cur = conn.cursor()
     cur.execute(sql, snippet)
     conn.commit()
     return cur.lastrowid
 
-def create_snippet_part(conn, snippet_part):
+def create_snippet_part_with_text_content(conn, snippet_part):
     """
     Create a new snippet into the snippet table
     :param conn:
     :param project:
     :return: snippet id
     """
-    sql = ''' INSERT INTO snippet_parts(snippet_id, snippet_type, language_id, content)
+    sql = ''' INSERT INTO snippet_parts(snippet_id, snippet_type, language_id, text_content)
               VALUES(?,?,?,?) '''
+    cur = conn.cursor()
+    cur.execute(sql, snippet_part)
+    conn.commit()
+    return cur.lastrowid
+
+def create_snippet_part_with_binary_content(conn, snippet_part):
+    """
+    Create a new snippet into the snippet table
+    :param conn:
+    :param project:
+    :return: snippet id
+    """
+    sql = ''' INSERT INTO snippet_parts(snippet_id, snippet_type, filename, blob_content, mime_type)
+              VALUES(?, ?, ?, ?, ?) '''
     cur = conn.cursor()
     cur.execute(sql, snippet_part)
     conn.commit()

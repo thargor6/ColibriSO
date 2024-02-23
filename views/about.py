@@ -22,9 +22,10 @@
 # SOFTWARE.
 
 import streamlit as st
+import app_constants as const
 
 def load_view():
-    print("auth: ", st.session_state.get("password_correct", False))
-
-    st.title('About Page')
+    st.title('About {appName}'.format(appName = const.APP_NAME))
+    st.markdown('ColibriSO is a tool for organizing information of all kinds, written in Python and Streamlit.')
+    st.markdown('Copyright (C) 2022-2024 Andreas Maschke')
     st.markdown('Uses [streamlit-navbar-flaskless](https://github.com/BugzTheBunny/streamlit-navbar-flaskless) by BugzTheBunny',unsafe_allow_html=True)
