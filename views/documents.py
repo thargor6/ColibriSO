@@ -23,7 +23,7 @@
 
 import streamlit as st
 
-from app_database import connect_to_colibri_db, fetch_all_snippets
+from app_database import connect_to_colibri_db, fetch_all_snippets, fetch_all_snippet_parts
 from app_openai import simple_chat
 import app_constants as const
 
@@ -46,31 +46,28 @@ def dataframe_with_selections(df):
     return selected_rows.drop('Select', axis=1)
 
 def load_view():
-    st.title('Snippets overview')
+    st.title('Documents overview')
     conn = connect_to_colibri_db()
     try:
+        # more about data frames: # https://docs.streamlit.io/library/api-reference/data/st.dataframe
         snippet_rows = fetch_all_snippets(conn)
         snippet_df = pd.DataFrame(snippet_rows, columns=["Id", "Creation date", "Caption"])
         snippet_selection = dataframe_with_selections(snippet_df)
 
-        st.write("Your selection:")
-        print(snippet_selection["Id"])
-        print(snippet_selection["Id"].values)
-        print(len(snippet_selection["Id"].values))
+        #print(snippet_selection["Id"])
+        #print(snippet_selection["Id"].values)
+        #print(len(snippet_selection["Id"].values))
 
-        parts_rows = fetch_all_snippet_parts(conn, snippet_selection["Id"].values)
-        parts_df = pd.DataFrame(parts_rows, columns=["Id", "Creation date", "Caption"])
-        st.dataframe(parts_df)
+        st.subheader("Document parts:")
+        if len(snippet_selection["Id"].values) > 0:
+            with st.spinner('Loading parts...'):
+                parts_rows = fetch_all_snippet_parts(conn, snippet_selection["Id"].values)
+                parts_df = pd.DataFrame(parts_rows, columns=["Snippet Id", "Id", "Snippet type", "Language", "Content", "Filename", "Mime type"])
+                st.dataframe(parts_df)
+        else:
+            st.write("(No document selected)")
     finally:
         conn.close()
-
-
-
-    #st.dataframe(selection)
-
-    #st.dataframe(df)
-
-    # https://docs.streamlit.io/library/api-reference/data/st.dataframe
 
 """
     language = st.selectbox('add a language', [const.LANGUAGE_DE, const.LANGUAGE_FA, const.LANGUAGE_EN, const.LANGUAGE_FR])

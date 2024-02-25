@@ -177,11 +177,24 @@ def fetch_all_snippets(conn):
     :param project:
     :return: snippets
     """
-    sql = ''' SELECT id, creation_date, caption FROM snippets order by creation_date desc '''
+    sql = ''' SELECT id, creation_date, caption FROM snippets order by id desc '''
     cursor = conn.cursor()
     cursor.execute(sql)
     return cursor.fetchall()
 
+def fetch_all_snippet_parts(conn, snippet_ids):
+    """
+    Fetch all snippets from the snippet table
+    :param conn:
+    :param project:
+    :return: snippets
+    """
+    conv_ids = [str(i) for i in snippet_ids]
+    sql = ''' SELECT snippet_id, id, snippet_type, language_id, text_content, filename, mime_type FROM snippet_parts 
+       where snippet_id in ({}) order by snippet_id desc, id '''.format(','.join('?' for _ in conv_ids))
+    cursor = conn.cursor()
+    cursor.execute(sql, conv_ids)
+    return cursor.fetchall()
 
 def create_snippet_part_with_text_content(conn, snippet_part):
     """

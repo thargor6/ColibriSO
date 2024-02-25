@@ -22,14 +22,14 @@
 # SOFTWARE.
 
 from app_auth import check_password_db
-from views import home, about, add_pdf, options, configuration, add_url, logout
+from views import documents, about, add_pdf, options, configuration, add_url, logout
 import utils as utl
 import app_constants as const
 
 def navigation():
     route = utl.get_current_route()
-    if route == const.ROUTE_HOME:
-        home.load_view()
+    if route == const.ROUTE_DOCUMENTS:
+        documents.load_view()
     elif route == const.ROUTE_ABOUT:
         about.load_view()
     elif route == const.ROUTE_ADD_PDF:
@@ -43,7 +43,7 @@ def navigation():
     elif route == const.ROUTE_LOGOUT:
         logout.load_view()
     elif route == None:
-        home.load_view()
+        documents.load_view()
 
 def load_view():
     if check_password_db():

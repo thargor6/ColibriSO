@@ -24,7 +24,7 @@
 import app_constants as const
 
 NAVBAR_PATHS = {
-    'HOME': const.ROUTE_HOME,
+    'DOCUMENTS': const.ROUTE_DOCUMENTS,
     'ADD URL': const.ROUTE_ADD_URL,
     'ADD PDF': const.ROUTE_ADD_PDF,
     'ABOUT': const.ROUTE_ABOUT
