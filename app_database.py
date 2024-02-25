@@ -170,6 +170,19 @@ def create_snippet(conn, snippet):
     conn.commit()
     return cur.lastrowid
 
+def fetch_all_snippets(conn):
+    """
+    Fetch all snippets from the snippet table
+    :param conn:
+    :param project:
+    :return: snippets
+    """
+    sql = ''' SELECT id, creation_date, caption FROM snippets order by creation_date desc '''
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    return cursor.fetchall()
+
+
 def create_snippet_part_with_text_content(conn, snippet_part):
     """
     Create a new snippet into the snippet table

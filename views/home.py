@@ -23,17 +23,54 @@
 
 import streamlit as st
 
+from app_database import connect_to_colibri_db, fetch_all_snippets
 from app_openai import simple_chat
 import app_constants as const
 
 import pandas as pd
 
+def dataframe_with_selections(df):
+    df_with_selections = df.copy()
+    df_with_selections.insert(0, "Select", False)
+
+    # Get dataframe row-selections from user with st.data_editor
+    edited_df = st.data_editor(
+        df_with_selections,
+        hide_index=True,
+        column_config={"Select": st.column_config.CheckboxColumn(required=True)},
+        disabled=df.columns,
+    )
+
+    # Filter the dataframe using the temporary column, then drop the column
+    selected_rows = edited_df[edited_df.Select]
+    return selected_rows.drop('Select', axis=1)
+
 def load_view():
-    st.title('Home Page')
+    st.title('Snippets overview')
+    conn = connect_to_colibri_db()
+    try:
+        snippet_rows = fetch_all_snippets(conn)
+        snippet_df = pd.DataFrame(snippet_rows, columns=["Id", "Creation date", "Caption"])
+        snippet_selection = dataframe_with_selections(snippet_df)
 
-    df = pd.DataFrame({'col1': [1.0, 2.0, 3], 'col2': [4, 5, 6]})
-    st.dataframe(df)
+        st.write("Your selection:")
+        print(snippet_selection["Id"])
+        print(snippet_selection["Id"].values)
+        print(len(snippet_selection["Id"].values))
 
+        parts_rows = fetch_all_snippet_parts(conn, snippet_selection["Id"].values)
+        parts_df = pd.DataFrame(parts_rows, columns=["Id", "Creation date", "Caption"])
+        st.dataframe(parts_df)
+    finally:
+        conn.close()
+
+
+
+    #st.dataframe(selection)
+
+    #st.dataframe(df)
+
+    # https://docs.streamlit.io/library/api-reference/data/st.dataframe
 
 """
     language = st.selectbox('add a language', [const.LANGUAGE_DE, const.LANGUAGE_FA, const.LANGUAGE_EN, const.LANGUAGE_FR])
