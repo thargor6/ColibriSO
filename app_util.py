@@ -21,23 +21,30 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import streamlit as st
-import app_constants as const
-from app_database import connect_to_colibri_db, update_user
-from app_util import obscure_str
+def encrypt_password(password):
+    import hashlib
+    import hmac
+    key = "b1963175-a4be-4096-8d38-53bf19ec"
+    byte_key = key.encode("UTF-8")
+    message = password.encode()
+    h = hmac.new(byte_key, message, hashlib.sha256).hexdigest()
+    return h
+
+def compare_password_hash(password, ref_hash):
+    return ref_hash == encrypt_password(password)
 
 
-def load_view():
-    st.title('Configuration Page')
-    st.text_input('EMail',  value=st.session_state[const.SESSION_USER_EMAIL], disabled=True)
+import zlib
+from base64 import urlsafe_b64encode as b64e, urlsafe_b64decode as b64d
 
-    open_ai_api_key = st.text_input('OpenAI API key',  value=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else "")
+def obscure(data: bytes) -> bytes:
+    return b64e(zlib.compress(data, 9))
 
-    if st.button('save configuration'):
-        conn = connect_to_colibri_db()
-        try:
-          update_user(conn, st.session_state[const.SESSION_USER_ID],  obscure_str( open_ai_api_key ) )
-        finally:
-          conn.close()
-        st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] = open_ai_api_key
-        st.success("Configuration saved successfully")
+def unobscure(obscured: bytes) -> bytes:
+    return zlib.decompress(b64d(obscured))
+
+def obscure_str(data: str) -> bytes:
+    return b64e(zlib.compress(data.encode('utf-8'), 9))
+
+def unobscure_str(obscured: bytes) -> str:
+    return zlib.decompress(b64d(obscured)).decode('utf-8')

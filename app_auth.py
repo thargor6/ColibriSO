@@ -26,7 +26,9 @@ from datetime import datetime
 import app_constants as const
 
 from app_database import connect_to_colibri_db, select_session_by_session_id, create_session, select_user_by_user_name, \
-    compare_password_hash, select_user_by_user_id
+    select_user_by_user_id
+from app_util import compare_password_hash, unobscure_str
+
 
 @st.cache_data
 def get_session_id():
@@ -96,7 +98,7 @@ def check_password_db():
     def user_data_to_session(user_data):
         st.session_state[const.SESSION_USER_ID] = user_data[0]
         st.session_state[const.SESSION_USER_EMAIL] = user_data[4]
-        st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] = user_data[5]
+        st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] = unobscure_str(user_data[5])
 
     if st.session_state.get(const.SESSION_PASSWORD_CORRECT, False):
         return True
@@ -116,3 +118,4 @@ def check_password_db():
         return False
     else:
         return True
+

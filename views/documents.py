@@ -24,9 +24,6 @@
 import streamlit as st
 
 from app_database import connect_to_colibri_db, fetch_all_snippets, fetch_all_snippet_parts
-from app_openai import simple_chat
-import app_constants as const
-
 import pandas as pd
 
 def dataframe_with_selections(df):
@@ -68,15 +65,3 @@ def load_view():
             st.write("(No document selected)")
     finally:
         conn.close()
-
-"""
-    language = st.selectbox('add a language', [const.LANGUAGE_DE, const.LANGUAGE_FA, const.LANGUAGE_EN, const.LANGUAGE_FR])
-
-    prompt = st.text_input('enter your prompt')
-
-    if st.button('Generate'):
-      result = simple_chat(prompt, const.getLanguageName(language))
-      st.write(result)
-
-      return True
-"""

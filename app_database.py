@@ -24,6 +24,8 @@
 from app_sqlite import create_connection, create_table
 from datetime import datetime
 
+from app_util import encrypt_password
+
 DATABASE = r"colibri_database.db"
 
 SQL_CREATE_SNIPPETS_TABLE = """ CREATE TABLE IF NOT EXISTS snippets (
@@ -224,15 +226,5 @@ def create_snippet_part_with_binary_content(conn, snippet_part):
     conn.commit()
     return cur.lastrowid
 
-def encrypt_password(password):
-    import hashlib
-    import hmac
-    key = "b1963175-a4be-4096-8d38-53bf19ec"
-    byte_key = key.encode("UTF-8")
-    message = password.encode()
-    h = hmac.new(byte_key, message, hashlib.sha256).hexdigest()
-    return h
 
-def compare_password_hash(password, ref_hash):
-    return ref_hash == encrypt_password(password)
 
