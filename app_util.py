@@ -41,10 +41,14 @@ def obscure(data: bytes) -> bytes:
     return b64e(zlib.compress(data, 9))
 
 def unobscure(obscured: bytes) -> bytes:
+    if obscured is None:
+        return None
     return zlib.decompress(b64d(obscured))
 
 def obscure_str(data: str) -> bytes:
     return b64e(zlib.compress(data.encode('utf-8'), 9))
 
 def unobscure_str(obscured: bytes) -> str:
+    if obscured is None:
+        return None
     return zlib.decompress(b64d(obscured)).decode('utf-8')

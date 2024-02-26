@@ -21,6 +21,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import streamlit as st
 from app_sqlite import create_connection, create_table
 from datetime import datetime
 
@@ -61,6 +62,13 @@ SQL_CREATE_USER_SESSIONS_TABLE = """ CREATE TABLE IF NOT EXISTS user_sessions (
                                         session_id text NOT NULL                                        
                                     ); """
 
+SQL_CREATE_APP_SETTINGS_TABLE = """ CREATE TABLE IF NOT EXISTS app_settings (
+                                        id integer PRIMARY KEY,
+                                        user_id integer NULL,
+                                        key text NOT NULL,
+                                        value text NULL                                        
+                                    ); """
+
 def populate_users_table(conn):
     rowsQuery = "SELECT Count() FROM users"
     cursor = conn.cursor()
@@ -69,18 +77,44 @@ def populate_users_table(conn):
     if numberOfRows == 0:
       create_user(conn, (datetime.now(), 'thargor6', encrypt_password('software1'), "thargor6@googlemail.com"))
 
+
+@st.cache_data
+def datamodel_is_present_v1():
+    conn = create_connection(DATABASE)
+    try:
+        if conn is not None:
+            sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'".format(table_name="app_settings");
+            cursor = conn.cursor()
+            cursor.execute(sql)
+            row = cursor.fetchone()
+            return row is not None
+        else:
+            return False
+    finally:
+        conn.close()
+
 def connect_to_colibri_db():
     """ connect to the database and initialize it, if necessary
     :return: Connection object or None
     """
+
+    # separate function to with own connection to allow caching of the result
+    datamodel_is_present = datamodel_is_present_v1();
+
+
     conn = create_connection(DATABASE)
     # create tables
     if conn is not None:
-        create_table(conn, SQL_CREATE_SNIPPETS_TABLE)
-        create_table(conn, SQL_CREATE_SNIPPET_PARTS_TABLE)
-        create_table(conn, SQL_CREATE_USERS_TABLE)
-        populate_users_table(conn)
-        create_table(conn, SQL_CREATE_USER_SESSIONS_TABLE)
+        # create initial tables
+        if not datamodel_is_present:
+            # important to clear the cache, because the database has changed
+            st.cache_data.clear()
+            create_table(conn, SQL_CREATE_APP_SETTINGS_TABLE)
+            create_table(conn, SQL_CREATE_SNIPPETS_TABLE)
+            create_table(conn, SQL_CREATE_SNIPPET_PARTS_TABLE)
+            create_table(conn, SQL_CREATE_USERS_TABLE)
+            populate_users_table(conn)
+            create_table(conn, SQL_CREATE_USER_SESSIONS_TABLE)
     else:
         print("Error! cannot create the database connection.")
     return conn
