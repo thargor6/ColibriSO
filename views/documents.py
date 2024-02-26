@@ -23,8 +23,10 @@
 
 import streamlit as st
 
-from app_database import connect_to_colibri_db, fetch_all_snippets, fetch_all_snippet_parts
+from app_database import connect_to_colibri_db, fetch_all_snippets
 import pandas as pd
+
+from views.show_details_dlg import showDetails
 
 def dataframe_with_selections(df):
     df_with_selections = df.copy()
@@ -46,22 +48,33 @@ def load_view():
     st.title('Documents overview')
     conn = connect_to_colibri_db()
     try:
-        # more about data frames: # https://docs.streamlit.io/library/api-reference/data/st.dataframe
         snippet_rows = fetch_all_snippets(conn)
-        snippet_df = pd.DataFrame(snippet_rows, columns=["Id", "Creation date", "Caption"])
-        snippet_selection = dataframe_with_selections(snippet_df)
-
-        #print(snippet_selection["Id"])
-        #print(snippet_selection["Id"].values)
-        #print(len(snippet_selection["Id"].values))
-
-        st.subheader("Document parts:")
-        if len(snippet_selection["Id"].values) > 0:
-            with st.spinner('Loading parts...'):
-                parts_rows = fetch_all_snippet_parts(conn, snippet_selection["Id"].values)
-                parts_df = pd.DataFrame(parts_rows, columns=["Snippet Id", "Id", "Snippet type", "Language", "Content", "Filename", "Mime type"])
-                st.dataframe(parts_df)
-        else:
-            st.write("(No document selected)")
     finally:
         conn.close()
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        showDetailsButton = st.button('Show details')
+    with col2:
+        button2 = st.button('Button 2')
+    with col3:
+        button3 = st.button('Button 3')
+
+    # more about data frames: # https://docs.streamlit.io/library/api-reference/data/st.dataframe
+    snippet_df = pd.DataFrame(snippet_rows, columns=["Id", "Creation date", "Caption"])
+    snippet_selection = dataframe_with_selections(snippet_df)
+
+    #print(snippet_selection["Id"])
+    #print(snippet_selection["Id"].values)
+    #print(len(snippet_selection["Id"].values))
+
+    details = st.expander("Details", expanded=True)
+
+    if showDetailsButton:
+        showDetails(details, snippet_selection)
+    if button2:
+        print("Button 2 clicked")
+    if button3:
+        print("Button 3 clicked")
+
+
