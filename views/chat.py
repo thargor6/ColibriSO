@@ -32,7 +32,6 @@ def load_view():
     prompt = st.text_input('enter your prompt')
 
     if st.button('Generate'):
-      result = simple_chat(prompt, const.getLanguageName(language))
-      st.write(result)
-
-      return True
+      with st.spinner('Thinking...'):
+          result = simple_chat(prompt, const.getLanguageName(language))
+          st.write(result)
