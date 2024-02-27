@@ -21,102 +21,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import streamlit as st
-from app_sqlite import create_connection, create_table
-from datetime import datetime
-
-from app_util import encrypt_password
+from app_db_changelogs import apply_db_changelogs
+from app_sqlite import create_connection
 
 DATABASE = r"colibri_database.db"
-
-SQL_CREATE_SNIPPETS_TABLE = """ CREATE TABLE IF NOT EXISTS snippets (
-                                        id integer PRIMARY KEY,
-                                        creation_date text,
-                                        caption text NOT NULL
-                                    ); """
-
-SQL_CREATE_SNIPPET_PARTS_TABLE = """ CREATE TABLE IF NOT EXISTS snippet_parts (
-                                        id integer PRIMARY KEY,
-                                        snippet_id integer NOT NULL,
-                                        snippet_type text NOT NULL,
-                                        language_id text NULL,
-                                        text_content text NULL,
-                                        filename text NULL,
-                                        blob_content blob NULL,
-                                        mime_type text NULL
-                                    ); """
-
-SQL_CREATE_USERS_TABLE = """ CREATE TABLE IF NOT EXISTS users (
-                                        id integer PRIMARY KEY,
-                                        creation_time text NOT NULL,
-                                        user_name text NOT NULL,
-                                        pw_hash text NOT NULL,
-                                        email text NOT NULL,
-                                        open_ai_api_key text NULL                                                                                
-                                    ); """
-
-SQL_CREATE_USER_SESSIONS_TABLE = """ CREATE TABLE IF NOT EXISTS user_sessions (
-                                        id integer PRIMARY KEY,
-                                        creation_time text NOT NULL,
-                                        user_id integer NOT NULL,
-                                        session_id text NOT NULL                                        
-                                    ); """
-
-SQL_CREATE_APP_SETTINGS_TABLE = """ CREATE TABLE IF NOT EXISTS app_settings (
-                                        id integer PRIMARY KEY,
-                                        user_id integer NULL,
-                                        key text NOT NULL,
-                                        value text NULL                                        
-                                    ); """
-
-def populate_users_table(conn):
-    rowsQuery = "SELECT Count() FROM users"
-    cursor = conn.cursor()
-    cursor.execute(rowsQuery)
-    numberOfRows = cursor.fetchone()[0]
-    if numberOfRows == 0:
-      create_user(conn, (datetime.now(), 'thargor6', encrypt_password('software1'), "thargor6@googlemail.com"))
-
-
-@st.cache_data
-def datamodel_is_present_v1():
-    conn = create_connection(DATABASE)
-    try:
-        if conn is not None:
-            sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'".format(table_name="app_settings");
-            cursor = conn.cursor()
-            cursor.execute(sql)
-            row = cursor.fetchone()
-            return row is not None
-        else:
-            return False
-    finally:
-        conn.close()
 
 def connect_to_colibri_db():
     """ connect to the database and initialize it, if necessary
     :return: Connection object or None
     """
-
-    # separate function to with own connection to allow caching of the result
-    datamodel_is_present = datamodel_is_present_v1();
-
-
     conn = create_connection(DATABASE)
-    # create tables
-    if conn is not None:
-        # create initial tables
-        if not datamodel_is_present:
-            # important to clear the cache, because the database has changed
-            st.cache_data.clear()
-            create_table(conn, SQL_CREATE_APP_SETTINGS_TABLE)
-            create_table(conn, SQL_CREATE_SNIPPETS_TABLE)
-            create_table(conn, SQL_CREATE_SNIPPET_PARTS_TABLE)
-            create_table(conn, SQL_CREATE_USERS_TABLE)
-            populate_users_table(conn)
-            create_table(conn, SQL_CREATE_USER_SESSIONS_TABLE)
-    else:
-        print("Error! cannot create the database connection.")
+    try:
+        apply_db_changelogs(conn)
+    except:
+        conn.close()
+        return None
     return conn
 
 def create_user(conn, user):

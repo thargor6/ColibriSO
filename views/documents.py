@@ -23,6 +23,8 @@
 
 import streamlit as st
 
+# https://docs.streamlit.io/library/api-reference/layout
+
 from app_database import connect_to_colibri_db, fetch_all_snippets
 import pandas as pd
 

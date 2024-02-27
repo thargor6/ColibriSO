@@ -1,0 +1,24 @@
+CREATE TABLE IF NOT EXISTS users (
+        id integer PRIMARY KEY,
+        creation_time text NOT NULL,
+        user_name text NOT NULL,
+        pw_hash text NOT NULL,
+        email text NOT NULL,
+        open_ai_api_key text NULL
+        );
+
+CREATE TABLE IF NOT EXISTS user_sessions (
+        id integer PRIMARY KEY,
+        creation_time text NOT NULL,
+        user_id integer NOT NULL,
+        session_id text NOT NULL
+        );
+
+CREATE TABLE IF NOT EXISTS app_settings (
+        id integer PRIMARY KEY,
+        user_id integer NULL,
+        key text NOT NULL,
+        value text NULL
+        );
+
+insert into users (creation_time, user_name, pw_hash, email) values ('2024-02-28 00:00:00', 'thargor6', '3c3f4d965507d1841034ae10019f9de5f9cfde839116ed0728d8f62585b7097d', 'thargor6@googlemail.com');
