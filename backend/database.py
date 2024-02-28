@@ -21,8 +21,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from app_db_changelogs import apply_db_changelogs
-from app_sqlite import create_connection
+from backend.db_changelogs import apply_db_changelogs
+from backend.sqlite import create_connection
 
 DATABASE = r"colibri_database.db"
 

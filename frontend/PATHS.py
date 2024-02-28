@@ -21,17 +21,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import streamlit as st
+from backend import constants as const
 
-from app_openai import simple_chat
-import app_constants as const
-def load_view():
-    st.title('Chat')
-    language = st.selectbox('add a language', [const.LANGUAGE_DE, const.LANGUAGE_FA, const.LANGUAGE_EN, const.LANGUAGE_FR])
+NAVBAR_PATHS = {
+    'DOCUMENTS': const.ROUTE_DOCUMENTS,
+    'ADD URL': const.ROUTE_ADD_URL,
+    'ADD PDF': const.ROUTE_ADD_PDF,
+    'CHAT': const.ROUTE_CHAT
+}
 
-    prompt = st.text_input('enter your prompt')
-
-    if st.button('Generate'):
-      with st.spinner('Thinking...'):
-          result = simple_chat(prompt, const.getLanguageName(language))
-          st.write(result)
+SETTINGS = {
+    'ABOUT': const.ROUTE_ABOUT,
+    'OPTIONS': const.ROUTE_OPTIONS,
+    'CONFIGURATION': const.ROUTE_CONFIGURATION,
+    'LOGOUT': const.ROUTE_LOGOUT
+}

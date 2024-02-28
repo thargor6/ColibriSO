@@ -21,48 +21,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Language Constants
-APP_NAME = "ColibriSO"
-APP_VERSION = "0.5.0"
-APP_VERSION_DATE = "2024-02-28"
+import streamlit as st
+from backend import constants as const
+from backend.database import connect_to_colibri_db, update_user
+from backend.util import obscure_str
 
-LANGUAGE_EN = 'en'
-LANGUAGE_FA = 'fa'
-LANGUAGE_DE = 'de'
-LANGUAGE_FR = 'fr'
 
-PART_URL = 'url'
-PART_CONTENT = 'content'
-PART_SUMMARY_BRIEF = 'summary_brief'
-PART_SUMMARY_COMPREHENSIVE = 'summary_comprehensive'
-PART_PRIMARY = 'primary'
+def load_view():
+    st.title('Configuration Page')
+    st.text_input('EMail',  value=st.session_state[const.SESSION_USER_EMAIL], disabled=True)
 
-METADATA_TITLE = 'title'
-METADATA_LANGUAGE = 'language'
+    open_ai_api_key = st.text_input('OpenAI API key',  value=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else "")
 
-SESSION_USER_ID = "user_id"
-SESSION_USER_EMAIL = "user_email"
-SESSION_USER_OPEN_AI_API_KEY = "user_open_ai_api_key"
-SESSION_PASSWORD_CORRECT = "password_correct"
-
-ROUTE_DOCUMENTS = "documents"
-ROUTE_ABOUT = "about"
-ROUTE_CHAT = "chat"
-ROUTE_ADD_PDF = "add_pdf"
-ROUTE_OPTIONS = "options"
-ROUTE_CONFIGURATION = "configuration"
-ROUTE_ADD_URL = "add_url"
-ROUTE_LOGOUT = "logout"
-
-MIMETYPE_PDF = "application/pdf"
-
-def getLanguageName(language_id):
-    if language_id == LANGUAGE_EN:
-        return "English"
-    if language_id == LANGUAGE_FA:
-        return "Farsi"
-    if language_id == LANGUAGE_DE:
-        return "German"
-    if language_id == LANGUAGE_FR:
-        return "French"
-    return "Unknown"
+    if st.button('save configuration'):
+        conn = connect_to_colibri_db()
+        try:
+          update_user(conn, st.session_state[const.SESSION_USER_ID],  obscure_str( open_ai_api_key ) )
+        finally:
+          conn.close()
+        st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] = open_ai_api_key
+        st.success("Configuration saved successfully")

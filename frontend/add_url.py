@@ -23,12 +23,13 @@
 
 import streamlit as st
 
-from app_database import connect_to_colibri_db, create_snippet, create_snippet_part_with_text_content
-from app_openai import simple_summary
+from backend.database import connect_to_colibri_db, create_snippet, create_snippet_part_with_text_content
+from backend.openai import simple_summary
 from datetime import datetime
 
 from langchain_community.document_loaders import NewsURLLoader
-import app_constants as const
+from backend import constants as const
+
 
 def load_view():
     url = st.text_input('enter your url',  value="https://medium.com/enrique-dans/the-time-has-come-to-ban-robocalls-using-ai-generated-voices-d4b0ea3d665e")

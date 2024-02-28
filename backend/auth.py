@@ -23,12 +23,10 @@
 
 import streamlit as st
 from datetime import datetime
-import app_constants as const
-
-from app_database import connect_to_colibri_db, select_session_by_session_id, create_session, select_user_by_user_name, \
+import backend.constants as const
+from backend.database import connect_to_colibri_db, select_session_by_session_id, create_session, select_user_by_user_name, \
     select_user_by_user_id
-from app_util import compare_password_hash, unobscure_str
-
+from backend.util import compare_password_hash, unobscure_str
 
 @st.cache_data
 def get_session_id():

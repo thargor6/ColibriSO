@@ -22,11 +22,11 @@
 # SOFTWARE.
 
 import streamlit as st
-from app_auth import clear_cache
+from backend import constants as const
+
 
 def load_view():
-    if st.button("Logout user"):
-        clear_cache()
-        st.success("Logged out successfully")
-        st.rerun()
-
+    st.title('About {appName}'.format(appName = const.APP_NAME))
+    st.markdown('ColibriSO is a tool for organizing information of all kinds, written in Python and Streamlit.')
+    st.markdown('Copyright (C) 2022-2024 Andreas Maschke')
+    st.markdown('Uses [streamlit-navbar-flaskless](https://github.com/BugzTheBunny/streamlit-navbar-flaskless) by BugzTheBunny',unsafe_allow_html=True)

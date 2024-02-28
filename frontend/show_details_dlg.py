@@ -20,12 +20,24 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 import streamlit as st
-import app_constants as const
 
-def load_view():
-    st.title('About {appName}'.format(appName = const.APP_NAME))
-    st.markdown('ColibriSO is a tool for organizing information of all kinds, written in Python and Streamlit.')
-    st.markdown('Copyright (C) 2022-2024 Andreas Maschke')
-    st.markdown('Uses [streamlit-navbar-flaskless](https://github.com/BugzTheBunny/streamlit-navbar-flaskless) by BugzTheBunny',unsafe_allow_html=True)
+from backend.database import fetch_all_snippet_parts, connect_to_colibri_db
+import pandas as pd
+
+
+def showDetails(details, snippet_selection):
+  with details:
+      st.subheader("Document parts:")
+      if len(snippet_selection["Id"].values) > 0:
+          with st.spinner('Loading parts...'):
+              conn = connect_to_colibri_db()
+              try:
+                 parts_rows = fetch_all_snippet_parts(conn, snippet_selection["Id"].values)
+              finally:
+                 conn.close()
+              parts_df = pd.DataFrame(parts_rows, columns=["Snippet Id", "Id", "Snippet type", "Language", "Content", "Filename", "Mime type"])
+              st.dataframe(parts_df)
+      else:
+          st.write("(No document selected)")
+

@@ -22,22 +22,11 @@
 # SOFTWARE.
 
 import streamlit as st
-import app_constants as const
-from app_database import connect_to_colibri_db, update_user
-from app_util import obscure_str
-
+from backend.auth import clear_cache
 
 def load_view():
-    st.title('Configuration Page')
-    st.text_input('EMail',  value=st.session_state[const.SESSION_USER_EMAIL], disabled=True)
+    if st.button("Logout user"):
+        clear_cache()
+        st.success("Logged out successfully")
+        st.rerun()
 
-    open_ai_api_key = st.text_input('OpenAI API key',  value=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else "")
-
-    if st.button('save configuration'):
-        conn = connect_to_colibri_db()
-        try:
-          update_user(conn, st.session_state[const.SESSION_USER_ID],  obscure_str( open_ai_api_key ) )
-        finally:
-          conn.close()
-        st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] = open_ai_api_key
-        st.success("Configuration saved successfully")

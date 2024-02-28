@@ -25,7 +25,7 @@ import streamlit as st
 import base64
 from streamlit.components.v1 import html
 
-from PATHS import NAVBAR_PATHS, SETTINGS
+from frontend.PATHS import NAVBAR_PATHS, SETTINGS
 
 
 def inject_custom_css():

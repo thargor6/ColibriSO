@@ -20,24 +20,20 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 import streamlit as st
 
-from app_database import fetch_all_snippet_parts, connect_to_colibri_db
-import pandas as pd
+from backend.openai import simple_chat
+from backend import constants as const
 
 
-def showDetails(details, snippet_selection):
-  with details:
-      st.subheader("Document parts:")
-      if len(snippet_selection["Id"].values) > 0:
-          with st.spinner('Loading parts...'):
-              conn = connect_to_colibri_db()
-              try:
-                 parts_rows = fetch_all_snippet_parts(conn, snippet_selection["Id"].values)
-              finally:
-                 conn.close()
-              parts_df = pd.DataFrame(parts_rows, columns=["Snippet Id", "Id", "Snippet type", "Language", "Content", "Filename", "Mime type"])
-              st.dataframe(parts_df)
-      else:
-          st.write("(No document selected)")
+def load_view():
+    st.title('Chat')
+    language = st.selectbox('add a language', [const.LANGUAGE_DE, const.LANGUAGE_FA, const.LANGUAGE_EN, const.LANGUAGE_FR])
 
+    prompt = st.text_input('enter your prompt')
+
+    if st.button('Generate'):
+      with st.spinner('Thinking...'):
+          result = simple_chat(prompt, const.getLanguageName(language))
+          st.write(result)

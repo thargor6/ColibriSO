@@ -21,32 +21,48 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from app_auth import check_password_db
-from views import documents, about, add_pdf, options, configuration, add_url, logout, chat
-import utils as utl
-import app_constants as const
+# Language Constants
+APP_NAME = "ColibriSO"
+APP_VERSION = "0.6.0"
+APP_VERSION_DATE = "2024-02-28"
 
-def navigation():
-    route = utl.get_current_route()
-    if route == const.ROUTE_DOCUMENTS:
-        documents.load_view()
-    elif route == const.ROUTE_ABOUT:
-        about.load_view()
-    elif route == const.ROUTE_ADD_PDF:
-        add_pdf.load_view()
-    elif route == const.ROUTE_OPTIONS:
-        options.load_view()
-    elif route == const.ROUTE_CONFIGURATION:
-        configuration.load_view()
-    elif route == const.ROUTE_ADD_URL:
-        add_url.load_view()
-    elif route == const.ROUTE_LOGOUT:
-        logout.load_view()
-    elif route == const.ROUTE_CHAT:
-        chat.load_view()
-    elif route == None:
-        documents.load_view()
+LANGUAGE_EN = 'en'
+LANGUAGE_FA = 'fa'
+LANGUAGE_DE = 'de'
+LANGUAGE_FR = 'fr'
 
-def load_view():
-    if check_password_db():
-        navigation()
+PART_URL = 'url'
+PART_CONTENT = 'content'
+PART_SUMMARY_BRIEF = 'summary_brief'
+PART_SUMMARY_COMPREHENSIVE = 'summary_comprehensive'
+PART_PRIMARY = 'primary'
+
+METADATA_TITLE = 'title'
+METADATA_LANGUAGE = 'language'
+
+SESSION_USER_ID = "user_id"
+SESSION_USER_EMAIL = "user_email"
+SESSION_USER_OPEN_AI_API_KEY = "user_open_ai_api_key"
+SESSION_PASSWORD_CORRECT = "password_correct"
+
+ROUTE_DOCUMENTS = "documents"
+ROUTE_ABOUT = "about"
+ROUTE_CHAT = "chat"
+ROUTE_ADD_PDF = "add_pdf"
+ROUTE_OPTIONS = "options"
+ROUTE_CONFIGURATION = "configuration"
+ROUTE_ADD_URL = "add_url"
+ROUTE_LOGOUT = "logout"
+
+MIMETYPE_PDF = "application/pdf"
+
+def getLanguageName(language_id):
+    if language_id == LANGUAGE_EN:
+        return "English"
+    if language_id == LANGUAGE_FA:
+        return "Farsi"
+    if language_id == LANGUAGE_DE:
+        return "German"
+    if language_id == LANGUAGE_FR:
+        return "French"
+    return "Unknown"

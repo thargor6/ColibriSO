@@ -22,11 +22,11 @@
 # SOFTWARE.
 
 import streamlit as st
-from langchain_community.llms import OpenAI
+#from langchain_community.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
-import app_constants as const
+import backend.constants as const
 
 #from dotenv import load_dotenv
 

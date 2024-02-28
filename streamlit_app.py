@@ -22,9 +22,8 @@
 # SOFTWARE.
 
 import streamlit as st
-import utils as utl
-import app_constants as const
-from views import main
+from backend import constants as const
+from frontend import main, utils as utl
 
 st.set_page_config(layout="wide", page_title="{appName} - v{appVersion} ({appVersionDate})".format(appName = const.APP_NAME, appVersion = const.APP_VERSION, appVersionDate = const.APP_VERSION_DATE))
 

@@ -22,12 +22,13 @@
 # SOFTWARE.
 
 import streamlit as st
-from app_database import connect_to_colibri_db, create_snippet, create_snippet_part_with_text_content, create_snippet_part_with_binary_content
-from app_openai import simple_summary
+from backend.database import connect_to_colibri_db, create_snippet, create_snippet_part_with_text_content, create_snippet_part_with_binary_content
+from backend.openai import simple_summary
 from datetime import datetime
 #from langchain_community.document_loaders import PyPDFLoader
 from PyPDF2 import PdfReader
-import app_constants as const
+from backend import constants as const
+
 
 def load_view():
     uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")

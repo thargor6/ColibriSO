@@ -20,6 +20,7 @@ def apply_db_changelogs(conn):
         print("Last applied changelog id: ", last_applied_changelog_id)
         # scan for changelogs
         changelogs = sorted_directory_listing_with_os_listdir("db_changelogs")
+        # apply changelogs
         for changelog in changelogs:
             if last_applied_changelog_id is None or last_applied_changelog_id < changelog:
                 print("Applying changelog: ", changelog)

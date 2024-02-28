@@ -25,10 +25,10 @@ import streamlit as st
 
 # https://docs.streamlit.io/library/api-reference/layout
 
-from app_database import connect_to_colibri_db, fetch_all_snippets
+from backend.database import connect_to_colibri_db, fetch_all_snippets
 import pandas as pd
 
-from views.show_details_dlg import showDetails
+from frontend.show_details_dlg import showDetails
 
 def dataframe_with_selections(df):
     df_with_selections = df.copy()
