@@ -93,7 +93,7 @@ def load_view():
                         st.write(brief_summary)
                     with st.spinner('Creating comprehensive summary...'):
                         comprehensive_summary = simple_summary(const.getLanguageName(summary_language), document_content, False)
-                        snippet_part_comprehensive_summary = (snippet_id, const.PART_SUMMARY_COMPREHENSIVE, summary_language, brief_summary);
+                        snippet_part_comprehensive_summary = (snippet_id, const.PART_SUMMARY_COMPREHENSIVE, summary_language, comprehensive_summary);
                         create_snippet_part_with_text_content(conn, snippet_part_comprehensive_summary)
 
                         st.header("Comphrehensive Summary")

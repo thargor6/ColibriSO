@@ -20,49 +20,26 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import streamlit as st
 
-# Language Constants
-APP_NAME = "ColibriSO"
-APP_VERSION = "0.7.0"
-APP_VERSION_DATE = "2024-02-28"
+from backend.database import fetch_all_snippet_parts, connect_to_colibri_db
+import pandas as pd
 
-LANGUAGE_EN = 'en'
-LANGUAGE_FA = 'fa'
-LANGUAGE_DE = 'de'
-LANGUAGE_FR = 'fr'
 
-PART_URL = 'url'
-PART_CONTENT = 'content'
-PART_SUMMARY_BRIEF = 'summary_brief'
-PART_SUMMARY_COMPREHENSIVE = 'summary_comprehensive'
-PART_PRIMARY = 'primary'
+def showContent(details, snippet_selection):
+  with details:
+      st.subheader("Content parts:")
+      if len(snippet_selection["Id"].values) > 0:
+          with st.spinner('Loading content...'):
+              conn = connect_to_colibri_db()
+              try:
+                 parts_rows = fetch_all_snippet_parts(conn, snippet_selection["Id"].values)
+              finally:
+                 conn.close()
+              for row in parts_rows:
+                if row[4] is not None:
+                    st.subheader("Document " + str(row[0]) + " Part " + str(row[1]))
+                    st.write(row[4])
+      else:
+          st.write("(No document selected)")
 
-METADATA_TITLE = 'title'
-METADATA_LANGUAGE = 'language'
-
-SESSION_USER_ID = "user_id"
-SESSION_USER_EMAIL = "user_email"
-SESSION_USER_OPEN_AI_API_KEY = "user_open_ai_api_key"
-SESSION_PASSWORD_CORRECT = "password_correct"
-
-ROUTE_DOCUMENTS = "documents"
-ROUTE_ABOUT = "about"
-ROUTE_CHAT = "chat"
-ROUTE_ADD_PDF = "add_pdf"
-ROUTE_OPTIONS = "options"
-ROUTE_CONFIGURATION = "configuration"
-ROUTE_ADD_URL = "add_url"
-ROUTE_LOGOUT = "logout"
-
-MIMETYPE_PDF = "application/pdf"
-
-def getLanguageName(language_id):
-    if language_id == LANGUAGE_EN:
-        return "English"
-    if language_id == LANGUAGE_FA:
-        return "Farsi"
-    if language_id == LANGUAGE_DE:
-        return "German"
-    if language_id == LANGUAGE_FR:
-        return "French"
-    return "Unknown"

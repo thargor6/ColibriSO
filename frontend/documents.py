@@ -28,7 +28,8 @@ import streamlit as st
 from backend.database import connect_to_colibri_db, fetch_all_snippets
 import pandas as pd
 
-from frontend.show_details_dlg import showDetails
+from frontend.show_content_detail import showContent
+from frontend.show_details_detail import showDetails
 
 def dataframe_with_selections(df):
     df_with_selections = df.copy()
@@ -58,7 +59,7 @@ def load_view():
     with col1:
         showDetailsButton = st.button('Show details')
     with col2:
-        button2 = st.button('Button 2')
+        showContentButton = st.button('Show content')
     with col3:
         button3 = st.button('Button 3')
 
@@ -74,8 +75,8 @@ def load_view():
 
     if showDetailsButton:
         showDetails(details, snippet_selection)
-    if button2:
-        print("Button 2 clicked")
+    if showContentButton:
+        showContent(details, snippet_selection)
     if button3:
         print("Button 3 clicked")
 
