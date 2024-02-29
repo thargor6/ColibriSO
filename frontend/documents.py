@@ -30,6 +30,8 @@ import pandas as pd
 
 from frontend.show_content_detail import showContent
 from frontend.show_details_detail import showDetails
+from frontend.show_summary_detail import showSummary
+
 
 def dataframe_with_selections(df):
     df_with_selections = df.copy()
@@ -57,11 +59,11 @@ def load_view():
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        showDetailsButton = st.button('Show details')
+        showSummaryButton = st.button('Show summary')
     with col2:
         showContentButton = st.button('Show content')
     with col3:
-        button3 = st.button('Button 3')
+        showDetailsButton = st.button('Show details')
 
     # more about data frames: # https://docs.streamlit.io/library/api-reference/data/st.dataframe
     snippet_df = pd.DataFrame(snippet_rows, columns=["Id", "Creation date", "Caption"])
@@ -73,11 +75,13 @@ def load_view():
 
     details = st.expander("Details", expanded=True)
 
+    if showSummaryButton:
+        showSummary(details, snippet_selection)
     if showDetailsButton:
         showDetails(details, snippet_selection)
     if showContentButton:
         showContent(details, snippet_selection)
-    if button3:
+    if showSummaryButton:
         print("Button 3 clicked")
 
 

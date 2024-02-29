@@ -25,7 +25,6 @@ import streamlit as st
 from backend.database import fetch_all_snippet_parts, connect_to_colibri_db
 import pandas as pd
 
-
 def showDetails(details, snippet_selection):
   with details:
       st.subheader("Document parts:")

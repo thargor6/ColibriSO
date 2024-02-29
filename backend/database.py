@@ -23,6 +23,7 @@
 
 from backend.db_changelogs import apply_db_changelogs
 from backend.sqlite import create_connection
+import backend.constants as const
 
 DATABASE = r"colibri_database.db"
 
@@ -149,6 +150,23 @@ def fetch_all_snippet_parts(conn, snippet_ids):
        where snippet_id in ({}) order by snippet_id desc, id '''.format(','.join('?' for _ in conv_ids))
     cursor = conn.cursor()
     cursor.execute(sql, conv_ids)
+    return cursor.fetchall()
+
+
+def fetch_all_snippet_summary_parts(conn, snippet_ids):
+    """
+    Fetch all summary snippets from the snippet table
+    :param conn:
+    :param project:
+    :return: snippets
+    """
+    conv_ids = [str(i) for i in snippet_ids]
+    sql = ''' SELECT snippet_id, id, snippet_type, language_id, text_content, filename, mime_type FROM snippet_parts 
+       where snippet_id in ({}) and snippet_type in (?,?) 
+       order by snippet_id desc, snippet_type, id '''.format(','.join('?' for _ in conv_ids))
+    cursor = conn.cursor()
+    params = conv_ids + [const.PART_SUMMARY_BRIEF, const.PART_SUMMARY_COMPREHENSIVE]
+    cursor.execute(sql, params)
     return cursor.fetchall()
 
 def create_snippet_part_with_text_content(conn, snippet_part):
