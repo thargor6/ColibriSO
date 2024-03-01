@@ -152,8 +152,13 @@ def fetch_all_snippet_parts(conn, snippet_ids):
     cursor.execute(sql, conv_ids)
     return cursor.fetchall()
 
+def split_keywords_into_like_expressions(keywords):
+    if keywords is None:
+        return []
+    filtered_array =  list(filter(None, keywords.split(' ')))
+    return list(map(lambda x: '%' + x + '%', filtered_array))
 
-def fetch_all_snippet_summary_parts(conn, snippet_ids):
+def fetch_all_snippet_summary_parts(conn, snippet_ids, keyword_string):
     """
     Fetch all summary snippets from the snippet table
     :param conn:
@@ -161,11 +166,19 @@ def fetch_all_snippet_summary_parts(conn, snippet_ids):
     :return: snippets
     """
     conv_ids = [str(i) for i in snippet_ids]
+    keyword_array = split_keywords_into_like_expressions(keyword_string)
+
     sql = ''' SELECT snippet_id, id, snippet_type, language_id, text_content, filename, mime_type FROM snippet_parts 
-       where snippet_id in ({}) and snippet_type in (?,?) 
-       order by snippet_id desc, snippet_type, id '''.format(','.join('?' for _ in conv_ids))
+       where snippet_id in ({ids}) and snippet_type in (?,?) 
+       {keywords}
+       order by snippet_id desc, snippet_type, id '''.format(
+          ids = ', '.join('?' for _ in conv_ids),
+          keywords = ' '.join('and text_content like ?' for _ in keyword_array))
+
+    print("SQL", sql)
     cursor = conn.cursor()
-    params = conv_ids + [const.PART_SUMMARY_BRIEF, const.PART_SUMMARY_COMPREHENSIVE]
+    params = conv_ids + [const.PART_SUMMARY_BRIEF, const.PART_SUMMARY_COMPREHENSIVE] + keyword_array
+    print("PARAMS", params)
     cursor.execute(sql, params)
     return cursor.fetchall()
 

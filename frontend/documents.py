@@ -57,12 +57,14 @@ def load_view():
     finally:
         conn.close()
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
-        showSummaryButton = st.button('Show summary')
+        keyword_string = st.text_input('Search for keywords', value="")
     with col2:
-        showContentButton = st.button('Show content')
+        showSummaryButton = st.button('Show summary')
     with col3:
+        showContentButton = st.button('Show content')
+    with col4:
         showDetailsButton = st.button('Show details')
 
     # more about data frames: # https://docs.streamlit.io/library/api-reference/data/st.dataframe
@@ -76,11 +78,11 @@ def load_view():
     details = st.expander("Details", expanded=True)
 
     if showSummaryButton:
-        showSummary(details, snippet_selection)
+        showSummary(details, snippet_selection, keyword_string)
     if showDetailsButton:
-        showDetails(details, snippet_selection)
+        showDetails(details, snippet_selection, keyword_string)
     if showContentButton:
-        showContent(details, snippet_selection)
+        showContent(details, snippet_selection, keyword_string)
     if showSummaryButton:
         print("Button 3 clicked")
 
