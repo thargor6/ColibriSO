@@ -50,39 +50,43 @@ def dataframe_with_selections(df):
     return selected_rows.drop('Select', axis=1)
 
 def load_view():
-    st.title('Documents overview')
+    st.title('Documents')
+    documents_keyword_string = st.text_input('Document keywords', value="")
     conn = connect_to_colibri_db()
     try:
-        snippet_rows = fetch_all_snippets(conn)
+        snippet_rows = fetch_all_snippets(conn, documents_keyword_string)
     finally:
         conn.close()
-
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        keyword_string = st.text_input('Search for keywords', value="")
-    with col2:
-        showSummaryButton = st.button('Show summary')
-    with col3:
-        showContentButton = st.button('Show content')
-    with col4:
-        showDetailsButton = st.button('Show details')
+    if st.button('Refresh'):
+        st.write('Refreshing...')
+        st.rerun()
 
     # more about data frames: # https://docs.streamlit.io/library/api-reference/data/st.dataframe
     snippet_df = pd.DataFrame(snippet_rows, columns=["Id", "Creation date", "Caption"])
     snippet_selection = dataframe_with_selections(snippet_df)
 
+    st.title('Document parts')
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        showSummaryButton = st.button('Show summary')
+    with col2:
+        showContentButton = st.button('Show content')
+    with col3:
+        showDetailsButton = st.button('Show details')
+
     #print(snippet_selection["Id"])
     #print(snippet_selection["Id"].values)
     #print(len(snippet_selection["Id"].values))
 
+    parts_keyword_string = st.text_input('Content keywords', value="")
     details = st.expander("Details", expanded=True)
 
     if showSummaryButton:
-        showSummary(details, snippet_selection, keyword_string)
+        showSummary(details, snippet_selection, parts_keyword_string)
     if showDetailsButton:
-        showDetails(details, snippet_selection, keyword_string)
+        showDetails(details, snippet_selection, parts_keyword_string)
     if showContentButton:
-        showContent(details, snippet_selection, keyword_string)
+        showContent(details, snippet_selection, parts_keyword_string)
     if showSummaryButton:
         print("Button 3 clicked")
 

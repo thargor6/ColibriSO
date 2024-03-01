@@ -27,13 +27,19 @@ import backend.constants as const
 
 DATABASE = r"colibri_database.db"
 
+
+db_checked = False
+
 def connect_to_colibri_db():
     """ connect to the database and initialize it, if necessary
     :return: Connection object or None
     """
     conn = create_connection(DATABASE)
     try:
-        apply_db_changelogs(conn)
+        global db_checked
+        if not db_checked:
+            db_checked = True
+            apply_db_changelogs(conn)
     except:
         conn.close()
         return None
@@ -126,19 +132,24 @@ def create_snippet(conn, snippet):
     conn.commit()
     return cur.lastrowid
 
-def fetch_all_snippets(conn):
+def fetch_all_snippets(conn, keyword_string):
     """
     Fetch all snippets from the snippet table
     :param conn:
     :param project:
     :return: snippets
     """
-    sql = ''' SELECT id, creation_date, caption FROM snippets order by id desc '''
+    keyword_array = split_keywords_into_like_expressions(keyword_string)
+    sql = ''' SELECT id, creation_date, caption FROM snippets 
+              WHERE caption is not null
+              {keywords}       
+              order by id desc '''.format(
+        keywords = ' '.join('and lower(caption) like ?' for _ in keyword_array))
     cursor = conn.cursor()
-    cursor.execute(sql)
+    cursor.execute(sql, keyword_array)
     return cursor.fetchall()
 
-def fetch_all_snippet_parts(conn, snippet_ids):
+def fetch_all_snippet_parts(conn, snippet_ids, keyword_string):
     """
     Fetch all snippets from the snippet table
     :param conn:
@@ -146,17 +157,24 @@ def fetch_all_snippet_parts(conn, snippet_ids):
     :return: snippets
     """
     conv_ids = [str(i) for i in snippet_ids]
+    keyword_array = split_keywords_into_like_expressions(keyword_string)
     sql = ''' SELECT snippet_id, id, snippet_type, language_id, text_content, filename, mime_type FROM snippet_parts 
-       where snippet_id in ({}) order by snippet_id desc, id '''.format(','.join('?' for _ in conv_ids))
+       where snippet_id in ({ids})
+       {keywords} 
+       order by snippet_id desc, id '''.format(
+        ids=','.join('?' for _ in conv_ids),
+        keywords = ' '.join('and lower(text_content) like ?' for _ in keyword_array)
+    )
     cursor = conn.cursor()
-    cursor.execute(sql, conv_ids)
+    params = conv_ids + keyword_array
+    cursor.execute(sql, params)
     return cursor.fetchall()
 
 def split_keywords_into_like_expressions(keywords):
     if keywords is None:
         return []
     filtered_array =  list(filter(None, keywords.split(' ')))
-    return list(map(lambda x: '%' + x + '%', filtered_array))
+    return list(map(lambda x: '%' +  x.lower() + '%', filtered_array))
 
 def fetch_all_snippet_summary_parts(conn, snippet_ids, keyword_string):
     """
@@ -173,7 +191,7 @@ def fetch_all_snippet_summary_parts(conn, snippet_ids, keyword_string):
        {keywords}
        order by snippet_id desc, snippet_type, id '''.format(
           ids = ', '.join('?' for _ in conv_ids),
-          keywords = ' '.join('and text_content like ?' for _ in keyword_array))
+          keywords = ' '.join('and lower(text_content) like ?' for _ in keyword_array))
 
     print("SQL", sql)
     cursor = conn.cursor()

@@ -24,14 +24,14 @@ import streamlit as st
 
 from backend.database import fetch_all_snippet_parts, connect_to_colibri_db
 
-def showContent(details, snippet_selection):
+def showContent(details, snippet_selection, keyword_string):
   with details:
       st.subheader("Content parts:")
       if len(snippet_selection["Id"].values) > 0:
           with st.spinner('Loading content...'):
               conn = connect_to_colibri_db()
               try:
-                 parts_rows = fetch_all_snippet_parts(conn, snippet_selection["Id"].values)
+                 parts_rows = fetch_all_snippet_parts(conn, snippet_selection["Id"].values, keyword_string)
               finally:
                  conn.close()
               for row in parts_rows:
