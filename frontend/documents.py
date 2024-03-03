@@ -87,7 +87,5 @@ def load_view():
         showDetails(details, snippet_selection, parts_keyword_string)
     if showContentButton:
         showContent(details, snippet_selection, parts_keyword_string)
-    if showSummaryButton:
-        print("Button 3 clicked")
 
 

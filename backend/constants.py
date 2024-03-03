@@ -23,8 +23,8 @@
 
 # Language Constants
 APP_NAME = "ColibriSO"
-APP_VERSION = "0.9.0"
-APP_VERSION_DATE = "2024-03-01"
+APP_VERSION = "0.10.0"
+APP_VERSION_DATE = "2024-03-03"
 
 LANGUAGE_EN = 'en'
 LANGUAGE_FA = 'fa'
@@ -48,6 +48,7 @@ SESSION_PASSWORD_CORRECT = "password_correct"
 ROUTE_DOCUMENTS = "documents"
 ROUTE_ABOUT = "about"
 ROUTE_CHAT = "chat"
+ROUTE_EXPLAIN = "explain"
 ROUTE_ADD_PDF = "add_pdf"
 ROUTE_OPTIONS = "options"
 ROUTE_CONFIGURATION = "configuration"

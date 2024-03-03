@@ -27,7 +27,8 @@ NAVBAR_PATHS = {
     'DOCUMENTS': const.ROUTE_DOCUMENTS,
     'ADD URL': const.ROUTE_ADD_URL,
     'ADD PDF': const.ROUTE_ADD_PDF,
-    'CHAT': const.ROUTE_CHAT
+    'CHAT': const.ROUTE_CHAT,
+    'EXPLAIN': const.ROUTE_EXPLAIN
 }
 
 SETTINGS = {

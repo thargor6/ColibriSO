@@ -56,3 +56,15 @@ def simple_summary(language, text, brief=True):
   print(result)
 
   return result["text"]
+
+
+def simple_explanation(prompt, language):
+  llm = ChatOpenAI(model_name='gpt-4', api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
+  code_prompt = PromptTemplate(
+    template="Write a comprehensive explanation of the word \"" + prompt + "\" in {language}. After that, repeat the same in English",
+    input_variables=["language"]
+  )
+  code_chain = LLMChain(
+    llm=llm, prompt=code_prompt)
+  result = code_chain({"language": language})
+  return result["text"]
