@@ -31,7 +31,7 @@ def load_view():
     st.title('Configuration Page')
     st.text_input('EMail',  value=st.session_state[const.SESSION_USER_EMAIL], disabled=True)
 
-    open_ai_api_key = st.text_input('OpenAI API key',  value=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else "")
+    open_ai_api_key = st.text_input('OpenAI API key',  value=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else "", type="password")
 
     if st.button('save configuration'):
         conn = connect_to_colibri_db()

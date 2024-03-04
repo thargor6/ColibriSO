@@ -32,12 +32,17 @@ from backend import constants as const
 
 def load_view():
     prompt = st.text_input('enter your word')
-    explanation_language = st.selectbox('select a language', [const.LANGUAGE_FA, const.LANGUAGE_DE, const.LANGUAGE_EN, const.LANGUAGE_FR])
+    details = st.expander("Options", expanded=False)
+    with details:
+        explanation_language = st.selectbox('explain in language', [const.LANGUAGE_FA, const.LANGUAGE_DE, const.LANGUAGE_EN, const.LANGUAGE_FR], index=0)
+        repeat_in_language = st.selectbox('repeat in language', [const.LANGUAGE_FA, const.LANGUAGE_DE, const.LANGUAGE_EN, const.LANGUAGE_FR], index=1)
+        explanation_type = st.selectbox('explanation type', [const.PART_EXPLANATION_BRIEF, const.PART_EXPLANATION_COMPREHENSIVE], index=1)
+
     if st.button('Explain'):
         with st.spinner('Thinking...'):
             conn = connect_to_colibri_db()
             try:
-                explanation = simple_explanation(prompt, const.getLanguageName(explanation_language))
+                explanation = simple_explanation(prompt, const.getLanguageName(explanation_language), const.getLanguageName(repeat_in_language), explanation_type)
                 st.write(explanation)
                 #snippet = (title, datetime.now());
                 #snippet_id = create_snippet(conn, snippet)

@@ -23,8 +23,8 @@
 
 # Language Constants
 APP_NAME = "ColibriSO"
-APP_VERSION = "0.10.0"
-APP_VERSION_DATE = "2024-03-03"
+APP_VERSION = "0.11.0"
+APP_VERSION_DATE = "2024-03-04"
 
 LANGUAGE_EN = 'en'
 LANGUAGE_FA = 'fa'
@@ -35,6 +35,8 @@ PART_URL = 'url'
 PART_CONTENT = 'content'
 PART_SUMMARY_BRIEF = 'summary_brief'
 PART_SUMMARY_COMPREHENSIVE = 'summary_comprehensive'
+PART_EXPLANATION_BRIEF = 'explanation_brief'
+PART_EXPLANATION_COMPREHENSIVE = 'explanation_comprehensive'
 PART_PRIMARY = 'primary'
 
 METADATA_TITLE = 'title'
