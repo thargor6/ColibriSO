@@ -35,5 +35,5 @@ def load_view():
 
     if st.button('Generate'):
       with st.spinner('Thinking...'):
-          result = simple_chat(prompt, const.getLanguageName(language))
+          result = simple_chat(prompt, const.getLanguageCaption(language))
           st.write(result)

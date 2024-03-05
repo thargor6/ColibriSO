@@ -78,14 +78,14 @@ def load_view():
 
             if with_summary:
               with st.spinner('Creating brief summary...'):
-                  brief_summary = simple_summary(const.getLanguageName(summary_language), data.page_content, True)
+                  brief_summary = simple_summary(const.getLanguageCaption(summary_language), data.page_content, True)
                   snippet_part_brief_summary = (snippet_id, const.PART_SUMMARY_BRIEF, summary_language, brief_summary);
                   create_snippet_part_with_text_content(conn, snippet_part_brief_summary)
 
                   st.header("Brief Summary")
                   st.write(brief_summary)
               with st.spinner('Creating comprehensive summary...'):
-                  comprehensive_summary = simple_summary(const.getLanguageName(summary_language), data.page_content, False)
+                  comprehensive_summary = simple_summary(const.getLanguageCaption(summary_language), data.page_content, False)
                   snippet_part_comprehensive_summary = (snippet_id, const.PART_SUMMARY_COMPREHENSIVE, summary_language, brief_summary);
                   create_snippet_part_with_text_content(conn, snippet_part_comprehensive_summary)
 

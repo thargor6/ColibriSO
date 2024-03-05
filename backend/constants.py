@@ -23,13 +23,18 @@
 
 # Language Constants
 APP_NAME = "ColibriSO"
-APP_VERSION = "0.14.0"
+APP_VERSION = "0.15.0"
 APP_VERSION_DATE = "2024-03-05"
 
 LANGUAGE_EN = 'en'
 LANGUAGE_FA = 'fa'
 LANGUAGE_DE = 'de'
 LANGUAGE_FR = 'fr'
+
+LANGUAGE_EN_CAPTION = 'English'
+LANGUAGE_FA_CAPTION = 'Farsi'
+LANGUAGE_DE_CAPTION = 'German'
+LANGUAGE_FR_CAPTION = 'French'
 
 PART_URL = 'url'
 PART_CONTENT = 'content'
@@ -62,13 +67,24 @@ MIMETYPE_PDF = "application/pdf"
 UI_DEFAULT_TEXT_AREA_HEIGHT = 400
 UI_DEFAULT_TEXT_AREA_MAX_CHARS = 10000
 
-def getLanguageName(language_id):
+def getLanguageCaption(language_id):
     if language_id == LANGUAGE_EN:
-        return "English"
+        return LANGUAGE_EN_CAPTION
     if language_id == LANGUAGE_FA:
-        return "Farsi"
+        return LANGUAGE_FA_CAPTION
     if language_id == LANGUAGE_DE:
-        return "German"
+        return LANGUAGE_DE_CAPTION
     if language_id == LANGUAGE_FR:
-        return "French"
-    return "Unknown"
+        return LANGUAGE_FR_CAPTION
+    return None
+
+def getLanguageId(language_caption):
+    if language_caption == LANGUAGE_EN:
+        return LANGUAGE_EN_CAPTION
+    if language_caption == LANGUAGE_FA:
+        return LANGUAGE_FA_CAPTION
+    if language_caption == LANGUAGE_DE:
+        return LANGUAGE_DE_CAPTION
+    if language_caption == LANGUAGE_FR:
+        return LANGUAGE_FR_CAPTION
+    return None

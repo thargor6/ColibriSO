@@ -4,8 +4,9 @@
 # https://hslpicker.com/#ebaa05
 primaryColor="#0C0E24"
 backgroundColor="#7A787A"
-secondaryBackgroundColor="#A2A0A2"
-textColor="#ebbd05"
+secondaryBackgroundColor="#8F8B8F"
+# textColor="#ebbd05"
+textColor="#FAC91E"
 font="sans serif"
 base="dark"
 
