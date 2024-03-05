@@ -25,7 +25,7 @@ import streamlit as st
 
 # https://docs.streamlit.io/library/api-reference/layout
 
-from backend.database import connect_to_colibri_db, fetch_all_snippets
+from backend.database import connect_to_colibri_db, fetch_all_snippets, delete_snippets
 import pandas as pd
 
 from frontend.show_content_detail import showContent
@@ -66,13 +66,16 @@ def load_view():
     snippet_selection = dataframe_with_selections(snippet_df)
 
     st.title('Document parts')
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
         showSummaryButton = st.button('Show summary')
     with col2:
         showContentButton = st.button('Show content')
     with col3:
         showDetailsButton = st.button('Show details')
+    with col4:
+        deleteButton = st.button('Delete documents')
+        confirmDelete = st.checkbox("Confirm delete")
 
     #print(snippet_selection["Id"])
     #print(snippet_selection["Id"].values)
@@ -87,5 +90,13 @@ def load_view():
         showDetails(details, snippet_selection, parts_keyword_string)
     if showContentButton:
         showContent(details, snippet_selection, parts_keyword_string)
-
-
+    if deleteButton and confirmDelete:
+        if len(snippet_selection["Id"].values) > 0:
+            with st.spinner('Deleting documents ...'):
+                conn = connect_to_colibri_db()
+                try:
+                    delete_snippets(conn, snippet_selection["Id"].values)
+                finally:
+                    conn.close()
+            st.success("Documents successfully deleted")
+            st.rerun()

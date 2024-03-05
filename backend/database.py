@@ -227,6 +227,24 @@ def create_snippet_part_with_binary_content(conn, snippet_part):
     cur.execute(sql, snippet_part)
     conn.commit()
     return cur.lastrowid
+def delete_snippets(conn, snippet_ids):
+    """
+    Delete snippets and snippet parts from the snippet table
+    :param conn:
+    :param project:
+    :return: snippets
+    """
+    conv_ids = [str(i) for i in snippet_ids]
 
+    cursor = conn.cursor()
 
+    del_snippet_part_sql = ''' DELETE FROM snippet_parts where snippet_id in ({ids}) '''.format(
+        ids=','.join('?' for _ in conv_ids))
+    cursor.execute(del_snippet_part_sql, conv_ids)
 
+    del_snippet_sql = ''' DELETE FROM snippets where id in ({ids}) '''.format(
+        ids=','.join('?' for _ in conv_ids))
+    cursor.execute(del_snippet_sql, conv_ids)
+
+    conn.commit()
+    return cursor.fetchall()
