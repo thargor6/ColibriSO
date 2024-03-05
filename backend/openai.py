@@ -47,7 +47,7 @@ def simple_chat(prompt, language):
 def simple_summary(language, text, brief=True):
   llm = ChatOpenAI(model_name='gpt-4', api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
   code_prompt = PromptTemplate(
-    template="Write a {summary_type} summary of the following text in {language}:\n {text}",
+    template="Write a {summary_type} summary of the following text in {language} language:\n {text}",
     input_variables=["summary_type", "language", "text"]
   )
   code_chain = LLMChain(
@@ -62,9 +62,9 @@ def simple_explanation(prompt, language, ref_language, explanation_type):
   llm = ChatOpenAI(model_name='gpt-4', api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
   conv_explanation_type = "brief" if explanation_type == const.PART_EXPLANATION_BRIEF else "comprehensive"
 
-  template="In {language}, write a truly {explanation_type} explanation of the term \"{prompt}\" ."
+  template="In {language} language, write a truly {explanation_type} explanation of the term \"{prompt}\" ."
   if ref_language is not None and ref_language != language:
-    template += "Repeat the same in {ref_language}."
+    template += "Repeat the same in {ref_language} language."
 
   code_prompt = PromptTemplate(
     template=template,
@@ -73,4 +73,18 @@ def simple_explanation(prompt, language, ref_language, explanation_type):
   code_chain = LLMChain(
     llm=llm, prompt=code_prompt)
   result = code_chain({"prompt": prompt, "language": language, "ref_language": ref_language, "explanation_type": conv_explanation_type})
+  return result["text"]
+
+def simple_translate(input_text, language):
+  llm = ChatOpenAI(model_name='gpt-4', api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
+
+  template=f"Translate the following text into {language} language:\n\n {input_text}"
+
+  code_prompt = PromptTemplate(
+    template=template,
+    input_variables=["input_text", "language"]
+  )
+  code_chain = LLMChain(
+    llm=llm, prompt=code_prompt)
+  result = code_chain({"input_text": input_text, "language": language})
   return result["text"]

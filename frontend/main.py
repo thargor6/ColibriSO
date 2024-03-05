@@ -22,31 +22,33 @@
 # SOFTWARE.
 
 from backend.auth import check_password_db
-from frontend import documents, about, add_pdf, options, configuration, add_url, logout, chat, explain, utils as utl
+from frontend import documents, about, add_pdf, options, configuration, add_url, logout, chat, explain, translate, utils as utl
 from backend import constants as const
-
 
 def navigation():
     route = utl.get_current_route()
-    if route == const.ROUTE_DOCUMENTS:
-        documents.load_view()
-    elif route == const.ROUTE_ABOUT:
+
+    if route == const.ROUTE_ABOUT:
         about.load_view()
     elif route == const.ROUTE_ADD_PDF:
         add_pdf.load_view()
-    elif route == const.ROUTE_OPTIONS:
-        options.load_view()
-    elif route == const.ROUTE_CONFIGURATION:
-        configuration.load_view()
     elif route == const.ROUTE_ADD_URL:
         add_url.load_view()
-    elif route == const.ROUTE_LOGOUT:
-        logout.load_view()
     elif route == const.ROUTE_CHAT:
         chat.load_view()
+    elif route == const.ROUTE_CONFIGURATION:
+        configuration.load_view()
+    elif route == const.ROUTE_DOCUMENTS:
+        documents.load_view()
     elif route == const.ROUTE_EXPLAIN:
         explain.load_view()
-    elif route == None:
+    elif route == const.ROUTE_LOGOUT:
+        logout.load_view()
+    elif route == const.ROUTE_OPTIONS:
+        options.load_view()
+    elif route == const.ROUTE_TRANSLATE:
+        translate.load_view()
+    else:
         documents.load_view()
 
 def load_view():
