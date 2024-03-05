@@ -25,13 +25,15 @@ import streamlit as st
 from backend.database import connect_to_colibri_db, create_snippet, create_snippet_part_with_text_content, create_snippet_part_with_binary_content
 from backend.openai import simple_summary
 from datetime import datetime
-#from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import NewsURLLoader
 from PyPDF2 import PdfReader
 from backend import constants as const
 
 
 def load_view():
     uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
+
+    url = st.text_input('original url (optional)')
 
     with_summary = st.checkbox('create summary', value=True)
     if with_summary:
@@ -44,8 +46,6 @@ def load_view():
 
             meta = reader.metadata
 
-            print(len(reader.pages))
-
             document_content = ""
             for page_number in range(num_pages):
                 page = reader.pages[page_number]
@@ -57,17 +57,37 @@ def load_view():
             if title is None:
                 title = ""
 
+            # best 'guess' for language so far
+            content_language = const.LANGUAGE_EN
 
+
+            if url is not None and url != "":
+                with st.spinner('Loading document...'):
+                    urls = [
+                        url,
+                    ]
+                    news_loader = NewsURLLoader(urls=urls)
+                    news_documents = news_loader.load()
+                    news_data = news_documents[0]
+                    news_title = news_data.metadata[const.METADATA_TITLE]
+                    if news_title is None:
+                       title = news_title
+                    news_content_language = news_data.metadata[const.METADATA_LANGUAGE]
+                    if news_content_language is None:
+                       content_language = news_content_language
 
             conn = connect_to_colibri_db()
             try:
                 snippet = (title, datetime.now());
                 snippet_id = create_snippet(conn, snippet)
 
+                if url is not None and url != "":
+                  snippet_part_url = (snippet_id, const.PART_URL, None, url);
+                  create_snippet_part_with_text_content(conn, snippet_part_url)
+
                 snippet_part_pdf = (snippet_id, const.PART_PRIMARY, uploaded_file.name, uploaded_file.getvalue(), const.MIMETYPE_PDF)
                 create_snippet_part_with_binary_content(conn, snippet_part_pdf)
 
-                content_language = const.LANGUAGE_EN
                 snippet_part_content = (snippet_id, const.PART_CONTENT, content_language, document_content)
                 create_snippet_part_with_text_content(conn, snippet_part_content)
 
@@ -79,9 +99,7 @@ def load_view():
                 st.write("Subject: ", meta.subject)
                 st.write("Title: ", meta.title)
 
-                st.header("Content")
-                st.write(document_content)
-                print(document_content)
+                st.text_area("Content", value=document_content, height=400, max_chars=10000, key=None)
 
                 if with_summary:
                     with st.spinner('Creating brief summary...'):
