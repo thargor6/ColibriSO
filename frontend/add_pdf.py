@@ -91,30 +91,27 @@ def load_view():
                 snippet_part_content = (snippet_id, const.PART_CONTENT, content_language, document_content)
                 create_snippet_part_with_text_content(conn, snippet_part_content)
 
-                st.header("Metadata")
-                st.write("Filename: ", uploaded_file.name)
-                st.write("Author: ", meta.author)
-                st.write("Creator: ", meta.creator)
-                st.write("Producer: ", meta.producer)
-                st.write("Subject: ", meta.subject)
-                st.write("Title: ", meta.title)
+                metadata = ""
+                metadata += "Filename: " + uploaded_file.name + "\n"
+                metadata += "Author: " + str(meta.author) + "\n"
+                metadata += "Creator: " + str(meta.creator) + "\n"
+                metadata += "Producer: " + str(meta.producer) + "\n"
+                metadata += "Subject: " + str(meta.subject) + "\n"
+                metadata += "Title: " + str(meta.title) + "\n"
+                st.text_area("Metadata", value=metadata, height=120, max_chars=const.UI_DEFAULT_TEXT_AREA_MAX_CHARS, key=None)
 
-                st.text_area("Content", value=document_content, height=400, max_chars=10000, key=None)
+                st.text_area("Content", value=document_content, height=400, max_chars=const.UI_DEFAULT_TEXT_AREA_MAX_CHARS, key=None)
 
                 if with_summary:
                     with st.spinner('Creating brief summary...'):
                         brief_summary = simple_summary(const.getLanguageName(summary_language), document_content, True)
                         snippet_part_brief_summary = (snippet_id, const.PART_SUMMARY_BRIEF, summary_language, brief_summary);
                         create_snippet_part_with_text_content(conn, snippet_part_brief_summary)
-
-                        st.header("Brief Summary")
-                        st.write(brief_summary)
+                        st.text_area("Brief Summary", value=brief_summary, height=160, max_chars=const.UI_DEFAULT_TEXT_AREA_MAX_CHARS, key=None)
                     with st.spinner('Creating comprehensive summary...'):
                         comprehensive_summary = simple_summary(const.getLanguageName(summary_language), document_content, False)
                         snippet_part_comprehensive_summary = (snippet_id, const.PART_SUMMARY_COMPREHENSIVE, summary_language, comprehensive_summary);
                         create_snippet_part_with_text_content(conn, snippet_part_comprehensive_summary)
-
-                        st.header("Comphrehensive Summary")
-                        st.write(comprehensive_summary)
+                        st.text_area("Comprehensive Summary", value=comprehensive_summary, height=240, max_chars=const.UI_DEFAULT_TEXT_AREA_MAX_CHARS, key=None)
             finally:
                 conn.close()

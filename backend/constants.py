@@ -23,8 +23,8 @@
 
 # Language Constants
 APP_NAME = "ColibriSO"
-APP_VERSION = "0.11.0"
-APP_VERSION_DATE = "2024-03-04"
+APP_VERSION = "0.12.0"
+APP_VERSION_DATE = "2024-05-04"
 
 LANGUAGE_EN = 'en'
 LANGUAGE_FA = 'fa'
@@ -58,6 +58,9 @@ ROUTE_ADD_URL = "add_url"
 ROUTE_LOGOUT = "logout"
 
 MIMETYPE_PDF = "application/pdf"
+
+UI_DEFAULT_TEXT_AREA_HEIGHT = 400
+UI_DEFAULT_TEXT_AREA_MAX_CHARS = 10000
 
 def getLanguageName(language_id):
     if language_id == LANGUAGE_EN:
