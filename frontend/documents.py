@@ -33,6 +33,7 @@ from frontend.show_content_detail import showContent
 from frontend.show_details_detail import showDetails
 from frontend.show_summary_detail import showSummary
 import backend.constants as const
+import os
 
 def dataframe_with_selections(df):
     df_with_selections = df.copy()
@@ -119,5 +120,9 @@ def load_view():
                 if snippet_content is not None and snippet_type == const.PART_SUMMARY_BRIEF:
                     st.write(snippet_content)
                     audio_path =  text_to_speech(snippet_content, const.SPEECH_VOICE_ECHO)
+                    try:
+                      pass
+                    finally:
+                      os.remove(audio_path)
 
-                    st.audio(audio_path, format='audio/mp3')
+                    #st.audio(audio_path, format='audio/mp3')

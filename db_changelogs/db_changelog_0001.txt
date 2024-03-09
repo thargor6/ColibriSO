@@ -1,5 +1,5 @@
-CREATE TABLE IF NOT EXISTS users (
-        id integer PRIMARY KEY,
+CREATE TABLE users (
+        id integer PRIMARY KEY NOT NULL,
         creation_time text NOT NULL,
         user_name text NOT NULL,
         pw_hash text NOT NULL,
@@ -7,15 +7,15 @@ CREATE TABLE IF NOT EXISTS users (
         open_ai_api_key text NULL
         );
 
-CREATE TABLE IF NOT EXISTS user_sessions (
-        id integer PRIMARY KEY,
+CREATE TABLE user_sessions (
+        id integer PRIMARY KEY NOT NULL,
         creation_time text NOT NULL,
         user_id integer NOT NULL,
         session_id text NOT NULL
         );
 
-CREATE TABLE IF NOT EXISTS app_settings (
-        id integer PRIMARY KEY,
+CREATE TABLE app_settings (
+        id integer PRIMARY KEY NOT NULL,
         user_id integer NULL,
         key text NOT NULL,
         value text NULL

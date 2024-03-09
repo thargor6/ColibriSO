@@ -1,17 +1,18 @@
-CREATE TABLE IF NOT EXISTS snippets (
-        id integer PRIMARY KEY,
-        creation_date text,
+CREATE TABLE snippets (
+        id integer PRIMARY KEY NOT NULL,
+        creation_date text NOT NULL,
         caption text NOT NULL
         );
 
-CREATE TABLE IF NOT EXISTS snippet_parts (
-        id integer PRIMARY KEY,
+CREATE TABLE snippet_parts (
+        id integer PRIMARY KEY NOT NULL,
         snippet_id integer NOT NULL,
         snippet_type text NOT NULL,
         language_id text NULL,
         text_content text NULL,
         filename text NULL,
         blob_content blob NULL,
+        blob_size integer NULL,
         mime_type text NULL
         );
 
