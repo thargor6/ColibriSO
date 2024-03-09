@@ -1,0 +1,11 @@
+CREATE TABLE snippet_parts_audio (
+        id integer PRIMARY KEY NOT NULL,
+        snippet_id integer NOT NULL,
+        snippet_part_id integer NOT NULL,
+        model_id text NOT NULL,
+        voice_id text NOT NULL,
+        audio_content blob NOT NULL,
+        audio_size integer NOT NULL,
+        mime_type text NOT NULL
+        );
+
