@@ -28,13 +28,11 @@ from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 import backend.constants as const
 
-#from dotenv import load_dotenv
 
-#load_dotenv()
 
 
 def simple_chat(prompt, language):
-  llm = ChatOpenAI(model_name='gpt-4', api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
+  llm = ChatOpenAI(temperature=const.OPENAI_DFLT_TEMPERATURE, model_name=const.OPENAI_DFLT_MODEL, api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
   code_prompt = PromptTemplate(
     template="Write a short " + prompt + ", in {language}. After that, repeat the same in English",
     input_variables=["language"]
@@ -45,7 +43,7 @@ def simple_chat(prompt, language):
   return result["text"]
 
 def simple_summary(language, text, brief=True):
-  llm = ChatOpenAI(model_name='gpt-4', api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
+  llm = ChatOpenAI(temperature=const.OPENAI_DFLT_TEMPERATURE, model_name=const.OPENAI_DFLT_MODEL, api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
   code_prompt = PromptTemplate(
     template="Write a {summary_type} summary of the following text in {language} language:\n {text}",
     input_variables=["summary_type", "language", "text"]
@@ -59,7 +57,7 @@ def simple_summary(language, text, brief=True):
 
 
 def simple_explanation(prompt, language, ref_language, explanation_type):
-  llm = ChatOpenAI(model_name='gpt-4', api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
+  llm = ChatOpenAI(temperature=const.OPENAI_DFLT_TEMPERATURE, model_name=const.OPENAI_DFLT_MODEL, api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
   conv_explanation_type = "brief" if explanation_type == const.PART_EXPLANATION_BRIEF else "comprehensive"
 
   template="In {language} language, write a truly {explanation_type} explanation of the term \"{prompt}\" ."
@@ -76,7 +74,7 @@ def simple_explanation(prompt, language, ref_language, explanation_type):
   return result["text"]
 
 def simple_translate(input_text, language):
-  llm = ChatOpenAI(model_name='gpt-4', api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
+  llm = ChatOpenAI(temperature=const.OPENAI_DFLT_TEMPERATURE, model_name=const.OPENAI_DFLT_MODEL, api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
 
   template=f"Translate the following text into {language} language:\n\n {input_text}"
 

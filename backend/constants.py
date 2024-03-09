@@ -23,8 +23,8 @@
 
 # Language Constants
 APP_NAME = "ColibriSO"
-APP_VERSION = "0.16.0"
-APP_VERSION_DATE = "2024-03-05"
+APP_VERSION = "0.16.1"
+APP_VERSION_DATE = "2024-03-09"
 
 LANGUAGE_EN = 'en'
 LANGUAGE_FA = 'fa'
@@ -67,6 +67,9 @@ MIMETYPE_PDF = "application/pdf"
 
 UI_DEFAULT_TEXT_AREA_HEIGHT = 400
 UI_DEFAULT_TEXT_AREA_MAX_CHARS = 10000
+
+OPENAI_DFLT_MODEL = 'gpt-4'
+OPENAI_DFLT_TEMPERATURE = 0.0
 
 def getLanguageCaption(language_id):
     if language_id == LANGUAGE_EN:
