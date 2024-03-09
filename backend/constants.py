@@ -23,7 +23,7 @@
 
 # Language Constants
 APP_NAME = "ColibriSO"
-APP_VERSION = "0.16.1"
+APP_VERSION = "0.17.0"
 APP_VERSION_DATE = "2024-03-09"
 
 LANGUAGE_EN = 'en'
@@ -70,6 +70,13 @@ UI_DEFAULT_TEXT_AREA_MAX_CHARS = 10000
 
 OPENAI_DFLT_MODEL = 'gpt-4'
 OPENAI_DFLT_TEMPERATURE = 0.0
+
+SPEECH_VOICE_ALLOY = 'alloy'
+SPEECH_VOICE_ECHO = 'echo'
+SPEECH_VOICE_FABLE = 'fable'
+SPEECH_VOICE_ONYX = 'onyx'
+SPEECH_VOICE_NOVA = 'nova'
+SPEECH_VOICE_SHIMMER = 'shimmer'
 
 def getLanguageCaption(language_id):
     if language_id == LANGUAGE_EN:

@@ -86,3 +86,22 @@ def simple_translate(input_text, language):
     llm=llm, prompt=code_prompt)
   result = code_chain({"input_text": input_text, "language": language})
   return result["text"]
+
+
+from pathlib import Path
+from openai import OpenAI
+
+def text_to_speech(text, voice="alloy"):
+  client = OpenAI(api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
+  speech_file_path = Path(__file__).parent / "speech.mp3"
+  response = client.audio.speech.create(
+    model="tts-1-hd",
+    voice=voice,
+    input=text,
+    response_format="mp3",
+  )
+  response.stream_to_file(speech_file_path)
+
+  print("speech_file_path: ", speech_file_path)
+
+  return speech_file_path

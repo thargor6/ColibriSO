@@ -25,13 +25,14 @@ import streamlit as st
 
 # https://docs.streamlit.io/library/api-reference/layout
 
-from backend.database import connect_to_colibri_db, fetch_all_snippets, delete_snippets
+from backend.database import connect_to_colibri_db, fetch_all_snippets, delete_snippets, fetch_all_snippet_parts
 import pandas as pd
 
+from backend.openai import text_to_speech
 from frontend.show_content_detail import showContent
 from frontend.show_details_detail import showDetails
 from frontend.show_summary_detail import showSummary
-
+import backend.constants as const
 
 def dataframe_with_selections(df):
     df_with_selections = df.copy()
@@ -66,7 +67,7 @@ def load_view():
     snippet_selection = dataframe_with_selections(snippet_df)
 
     st.title('Document parts')
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
         showSummaryButton = st.button('Show summary')
     with col2:
@@ -76,6 +77,8 @@ def load_view():
     with col4:
         deleteButton = st.button('Delete documents')
         confirmDelete = st.checkbox("Confirm delete")
+    with col5:
+        textToSpeechButton = st.button('TextToSpeech')
 
     #print(snippet_selection["Id"])
     #print(snippet_selection["Id"].values)
@@ -100,3 +103,21 @@ def load_view():
                     conn.close()
             st.success("Documents successfully deleted")
             st.rerun()
+    if textToSpeechButton:
+        if len(snippet_selection["Id"].values) > 0:
+           with (st.spinner('Converting content...')):
+             conn = connect_to_colibri_db()
+             try:
+                parts_rows = fetch_all_snippet_parts(conn, snippet_selection["Id"].values, parts_keyword_string)
+             finally:
+               conn.close()
+             for row in parts_rows:
+                snippet_type = row[2]
+                snippet_content = row[4]
+                snippet_id = row[0]
+                id = row[1]
+                if snippet_content is not None and snippet_type == const.PART_SUMMARY_BRIEF:
+                    st.write(snippet_content)
+                    audio_path =  text_to_speech(snippet_content, const.SPEECH_VOICE_ECHO)
+
+                    st.audio(audio_path, format='audio/mp3')
