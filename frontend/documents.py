@@ -25,7 +25,8 @@ import streamlit as st
 
 # https://docs.streamlit.io/library/api-reference/layout
 
-from backend.database import connect_to_colibri_db, fetch_all_snippets, delete_snippets, fetch_all_snippet_parts
+from backend.database import connect_to_colibri_db, fetch_all_snippets, delete_snippets, fetch_all_snippet_parts, \
+    create_snippet_part_audio
 import pandas as pd
 
 from backend.openai import text_to_speech
@@ -116,13 +117,23 @@ def load_view():
                 snippet_type = row[2]
                 snippet_content = row[4]
                 snippet_id = row[0]
-                id = row[1]
+                snippet_part_id = row[1]
                 if snippet_content is not None and snippet_type == const.PART_SUMMARY_BRIEF:
                     st.write(snippet_content)
-                    audio_path =  text_to_speech(snippet_content, const.SPEECH_VOICE_ECHO)
+                    voice = const.SPEECH_VOICE_ECHO
+                    audio_path =  text_to_speech(snippet_content, voice)
                     try:
-                      pass
+                      in_file = open(audio_path, "rb")
+                      try:
+                        audio_data = in_file.read()
+                      finally:
+                        in_file.close()
+                      snippet_part_audio = (snippet_id, snippet_part_id, const.OPENAI_DFLT_SPEECH_MODEL, voice, audio_data, len(audio_data), const.MIMETYPE_MP3)
+                      conn = connect_to_colibri_db()
+                      try:
+                        create_snippet_part_audio(conn, snippet_part_audio)
+                      finally:
+                        conn.close()
                     finally:
                       os.remove(audio_path)
-
                     #st.audio(audio_path, format='audio/mp3')

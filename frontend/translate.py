@@ -22,11 +22,8 @@
 # SOFTWARE.
 
 import streamlit as st
-from backend.database import connect_to_colibri_db, create_snippet, create_snippet_part_with_text_content, create_snippet_part_with_binary_content
-from backend.openai import simple_summary, simple_explanation, simple_translate
-from datetime import datetime
-#from langchain_community.document_loaders import PyPDFLoader
-from PyPDF2 import PdfReader
+from backend.database import connect_to_colibri_db
+from backend.openai import simple_translate
 from backend import constants as const
 
 

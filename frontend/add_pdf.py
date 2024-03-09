@@ -85,7 +85,8 @@ def load_view():
                   snippet_part_url = (snippet_id, const.PART_URL, None, url);
                   create_snippet_part_with_text_content(conn, snippet_part_url)
 
-                snippet_part_pdf = (snippet_id, const.PART_PRIMARY, uploaded_file.name, uploaded_file.getvalue(), const.MIMETYPE_PDF)
+                bytes_data = uploaded_file.getvalue()
+                snippet_part_pdf = (snippet_id, const.PART_PRIMARY, uploaded_file.name, bytes_data, len(bytes_data), const.MIMETYPE_PDF)
                 create_snippet_part_with_binary_content(conn, snippet_part_pdf)
 
                 snippet_part_content = (snippet_id, const.PART_CONTENT, content_language, document_content)

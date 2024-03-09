@@ -221,12 +221,21 @@ def create_snippet_part_with_binary_content(conn, snippet_part):
     :param project:
     :return: snippet id
     """
-    sql = ''' INSERT INTO snippet_parts(snippet_id, snippet_type, filename, blob_content, mime_type)
-              VALUES(?, ?, ?, ?, ?) '''
+    sql = ''' INSERT INTO snippet_parts(snippet_id, snippet_type, filename, blob_content, blob_size, mime_type)
+              VALUES(?, ?, ?, ?, ?, ?) '''
     cur = conn.cursor()
     cur.execute(sql, snippet_part)
     conn.commit()
     return cur.lastrowid
+
+def create_snippet_part_audio(conn, snippet_part_audio):
+    sql = ''' INSERT INTO snippet_parts_audio(snippet_id, snippet_part_id, model_id, voice_id, audio_content, audio_size, mime_type)
+              VALUES(?, ?, ?, ?, ?, ?, ?) '''
+    cur = conn.cursor()
+    cur.execute(sql, snippet_part_audio)
+    conn.commit()
+    return cur.lastrowid
+
 def delete_snippets(conn, snippet_ids):
     """
     Delete snippets and snippet parts from the snippet table
@@ -237,6 +246,10 @@ def delete_snippets(conn, snippet_ids):
     conv_ids = [str(i) for i in snippet_ids]
 
     cursor = conn.cursor()
+
+    del_snippet_part_audio_sql = ''' DELETE FROM snippet_parts_audio where snippet_id in ({ids}) '''.format(
+        ids=','.join('?' for _ in conv_ids))
+    cursor.execute(del_snippet_part_audio_sql, conv_ids)
 
     del_snippet_part_sql = ''' DELETE FROM snippet_parts where snippet_id in ({ids}) '''.format(
         ids=','.join('?' for _ in conv_ids))
