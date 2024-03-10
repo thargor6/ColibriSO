@@ -29,12 +29,12 @@ from backend.database import connect_to_colibri_db, fetch_all_snippets, delete_s
     create_snippet_part_audio
 import pandas as pd
 
-from backend.openai import text_to_speech
+from frontend.show_audio_content_detail import showAudioContent
 from frontend.show_content_detail import showContent
 from frontend.show_details_detail import showDetails
 from frontend.show_summary_detail import showSummary
-import backend.constants as const
-import os
+from frontend.text_to_speech_detail import textToSpeech
+
 
 def dataframe_with_selections(df):
     df_with_selections = df.copy()
@@ -69,17 +69,19 @@ def load_view():
     snippet_selection = dataframe_with_selections(snippet_df)
 
     st.title('Document parts')
-    col1, col2, col3, col4, col5 = st.columns(5)
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
     with col1:
         showSummaryButton = st.button('Show summary')
     with col2:
-        showContentButton = st.button('Show content')
+        listenAudioButton = st.button('Listen')
     with col3:
-        showDetailsButton = st.button('Show details')
+        showContentButton = st.button('Show content')
     with col4:
+        showDetailsButton = st.button('Show details')
+    with col5:
         deleteButton = st.button('Delete documents')
         confirmDelete = st.checkbox("Confirm delete")
-    with col5:
+    with col6:
         textToSpeechButton = st.button('TextToSpeech')
 
     #print(snippet_selection["Id"])
@@ -106,34 +108,9 @@ def load_view():
             st.success("Documents successfully deleted")
             st.rerun()
     if textToSpeechButton:
-        if len(snippet_selection["Id"].values) > 0:
-           with (st.spinner('Converting content...')):
-             conn = connect_to_colibri_db()
-             try:
-                parts_rows = fetch_all_snippet_parts(conn, snippet_selection["Id"].values, parts_keyword_string)
-             finally:
-               conn.close()
-             for row in parts_rows:
-                snippet_type = row[2]
-                snippet_content = row[4]
-                snippet_id = row[0]
-                snippet_part_id = row[1]
-                if snippet_content is not None and snippet_type == const.PART_SUMMARY_BRIEF:
-                    st.write(snippet_content)
-                    voice = const.SPEECH_VOICE_ECHO
-                    audio_path =  text_to_speech(snippet_content, voice)
-                    try:
-                      in_file = open(audio_path, "rb")
-                      try:
-                        audio_data = in_file.read()
-                      finally:
-                        in_file.close()
-                      snippet_part_audio = (snippet_id, snippet_part_id, const.OPENAI_DFLT_SPEECH_MODEL, voice, audio_data, len(audio_data), const.MIMETYPE_MP3)
-                      conn = connect_to_colibri_db()
-                      try:
-                        create_snippet_part_audio(conn, snippet_part_audio)
-                      finally:
-                        conn.close()
-                    finally:
-                      os.remove(audio_path)
-                    #st.audio(audio_path, format='audio/mp3')
+        if textToSpeech(details, snippet_selection, parts_keyword_string) > 0:
+            st.success("Text to speech successfully created")
+            st.rerun()
+    if listenAudioButton:
+        showAudioContent(details, snippet_selection, parts_keyword_string)
+        pass

@@ -20,24 +20,32 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 import streamlit as st
 
-from backend.database import fetch_all_snippet_parts, connect_to_colibri_db
-import pandas as pd
+from backend.database import connect_to_colibri_db, fetch_all_snippet_summary_parts, fetch_all_snippet_parts_with_audio, \
+    fetch_all_audio_parts, fetch_audio_data
 
-def showDetails(details, snippet_selection, keyword_string):
+
+def showAudioContent(details, snippet_selection, keyword_string):
   with details:
-      st.subheader("Document parts:")
+      st.subheader("Audio content:")
       if len(snippet_selection["Id"].values) > 0:
-          with st.spinner('Loading parts...'):
+          with st.spinner('Loading audio content ...'):
               conn = connect_to_colibri_db()
               try:
-                 parts_rows = fetch_all_snippet_parts(conn, snippet_selection["Id"].values, keyword_string)
+                 parts_rows = fetch_all_snippet_parts_with_audio(conn, snippet_selection["Id"].values, keyword_string)
+                 for row in parts_rows:
+                      snippet_id = row[0]
+                      snippet_part_id = row[1]
+                      st.header("Document " + str(row[0]) + " Part " + str(row[1]))
+                      st.write(row[4])
+                      audio_parts = fetch_all_audio_parts(conn, snippet_id, snippet_part_id)
+                      for audio_row in audio_parts:
+                          st.subheader("Audio " + str(audio_row[0]))
+                          audio_data = fetch_audio_data(conn, audio_row[0])
+                          st.audio(audio_data, format='audio/mp3')
               finally:
                  conn.close()
-              parts_df = pd.DataFrame(parts_rows, columns=["Snippet Id", "Id", "Snippet type", "Language", "Content", "Filename", "Mime type"])
-              st.dataframe(parts_df)
       else:
           st.write("(No document selected)")
 

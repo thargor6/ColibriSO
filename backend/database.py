@@ -150,12 +150,6 @@ def fetch_all_snippets(conn, keyword_string):
     return cursor.fetchall()
 
 def fetch_all_snippet_parts(conn, snippet_ids, keyword_string):
-    """
-    Fetch all snippets from the snippet table
-    :param conn:
-    :param project:
-    :return: snippets
-    """
     conv_ids = [str(i) for i in snippet_ids]
     keyword_array = split_keywords_into_like_expressions(keyword_string)
     sql = ''' SELECT snippet_id, id, snippet_type, language_id, text_content, filename, mime_type FROM snippet_parts 
@@ -169,6 +163,40 @@ def fetch_all_snippet_parts(conn, snippet_ids, keyword_string):
     params = conv_ids + keyword_array
     cursor.execute(sql, params)
     return cursor.fetchall()
+
+def fetch_all_snippet_parts_with_audio(conn, snippet_ids, keyword_string):
+    conv_ids = [str(i) for i in snippet_ids]
+    keyword_array = split_keywords_into_like_expressions(keyword_string)
+    sql = ''' SELECT snippet_id, id, snippet_type, language_id, text_content, filename, mime_type FROM snippet_parts 
+       where snippet_id in ({ids})
+       {keywords} 
+       and exists (select 1 from snippet_parts_audio where snippet_parts_audio.snippet_id = snippet_parts.snippet_id and snippet_parts_audio.snippet_part_id = snippet_parts.id)
+       order by snippet_id desc, id '''.format(
+        ids=','.join('?' for _ in conv_ids),
+        keywords = ' '.join('and lower(text_content) like ?' for _ in keyword_array)
+    )
+    cursor = conn.cursor()
+    params = conv_ids + keyword_array
+    cursor.execute(sql, params)
+    return cursor.fetchall()
+
+def fetch_all_audio_parts(conn, snippet_id, snippet_part_id):
+    sql = ''' SELECT id, snippet_id, snippet_part_id, model_id, voice_id, audio_size, mime_type  FROM snippet_parts_audio 
+       where snippet_id=? and snippet_part_id=?
+       order by id desc '''
+    cursor = conn.cursor()
+    params = (snippet_id, snippet_part_id)
+    cursor.execute(sql, params)
+    return cursor.fetchall()
+
+def fetch_audio_data(conn, audio_id):
+    sql = ''' SELECT audio_content FROM snippet_parts_audio 
+       where id=?'''
+    cursor = conn.cursor()
+    params = (audio_id, )
+    cursor.execute(sql, params)
+    audio = cursor.fetchone()
+    return audio[0] if audio is not None else None
 
 def split_keywords_into_like_expressions(keywords):
     if keywords is None:
