@@ -25,8 +25,7 @@ import streamlit as st
 
 # https://docs.streamlit.io/library/api-reference/layout
 
-from backend.database import connect_to_colibri_db, fetch_all_documents, delete_document, fetch_all_document_parts, \
-    create_document_part_audio
+from backend.database import connect_to_colibri_db, fetch_all_documents, delete_document
 import pandas as pd
 
 from frontend.show_audio_content_detail import showAudioContent
@@ -34,23 +33,8 @@ from frontend.show_content_detail import showContent
 from frontend.show_details_detail import showDetails
 from frontend.show_summary_detail import showSummary
 from frontend.text_to_speech_detail import textToSpeech
+from frontend.utils import dataframe_with_selections
 
-
-def dataframe_with_selections(df):
-    df_with_selections = df.copy()
-    df_with_selections.insert(0, "Select", False)
-
-    # Get dataframe row-selections from user with st.data_editor
-    edited_df = st.data_editor(
-        df_with_selections,
-        hide_index=True,
-        column_config={"Select": st.column_config.CheckboxColumn(required=True)},
-        disabled=df.columns,
-    )
-
-    # Filter the dataframe using the temporary column, then drop the column
-    selected_rows = edited_df[edited_df.Select]
-    return selected_rows.drop('Select', axis=1)
 
 def load_view():
     st.title('Documents')

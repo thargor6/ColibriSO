@@ -241,15 +241,27 @@ def delete_document(conn, document_ids):
 
     del_document_part_audio_sql = ''' DELETE FROM document_parts_audio where document_id in ({ids}) '''.format(
         ids=','.join('?' for _ in conv_ids))
-   # cursor.execute(del_document_part_audio_sql, conv_ids)
+    cursor.execute(del_document_part_audio_sql, conv_ids)
 
     del_document_part_sql = ''' DELETE FROM document_parts where document_id in ({ids}) '''.format(
         ids=','.join('?' for _ in conv_ids))
-   # cursor.execute(del_document_part_sql, conv_ids)
+    cursor.execute(del_document_part_sql, conv_ids)
 
-    del_document_sql = ''' DELETE FROM document where id in ({ids}) '''.format(
+    del_document_sql = ''' DELETE FROM documents where id in ({ids}) '''.format(
         ids=','.join('?' for _ in conv_ids))
     cursor.execute(del_document_sql, conv_ids)
 
     conn.commit()
+    return cursor.fetchall()
+
+
+def fetch_all_podcasts(conn, keyword_string):
+    keyword_array = split_keywords_into_like_expressions(keyword_string)
+    sql = ''' SELECT id, creation_date, caption, language_id, model_id, voice_id FROM podcasts 
+              WHERE caption is not null
+              {keywords}       
+              order by id desc '''.format(
+        keywords = ' '.join('and lower(caption) like ?' for _ in keyword_array))
+    cursor = conn.cursor()
+    cursor.execute(sql, keyword_array)
     return cursor.fetchall()

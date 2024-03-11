@@ -26,6 +26,7 @@ CREATE TABLE document_parts_audio (
         audio_content blob NOT NULL,
         audio_size integer NOT NULL,
         mime_type text NOT NULL,
-        foreign key (id, document_part_id) references document_parts(id, document_id)
+        foreign key (document_id) references documents(id),
+        foreign key (document_part_id) references document_parts(id)
         );
 

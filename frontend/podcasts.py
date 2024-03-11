@@ -21,38 +21,34 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from backend.auth import check_password_db
-from frontend import documents, about, add_pdf, options, configuration, add_url, logout, chat, explain, translate, podcasts, utils as utl
-from backend import constants as const
+import streamlit as st
 
-def navigation():
-    route = utl.get_current_route()
+# https://docs.streamlit.io/library/api-reference/layout
 
-    if route == const.ROUTE_ABOUT:
-        about.load_view()
-    elif route == const.ROUTE_ADD_PDF:
-        add_pdf.load_view()
-    elif route == const.ROUTE_ADD_URL:
-        add_url.load_view()
-    elif route == const.ROUTE_CHAT:
-        chat.load_view()
-    elif route == const.ROUTE_CONFIGURATION:
-        configuration.load_view()
-    elif route == const.ROUTE_DOCUMENTS:
-        documents.load_view()
-    elif route == const.ROUTE_EXPLAIN:
-        explain.load_view()
-    elif route == const.ROUTE_LOGOUT:
-        logout.load_view()
-    elif route == const.ROUTE_OPTIONS:
-        options.load_view()
-    elif route == const.ROUTE_PODCASTS:
-        podcasts.load_view()
-    elif route == const.ROUTE_TRANSLATE:
-        translate.load_view()
-    else:
-        documents.load_view()
+from backend.database import connect_to_colibri_db, fetch_all_documents, delete_document, fetch_all_document_parts, \
+    create_document_part_audio, fetch_all_podcasts
+import pandas as pd
+
+from frontend.show_audio_content_detail import showAudioContent
+from frontend.show_content_detail import showContent
+from frontend.show_details_detail import showDetails
+from frontend.show_summary_detail import showSummary
+from frontend.text_to_speech_detail import textToSpeech
+from frontend.utils import dataframe_with_selections
+
 
 def load_view():
-    if check_password_db():
-        navigation()
+    st.title('Podcasts')
+    podcast_keyword_string = st.text_input('Podcast keywords', value="")
+    conn = connect_to_colibri_db()
+    try:
+        podcasts_rows = fetch_all_podcasts(conn, podcast_keyword_string)
+    finally:
+        conn.close()
+    if st.button('Refresh'):
+        st.write('Refreshing...')
+        st.rerun()
+
+    # more about data frames: # https://docs.streamlit.io/library/api-reference/data/st.dataframe
+    podcasts_df = pd.DataFrame(podcasts_rows, columns=["Id", "Creation date", "Caption", "Language", "Model", "Voice"])
+    podcasts_selection = dataframe_with_selections(podcasts_df)

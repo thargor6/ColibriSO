@@ -1,6 +1,8 @@
 CREATE table podcasts (
         id integer PRIMARY KEY NOT NULL,
-        podcast_id text NOT NULL,
+        creation_date text NOT NULL,
+        caption text NOT NULL,
+        language_id text NULL,
         model_id text NOT NULL,
         voice_id text NOT NULL
         );
