@@ -23,7 +23,7 @@
 
 import streamlit as st
 
-from backend.database import connect_to_colibri_db, create_snippet, create_snippet_part_with_text_content
+from backend.database import connect_to_colibri_db, create_document, create_document_part_with_text_content
 from backend.openai import simple_summary
 from datetime import datetime
 
@@ -59,16 +59,16 @@ def load_view():
         conn = connect_to_colibri_db()
         try:
             snippet = (title, datetime.now());
-            snippet_id = create_snippet(conn, snippet)
+            snippet_id = create_document(conn, snippet)
 
             snippet_part_url = (snippet_id, const.PART_URL, None, url);
-            create_snippet_part_with_text_content(conn, snippet_part_url)
+            create_document_part_with_text_content(conn, snippet_part_url)
 
             content_language = data.metadata[const.METADATA_LANGUAGE]
             if content_language is None:
                 content_language = const.LANGUAGE_EN
             snippet_part_content = (snippet_id, const.PART_CONTENT, content_language, data.page_content);
-            create_snippet_part_with_text_content(conn, snippet_part_content)
+            create_document_part_with_text_content(conn, snippet_part_content)
 
             st.header("Metadata")
             st.write(data.metadata)
@@ -80,14 +80,14 @@ def load_view():
               with st.spinner('Creating brief summary...'):
                   brief_summary = simple_summary(const.getLanguageCaption(summary_language), data.page_content, True)
                   snippet_part_brief_summary = (snippet_id, const.PART_SUMMARY_BRIEF, summary_language, brief_summary);
-                  create_snippet_part_with_text_content(conn, snippet_part_brief_summary)
+                  create_document_part_with_text_content(conn, snippet_part_brief_summary)
 
                   st.header("Brief Summary")
                   st.write(brief_summary)
               with st.spinner('Creating comprehensive summary...'):
                   comprehensive_summary = simple_summary(const.getLanguageCaption(summary_language), data.page_content, False)
                   snippet_part_comprehensive_summary = (snippet_id, const.PART_SUMMARY_COMPREHENSIVE, summary_language, brief_summary);
-                  create_snippet_part_with_text_content(conn, snippet_part_comprehensive_summary)
+                  create_document_part_with_text_content(conn, snippet_part_comprehensive_summary)
 
                   st.header("Comphrehensive Summary")
                   st.write(comprehensive_summary)

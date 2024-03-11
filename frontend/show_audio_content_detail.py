@@ -22,7 +22,7 @@
 # SOFTWARE.
 import streamlit as st
 
-from backend.database import connect_to_colibri_db, fetch_all_snippet_summary_parts, fetch_all_snippet_parts_with_audio, \
+from backend.database import connect_to_colibri_db, fetch_all_document_summary_parts, fetch_all_document_parts_with_audio, \
     fetch_all_audio_parts, fetch_audio_data
 
 
@@ -33,7 +33,7 @@ def showAudioContent(details, snippet_selection, keyword_string):
           with st.spinner('Loading audio content ...'):
               conn = connect_to_colibri_db()
               try:
-                 parts_rows = fetch_all_snippet_parts_with_audio(conn, snippet_selection["Id"].values, keyword_string)
+                 parts_rows = fetch_all_document_parts_with_audio(conn, snippet_selection["Id"].values, keyword_string)
                  for row in parts_rows:
                       snippet_id = row[0]
                       snippet_part_id = row[1]

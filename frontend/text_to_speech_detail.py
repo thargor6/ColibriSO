@@ -25,7 +25,7 @@ import os
 
 import streamlit as st
 
-from backend.database import connect_to_colibri_db, fetch_all_snippet_parts, create_snippet_part_audio
+from backend.database import connect_to_colibri_db, fetch_all_document_parts, create_document_part_audio
 import backend.constants as const
 from backend.openai import text_to_speech
 
@@ -38,7 +38,7 @@ def textToSpeech(details, snippet_selection, parts_keyword_string):
             with (st.spinner('Converting content...')):
                 conn = connect_to_colibri_db()
                 try:
-                    parts_rows = fetch_all_snippet_parts(conn, snippet_selection["Id"].values, parts_keyword_string)
+                    parts_rows = fetch_all_document_parts(conn, snippet_selection["Id"].values, parts_keyword_string)
                 finally:
                     conn.close()
                 for row in parts_rows:
@@ -48,7 +48,7 @@ def textToSpeech(details, snippet_selection, parts_keyword_string):
                     snippet_part_id = row[1]
                     if snippet_content is not None and snippet_type == const.PART_SUMMARY_BRIEF:
                         st.write(snippet_content)
-                        voice = const.SPEECH_VOICE_ECHO
+                        voice = const.SPEECH_VOICE_SHIMMER
                         audio_path =  text_to_speech(snippet_content, voice)
                         try:
                             in_file = open(audio_path, "rb")
@@ -59,7 +59,7 @@ def textToSpeech(details, snippet_selection, parts_keyword_string):
                             snippet_part_audio = (snippet_id, snippet_part_id, const.OPENAI_DFLT_SPEECH_MODEL, voice, audio_data, len(audio_data), const.MIMETYPE_MP3)
                             conn = connect_to_colibri_db()
                             try:
-                                create_snippet_part_audio(conn, snippet_part_audio)
+                                create_document_part_audio(conn, snippet_part_audio)
                                 audio_created += 1
                             finally:
                                 conn.close()

@@ -25,8 +25,8 @@ import streamlit as st
 
 # https://docs.streamlit.io/library/api-reference/layout
 
-from backend.database import connect_to_colibri_db, fetch_all_snippets, delete_snippets, fetch_all_snippet_parts, \
-    create_snippet_part_audio
+from backend.database import connect_to_colibri_db, fetch_all_documents, delete_document, fetch_all_document_parts, \
+    create_document_part_audio
 import pandas as pd
 
 from frontend.show_audio_content_detail import showAudioContent
@@ -57,7 +57,7 @@ def load_view():
     documents_keyword_string = st.text_input('Document keywords', value="")
     conn = connect_to_colibri_db()
     try:
-        snippet_rows = fetch_all_snippets(conn, documents_keyword_string)
+        snippet_rows = fetch_all_documents(conn, documents_keyword_string)
     finally:
         conn.close()
     if st.button('Refresh'):
@@ -102,7 +102,7 @@ def load_view():
             with st.spinner('Deleting documents ...'):
                 conn = connect_to_colibri_db()
                 try:
-                    delete_snippets(conn, snippet_selection["Id"].values)
+                    delete_document(conn, snippet_selection["Id"].values)
                 finally:
                     conn.close()
             st.success("Documents successfully deleted")

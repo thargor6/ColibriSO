@@ -22,7 +22,7 @@
 # SOFTWARE.
 import streamlit as st
 
-from backend.database import connect_to_colibri_db, fetch_all_snippet_summary_parts
+from backend.database import connect_to_colibri_db, fetch_all_document_summary_parts
 
 def showSummary(details, snippet_selection, keyword_string):
   with details:
@@ -31,7 +31,7 @@ def showSummary(details, snippet_selection, keyword_string):
           with st.spinner('Loading summary ...'):
               conn = connect_to_colibri_db()
               try:
-                 parts_rows = fetch_all_snippet_summary_parts(conn, snippet_selection["Id"].values, keyword_string)
+                 parts_rows = fetch_all_document_summary_parts(conn, snippet_selection["Id"].values, keyword_string)
               finally:
                  conn.close()
               for row in parts_rows:

@@ -23,7 +23,7 @@
 
 import streamlit as st
 
-from backend.database import fetch_all_snippet_parts, connect_to_colibri_db
+from backend.database import fetch_all_document_parts, connect_to_colibri_db
 import pandas as pd
 
 def showDetails(details, snippet_selection, keyword_string):
@@ -33,7 +33,7 @@ def showDetails(details, snippet_selection, keyword_string):
           with st.spinner('Loading parts...'):
               conn = connect_to_colibri_db()
               try:
-                 parts_rows = fetch_all_snippet_parts(conn, snippet_selection["Id"].values, keyword_string)
+                 parts_rows = fetch_all_document_parts(conn, snippet_selection["Id"].values, keyword_string)
               finally:
                  conn.close()
               parts_df = pd.DataFrame(parts_rows, columns=["Snippet Id", "Id", "Snippet type", "Language", "Content", "Filename", "Mime type"])

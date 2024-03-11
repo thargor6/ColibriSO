@@ -118,29 +118,17 @@ def create_session(conn, session):
     conn.commit()
     return cur.lastrowid
 
-def create_snippet(conn, snippet):
-    """
-    Create a new snippet into the snippet table
-    :param conn:
-    :param project:
-    :return: snippet id
-    """
-    sql = ''' INSERT INTO snippets(caption, creation_date)
+def create_document(conn, document):
+    sql = ''' INSERT INTO documents(caption, creation_date)
               VALUES(?,?) '''
     cur = conn.cursor()
-    cur.execute(sql, snippet)
+    cur.execute(sql, document)
     conn.commit()
     return cur.lastrowid
 
-def fetch_all_snippets(conn, keyword_string):
-    """
-    Fetch all snippets from the snippet table
-    :param conn:
-    :param project:
-    :return: snippets
-    """
+def fetch_all_documents(conn, keyword_string):
     keyword_array = split_keywords_into_like_expressions(keyword_string)
-    sql = ''' SELECT id, creation_date, caption FROM snippets 
+    sql = ''' SELECT id, creation_date, caption FROM documents 
               WHERE caption is not null
               {keywords}       
               order by id desc '''.format(
@@ -149,13 +137,13 @@ def fetch_all_snippets(conn, keyword_string):
     cursor.execute(sql, keyword_array)
     return cursor.fetchall()
 
-def fetch_all_snippet_parts(conn, snippet_ids, keyword_string):
-    conv_ids = [str(i) for i in snippet_ids]
+def fetch_all_document_parts(conn, document_ids, keyword_string):
+    conv_ids = [str(i) for i in document_ids]
     keyword_array = split_keywords_into_like_expressions(keyword_string)
-    sql = ''' SELECT snippet_id, id, snippet_type, language_id, text_content, filename, mime_type FROM snippet_parts 
-       where snippet_id in ({ids})
+    sql = ''' SELECT document_id, id, document_type, language_id, text_content, filename, mime_type FROM document_parts 
+       where document_id in ({ids})
        {keywords} 
-       order by snippet_id desc, id '''.format(
+       order by document_id desc, id '''.format(
         ids=','.join('?' for _ in conv_ids),
         keywords = ' '.join('and lower(text_content) like ?' for _ in keyword_array)
     )
@@ -164,14 +152,14 @@ def fetch_all_snippet_parts(conn, snippet_ids, keyword_string):
     cursor.execute(sql, params)
     return cursor.fetchall()
 
-def fetch_all_snippet_parts_with_audio(conn, snippet_ids, keyword_string):
-    conv_ids = [str(i) for i in snippet_ids]
+def fetch_all_document_parts_with_audio(conn, document_ids, keyword_string):
+    conv_ids = [str(i) for i in document_ids]
     keyword_array = split_keywords_into_like_expressions(keyword_string)
-    sql = ''' SELECT snippet_id, id, snippet_type, language_id, text_content, filename, mime_type FROM snippet_parts 
-       where snippet_id in ({ids})
+    sql = ''' SELECT document_id, id, document_type, language_id, text_content, filename, mime_type FROM document_parts 
+       where document_id in ({ids})
        {keywords} 
-       and exists (select 1 from snippet_parts_audio where snippet_parts_audio.snippet_id = snippet_parts.snippet_id and snippet_parts_audio.snippet_part_id = snippet_parts.id)
-       order by snippet_id desc, id '''.format(
+       and exists (select 1 from document_part_audio where document_part_audio.document_id = document_parts.document_id and document_part_audio.document_part_id = document_parts.id)
+       order by document_id desc, id '''.format(
         ids=','.join('?' for _ in conv_ids),
         keywords = ' '.join('and lower(text_content) like ?' for _ in keyword_array)
     )
@@ -180,17 +168,17 @@ def fetch_all_snippet_parts_with_audio(conn, snippet_ids, keyword_string):
     cursor.execute(sql, params)
     return cursor.fetchall()
 
-def fetch_all_audio_parts(conn, snippet_id, snippet_part_id):
-    sql = ''' SELECT id, snippet_id, snippet_part_id, model_id, voice_id, audio_size, mime_type  FROM snippet_parts_audio 
-       where snippet_id=? and snippet_part_id=?
+def fetch_all_audio_parts(conn, document_id, document_part_id):
+    sql = ''' SELECT id, document_id, document_part_id, model_id, voice_id, audio_size, mime_type  FROM document_part_audio 
+       where document_id=? and document_part_id=?
        order by id desc '''
     cursor = conn.cursor()
-    params = (snippet_id, snippet_part_id)
+    params = (document_id, document_part_id)
     cursor.execute(sql, params)
     return cursor.fetchall()
 
 def fetch_audio_data(conn, audio_id):
-    sql = ''' SELECT audio_content FROM snippet_parts_audio 
+    sql = ''' SELECT audio_content FROM document_part_audio 
        where id=?'''
     cursor = conn.cursor()
     params = (audio_id, )
@@ -204,20 +192,14 @@ def split_keywords_into_like_expressions(keywords):
     filtered_array =  list(filter(None, keywords.split(' ')))
     return list(map(lambda x: '%' +  x.lower() + '%', filtered_array))
 
-def fetch_all_snippet_summary_parts(conn, snippet_ids, keyword_string):
-    """
-    Fetch all summary snippets from the snippet table
-    :param conn:
-    :param project:
-    :return: snippets
-    """
-    conv_ids = [str(i) for i in snippet_ids]
+def fetch_all_document_summary_parts(conn, document_ids, keyword_string):
+    conv_ids = [str(i) for i in document_ids]
     keyword_array = split_keywords_into_like_expressions(keyword_string)
 
-    sql = ''' SELECT snippet_id, id, snippet_type, language_id, text_content, filename, mime_type FROM snippet_parts 
-       where snippet_id in ({ids}) and snippet_type in (?,?) 
+    sql = ''' SELECT document_id, id, document_type, language_id, text_content, filename, mime_type FROM document_parts 
+       where document_id in ({ids}) and document_type in (?,?) 
        {keywords}
-       order by snippet_id desc, snippet_type, id '''.format(
+       order by document_id desc, document_type, id '''.format(
           ids = ', '.join('?' for _ in conv_ids),
           keywords = ' '.join('and lower(text_content) like ?' for _ in keyword_array))
 
@@ -228,64 +210,46 @@ def fetch_all_snippet_summary_parts(conn, snippet_ids, keyword_string):
     cursor.execute(sql, params)
     return cursor.fetchall()
 
-def create_snippet_part_with_text_content(conn, snippet_part):
-    """
-    Create a new snippet into the snippet table
-    :param conn:
-    :param project:
-    :return: snippet id
-    """
-    sql = ''' INSERT INTO snippet_parts(snippet_id, snippet_type, language_id, text_content)
+def create_document_part_with_text_content(conn, document_part):
+    sql = ''' INSERT INTO document_parts(document_id, document_type, language_id, text_content)
               VALUES(?,?,?,?) '''
     cur = conn.cursor()
-    cur.execute(sql, snippet_part)
+    cur.execute(sql, document_part)
     conn.commit()
     return cur.lastrowid
 
-def create_snippet_part_with_binary_content(conn, snippet_part):
-    """
-    Create a new snippet into the snippet table
-    :param conn:
-    :param project:
-    :return: snippet id
-    """
-    sql = ''' INSERT INTO snippet_parts(snippet_id, snippet_type, filename, blob_content, blob_size, mime_type)
+def create_document_part_with_binary_content(conn, document_part):
+    sql = ''' INSERT INTO document_parts(document_id, document_type, filename, blob_content, blob_size, mime_type)
               VALUES(?, ?, ?, ?, ?, ?) '''
     cur = conn.cursor()
-    cur.execute(sql, snippet_part)
+    cur.execute(sql, document_part)
     conn.commit()
     return cur.lastrowid
 
-def create_snippet_part_audio(conn, snippet_part_audio):
-    sql = ''' INSERT INTO snippet_parts_audio(snippet_id, snippet_part_id, model_id, voice_id, audio_content, audio_size, mime_type)
+def create_document_part_audio(conn, document_part_audio):
+    sql = ''' INSERT INTO document_parts_audio(document_id, document_part_id, model_id, voice_id, audio_content, audio_size, mime_type)
               VALUES(?, ?, ?, ?, ?, ?, ?) '''
     cur = conn.cursor()
-    cur.execute(sql, snippet_part_audio)
+    cur.execute(sql, document_part_audio)
     conn.commit()
     return cur.lastrowid
 
-def delete_snippets(conn, snippet_ids):
-    """
-    Delete snippets and snippet parts from the snippet table
-    :param conn:
-    :param project:
-    :return: snippets
-    """
-    conv_ids = [str(i) for i in snippet_ids]
+def delete_document(conn, document_ids):
+    conv_ids = [str(i) for i in document_ids]
 
     cursor = conn.cursor()
 
-    del_snippet_part_audio_sql = ''' DELETE FROM snippet_parts_audio where snippet_id in ({ids}) '''.format(
+    del_document_part_audio_sql = ''' DELETE FROM document_parts_audio where document_id in ({ids}) '''.format(
         ids=','.join('?' for _ in conv_ids))
-    cursor.execute(del_snippet_part_audio_sql, conv_ids)
+   # cursor.execute(del_document_part_audio_sql, conv_ids)
 
-    del_snippet_part_sql = ''' DELETE FROM snippet_parts where snippet_id in ({ids}) '''.format(
+    del_document_part_sql = ''' DELETE FROM document_parts where document_id in ({ids}) '''.format(
         ids=','.join('?' for _ in conv_ids))
-    cursor.execute(del_snippet_part_sql, conv_ids)
+   # cursor.execute(del_document_part_sql, conv_ids)
 
-    del_snippet_sql = ''' DELETE FROM snippets where id in ({ids}) '''.format(
+    del_document_sql = ''' DELETE FROM document where id in ({ids}) '''.format(
         ids=','.join('?' for _ in conv_ids))
-    cursor.execute(del_snippet_sql, conv_ids)
+    cursor.execute(del_document_sql, conv_ids)
 
     conn.commit()
     return cursor.fetchall()

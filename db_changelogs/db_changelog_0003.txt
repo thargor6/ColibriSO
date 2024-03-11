@@ -1,11 +1,15 @@
-CREATE TABLE snippet_parts_audio (
+CREATE table podcasts (
         id integer PRIMARY KEY NOT NULL,
-        snippet_id integer NOT NULL,
-        snippet_part_id integer NOT NULL,
+        podcast_id text NOT NULL,
         model_id text NOT NULL,
-        voice_id text NOT NULL,
-        audio_content blob NOT NULL,
-        audio_size integer NOT NULL,
-        mime_type text NOT NULL
+        voice_id text NOT NULL
         );
 
+CREATE table podcast_parts (
+        id integer PRIMARY KEY NOT NULL,
+        podcast_id integer NOT NULL,
+        audio_part_id integer NOT NULL,
+        last_listened_time text NULL,
+        foreign key (podcast_id) references podcasts(id),
+        foreign key (audio_part_id) references document_parts_audio(id)
+        );

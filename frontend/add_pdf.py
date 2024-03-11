@@ -22,7 +22,7 @@
 # SOFTWARE.
 
 import streamlit as st
-from backend.database import connect_to_colibri_db, create_snippet, create_snippet_part_with_text_content, create_snippet_part_with_binary_content
+from backend.database import connect_to_colibri_db, create_document, create_document_part_with_text_content, create_document_part_with_binary_content
 from backend.openai import simple_summary
 from datetime import datetime
 from langchain_community.document_loaders import NewsURLLoader
@@ -79,18 +79,18 @@ def load_view():
             conn = connect_to_colibri_db()
             try:
                 snippet = (title, datetime.now());
-                snippet_id = create_snippet(conn, snippet)
+                snippet_id = create_document(conn, snippet)
 
                 if url is not None and url != "":
                   snippet_part_url = (snippet_id, const.PART_URL, None, url);
-                  create_snippet_part_with_text_content(conn, snippet_part_url)
+                  create_document_part_with_text_content(conn, snippet_part_url)
 
                 bytes_data = uploaded_file.getvalue()
                 snippet_part_pdf = (snippet_id, const.PART_PRIMARY, uploaded_file.name, bytes_data, len(bytes_data), const.MIMETYPE_PDF)
-                create_snippet_part_with_binary_content(conn, snippet_part_pdf)
+                create_document_part_with_binary_content(conn, snippet_part_pdf)
 
                 snippet_part_content = (snippet_id, const.PART_CONTENT, content_language, document_content)
-                create_snippet_part_with_text_content(conn, snippet_part_content)
+                create_document_part_with_text_content(conn, snippet_part_content)
 
                 metadata = ""
                 metadata += "Filename: " + uploaded_file.name + "\n"
@@ -107,12 +107,12 @@ def load_view():
                     with st.spinner('Creating brief summary...'):
                         brief_summary = simple_summary(const.getLanguageCaption(summary_language), document_content, True)
                         snippet_part_brief_summary = (snippet_id, const.PART_SUMMARY_BRIEF, summary_language, brief_summary);
-                        create_snippet_part_with_text_content(conn, snippet_part_brief_summary)
+                        create_document_part_with_text_content(conn, snippet_part_brief_summary)
                         st.text_area("Brief Summary", value=brief_summary, height=160, max_chars=const.UI_DEFAULT_TEXT_AREA_MAX_CHARS, key=None)
                     with st.spinner('Creating comprehensive summary...'):
                         comprehensive_summary = simple_summary(const.getLanguageCaption(summary_language), document_content, False)
                         snippet_part_comprehensive_summary = (snippet_id, const.PART_SUMMARY_COMPREHENSIVE, summary_language, comprehensive_summary);
-                        create_snippet_part_with_text_content(conn, snippet_part_comprehensive_summary)
+                        create_document_part_with_text_content(conn, snippet_part_comprehensive_summary)
                         st.text_area("Comprehensive Summary", value=comprehensive_summary, height=240, max_chars=const.UI_DEFAULT_TEXT_AREA_MAX_CHARS, key=None)
             finally:
                 conn.close()
