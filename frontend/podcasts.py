@@ -23,22 +23,29 @@
 
 import streamlit as st
 
-# https://docs.streamlit.io/library/api-reference/layout
-
-from backend.database import connect_to_colibri_db, fetch_all_documents, delete_document, fetch_all_document_parts, \
-    create_document_part_audio, fetch_all_podcasts
+from backend.database import connect_to_colibri_db, fetch_all_podcasts, create_podcast, delete_podcast
 import pandas as pd
-
-from frontend.show_audio_content_detail import showAudioContent
-from frontend.show_content_detail import showContent
-from frontend.show_details_detail import showDetails
-from frontend.show_summary_detail import showSummary
-from frontend.text_to_speech_detail import textToSpeech
+import backend.constants as const
+from datetime import datetime
 from frontend.utils import dataframe_with_selections
 
 
 def load_view():
     st.title('Podcasts')
+    st.subheader('Create a new podcast')
+    caption = st.text_input('podcast title')
+    language = st.selectbox('select a language', [const.LANGUAGE_DE, const.LANGUAGE_FA, const.LANGUAGE_EN, const.LANGUAGE_FR], index=0)
+    model = st.selectbox('model', [const.OPENAI_DFLT_SPEECH_MODEL_SPEED, const.OPENAI_DFLT_SPEECH_MODEL_QUALITY], index=1)
+    voice = st.selectbox('voice', [const.SPEECH_VOICE_ALLOY, const.SPEECH_VOICE_ECHO, const.SPEECH_VOICE_FABLE, const.SPEECH_VOICE_ONYX, const.SPEECH_VOICE_NOVA, const.SPEECH_VOICE_SHIMMER], index=5)
+    if st.button('create podcast'):
+        conn = connect_to_colibri_db()
+        try:
+            podcast = (datetime.now(), caption, language, model, voice);
+            podcast__id = create_podcast(conn, podcast)
+        finally:
+            conn.close()
+
+    st.subheader('Search for podcasts')
     podcast_keyword_string = st.text_input('Podcast keywords', value="")
     conn = connect_to_colibri_db()
     try:
@@ -52,3 +59,23 @@ def load_view():
     # more about data frames: # https://docs.streamlit.io/library/api-reference/data/st.dataframe
     podcasts_df = pd.DataFrame(podcasts_rows, columns=["Id", "Creation date", "Caption", "Language", "Model", "Voice"])
     podcasts_selection = dataframe_with_selections(podcasts_df)
+
+    st.title('Podcast parts')
+    col1, col2 = st.columns(2)
+    with col1:
+        showContentButton = st.button('Show content')
+    with col2:
+        deleteButton = st.button('Delete podcasts')
+        confirmDelete = st.checkbox("Confirm delete")
+
+
+    if deleteButton and confirmDelete:
+        if len(podcasts_selection["Id"].values) > 0:
+            with st.spinner('Deleting podcasts ...'):
+                conn = connect_to_colibri_db()
+                try:
+                    delete_podcast(conn, podcasts_selection["Id"].values)
+                finally:
+                    conn.close()
+            st.success("Documents successfully deleted")
+            st.rerun()

@@ -265,3 +265,29 @@ def fetch_all_podcasts(conn, keyword_string):
     cursor = conn.cursor()
     cursor.execute(sql, keyword_array)
     return cursor.fetchall()
+
+
+def create_podcast(conn, podcast):
+    sql = ''' INSERT INTO podcasts(creation_date, caption, language_id, model_id, voice_id)
+              VALUES(?, ?, ?, ?, ?) '''
+    cur = conn.cursor()
+    cur.execute(sql, podcast)
+    conn.commit()
+    return cur.lastrowid
+
+
+def delete_podcast(conn, document_ids):
+    conv_ids = [str(i) for i in document_ids]
+
+    cursor = conn.cursor()
+
+    del_podcast_part_sql = ''' DELETE FROM podcast_parts where podcast_id in ({ids}) '''.format(
+        ids=','.join('?' for _ in conv_ids))
+    cursor.execute(del_podcast_part_sql, conv_ids)
+
+    del_podcast_sql = ''' DELETE FROM podcasts where id in ({ids}) '''.format(
+        ids=','.join('?' for _ in conv_ids))
+    cursor.execute(del_podcast_sql, conv_ids)
+
+    conn.commit()
+    return cursor.fetchall()
