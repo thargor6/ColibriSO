@@ -22,11 +22,12 @@
 # SOFTWARE.
 
 from backend.db_changelogs import apply_db_changelogs
+from backend.openai import text_to_speech
 from backend.sqlite import create_connection
 import backend.constants as const
+import os
 
 DATABASE = r"colibri_database.db"
-
 
 db_checked = False
 
@@ -291,3 +292,98 @@ def delete_podcast(conn, document_ids):
 
     conn.commit()
     return cursor.fetchall()
+
+
+def add_document_to_podcast(conn, podcast_id, doc_id):
+    # check if document already exists in podcast
+    parts_exists_sql = ''' SELECT 1 FROM podcast_parts, document_parts_audio where podcast_id = ?
+              and podcast_parts.audio_part_id = document_parts_audio.id 
+              and document_parts_audio.document_id = ? 
+          '''
+    cursor = conn.cursor()
+    try:
+        cursor.execute(parts_exists_sql, (int(podcast_id), int(doc_id)))
+        parts_exists = cursor.fetchone()
+    finally:
+        cursor.close()
+    if not parts_exists is None:
+        return False
+
+    # select desired podcast data
+    select_podcast_sql = ''' SELECT caption, language_id, model_id, voice_id FROM podcasts 
+                        WHERE id=?'''
+    cursor = conn.cursor()
+    try:
+        cursor.execute(select_podcast_sql, (int(podcast_id),))
+        podcast_info = cursor.fetchone()
+        if podcast_info is None:
+            return False
+    finally:
+        cursor.close()
+    voice = podcast_info[3]
+    model = podcast_info[2]
+
+    # select document parts
+    parts_rows = fetch_all_document_parts(conn, (doc_id,), "")
+
+    # iterate over parts and add comprehensive summary to podcast, if available
+    for row in parts_rows:
+        document_type = row[2]
+        document_content = row[4]
+        document_id = row[0]
+        document_part_id = row[1]
+        if document_content is not None and document_type == const.PART_SUMMARY_COMPREHENSIVE:
+            add_podcast_part(conn, document_content, document_id, document_part_id, model, podcast_id,
+                             voice)
+            return True
+
+    # iterate over parts and add brief summary to podcast, if available
+    for row in parts_rows:
+        document_type = row[2]
+        document_content = row[4]
+        document_id = row[0]
+        document_part_id = row[1]
+        if document_content is not None and document_type == const.PART_SUMMARY_BRIEF:
+            add_podcast_part(conn, document_content, document_id, document_part_id, model, podcast_id,
+                             voice)
+            return True
+    # no valid part found, nothing added
+    return False
+
+def add_podcast_part(conn, document_content, document_id, document_part_id, model, podcast_id, voice):
+    # check if audio part exists
+    audio_parts_exists_sql = ''' SELECT id FROM document_parts_audio where document_part_id = ?'''
+    cursor = conn.cursor()
+
+    try:
+      cursor.execute(audio_parts_exists_sql, (int(document_id),))
+      audio_part_ids = cursor.fetchall()
+    finally:
+      cursor.close()
+
+    # create audio if not exists
+    if len(audio_part_ids) == 0:
+        audio_part_ids = []
+        audio_path = text_to_speech(document_content, voice, model)
+        print("M 4")
+
+        try:
+            in_file = open(audio_path, "rb")
+            try:
+                audio_data = in_file.read()
+            finally:
+                in_file.close()
+            audio_part = (int(document_id), int(document_part_id), model, voice, audio_data, len(audio_data), const.MIMETYPE_MP3)
+            new_audio_part = create_document_part_audio(conn, audio_part)
+            audio_part_ids.append(new_audio_part)
+        finally:
+            os.remove(audio_path)
+
+
+    for audio_part_id in audio_part_ids:
+        podcast_part = (int(podcast_id), int(audio_part_id))
+        podcast_insert_sql = ''' INSERT INTO podcast_parts(podcast_id, audio_part_id)
+                              VALUES(?, ?) '''
+        cur = conn.cursor()
+        cur.execute(podcast_insert_sql, podcast_part)
+

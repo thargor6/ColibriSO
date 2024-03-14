@@ -47,8 +47,8 @@ def textToSpeech(details, snippet_selection, parts_keyword_string):
                     snippet_id = row[0]
                     snippet_part_id = row[1]
                     if snippet_content is not None and snippet_type == const.PART_SUMMARY_BRIEF:
-                        st.write(snippet_content)
-                        voice = const.SPEECH_VOICE_SHIMMER
+                        voice = const.OPENAI_DFLT_SPEECH_VOICE
+                        model = const.OPENAI_DFLT_SPEECH_MODEL
                         audio_path =  text_to_speech(snippet_content, voice)
                         try:
                             in_file = open(audio_path, "rb")

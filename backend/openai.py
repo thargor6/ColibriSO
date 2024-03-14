@@ -91,17 +91,15 @@ def simple_translate(input_text, language):
 from pathlib import Path
 from openai import OpenAI
 
-def text_to_speech(text, voice="alloy"):
+def text_to_speech(text, voice=const.OPENAI_DFLT_SPEECH_VOICE, model=const.OPENAI_DFLT_SPEECH_MODEL):
   client = OpenAI(api_key=st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] if const.SESSION_USER_OPEN_AI_API_KEY in st.session_state else None)
   speech_file_path = Path(__file__).parent / "speech.mp3"
+
   response = client.audio.speech.create(
-    model=const.OPENAI_DFLT_SPEECH_MODEL,
+    model=model,
     voice=voice,
     input=text,
     response_format="mp3",
   )
   response.stream_to_file(speech_file_path)
-
-  print("speech_file_path: ", speech_file_path)
-
   return speech_file_path

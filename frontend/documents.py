@@ -25,7 +25,8 @@ import streamlit as st
 
 # https://docs.streamlit.io/library/api-reference/layout
 
-from backend.database import connect_to_colibri_db, fetch_all_documents, delete_document
+from backend.database import connect_to_colibri_db, fetch_all_documents, delete_document, fetch_all_podcasts, \
+    add_document_to_podcast
 import pandas as pd
 
 from frontend.show_audio_content_detail import showAudioContent
@@ -53,7 +54,7 @@ def load_view():
     snippet_selection = dataframe_with_selections(snippet_df)
 
     st.title('Document parts')
-    col1, col2, col3, col4, col5, col6 = st.columns(6)
+    col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
     with col1:
         showSummaryButton = st.button('Show summary')
     with col2:
@@ -67,6 +68,15 @@ def load_view():
         confirmDelete = st.checkbox("Confirm delete")
     with col6:
         textToSpeechButton = st.button('TextToSpeech')
+    with col7:
+        conn = connect_to_colibri_db()
+        try:
+          podcasts = fetch_all_podcasts(conn, "")
+        finally:
+            conn.close()
+        podcast_captions = [podcast[2] for podcast in podcasts]
+        podcast_caption = st.selectbox('select a language', podcast_captions, index=0)
+        addToPodcastButton = st.button('Add to podcast')
 
     #print(snippet_selection["Id"])
     #print(snippet_selection["Id"].values)
@@ -97,4 +107,32 @@ def load_view():
             st.rerun()
     if listenAudioButton:
         showAudioContent(details, snippet_selection, parts_keyword_string)
-        pass
+    if addToPodcastButton:
+        addedCount = 0
+        errorCount = 0
+        with st.spinner('Adding documents to podcast ...'):
+            conn = connect_to_colibri_db()
+            try:
+                podcast_id = podcasts[podcast_captions.index(podcast_caption)][0]
+                document_ids = snippet_selection["Id"].values
+                for document_id in document_ids:
+                    try:
+                        if add_document_to_podcast(conn, podcast_id, document_id):
+                            addedCount += 1
+                        conn.commit()
+                    except:
+                        conn.rollback()
+                        errorCount += 1
+            finally:
+                conn.close()
+            if addedCount > 1:
+              st.success("Documents successfully added to podcast")
+            elif addedCount == 1:
+                st.success("Document successfully added to podcast")
+            elif errorCount == 0:
+                st.info("No new content added to podcast")
+            if errorCount > 0:
+                st.error("At least one error occured adding content to podcast")
+
+
+            #st.rerun()
