@@ -154,12 +154,12 @@ def fetch_all_document_parts(conn, document_ids, keyword_string):
     return cursor.fetchall()
 
 def fetch_all_document_parts_with_audio(conn, document_ids, keyword_string):
-    conv_ids = [str(i) for i in document_ids]
+    conv_ids = [int(str(i)) for i in document_ids]
     keyword_array = split_keywords_into_like_expressions(keyword_string)
     sql = ''' SELECT document_id, id, document_type, language_id, text_content, filename, mime_type FROM document_parts 
        where document_id in ({ids})
        {keywords} 
-       and exists (select 1 from document_part_audio where document_part_audio.document_id = document_parts.document_id and document_part_audio.document_part_id = document_parts.id)
+       and exists (select 1 from document_parts_audio where document_parts_audio.document_id = document_parts.document_id and document_parts_audio.document_part_id = document_parts.id)
        order by document_id desc, id '''.format(
         ids=','.join('?' for _ in conv_ids),
         keywords = ' '.join('and lower(text_content) like ?' for _ in keyword_array)
@@ -170,7 +170,7 @@ def fetch_all_document_parts_with_audio(conn, document_ids, keyword_string):
     return cursor.fetchall()
 
 def fetch_all_audio_parts(conn, document_id, document_part_id):
-    sql = ''' SELECT id, document_id, document_part_id, model_id, voice_id, audio_size, mime_type  FROM document_part_audio 
+    sql = ''' SELECT id, document_id, document_part_id, model_id, voice_id, audio_size, mime_type  FROM document_parts_audio 
        where document_id=? and document_part_id=?
        order by id desc '''
     cursor = conn.cursor()
@@ -179,7 +179,7 @@ def fetch_all_audio_parts(conn, document_id, document_part_id):
     return cursor.fetchall()
 
 def fetch_audio_data(conn, audio_id):
-    sql = ''' SELECT audio_content FROM document_part_audio 
+    sql = ''' SELECT audio_content FROM document_parts_audio 
        where id=?'''
     cursor = conn.cursor()
     params = (audio_id, )
@@ -240,9 +240,9 @@ def delete_document(conn, document_ids):
 
     cursor = conn.cursor()
 
-    del_document_part_audio_sql = ''' DELETE FROM document_parts_audio where document_id in ({ids}) '''.format(
+    del_document_parts_audio_sql = ''' DELETE FROM document_parts_audio where document_id in ({ids}) '''.format(
         ids=','.join('?' for _ in conv_ids))
-    cursor.execute(del_document_part_audio_sql, conv_ids)
+    cursor.execute(del_document_parts_audio_sql, conv_ids)
 
     del_document_part_sql = ''' DELETE FROM document_parts where document_id in ({ids}) '''.format(
         ids=','.join('?' for _ in conv_ids))

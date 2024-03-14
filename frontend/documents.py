@@ -33,7 +33,6 @@ from frontend.show_audio_content_detail import showAudioContent
 from frontend.show_content_detail import showContent
 from frontend.show_details_detail import showDetails
 from frontend.show_summary_detail import showSummary
-from frontend.text_to_speech_detail import textToSpeech
 from frontend.utils import dataframe_with_selections
 
 
@@ -54,7 +53,7 @@ def load_view():
     snippet_selection = dataframe_with_selections(snippet_df)
 
     st.title('Document parts')
-    col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
     with col1:
         showSummaryButton = st.button('Show summary')
     with col2:
@@ -67,8 +66,6 @@ def load_view():
         deleteButton = st.button('Delete documents')
         confirmDelete = st.checkbox("Confirm delete")
     with col6:
-        textToSpeechButton = st.button('TextToSpeech')
-    with col7:
         conn = connect_to_colibri_db()
         try:
           podcasts = fetch_all_podcasts(conn, "")
@@ -100,10 +97,6 @@ def load_view():
                 finally:
                     conn.close()
             st.success("Documents successfully deleted")
-            st.rerun()
-    if textToSpeechButton:
-        if textToSpeech(details, snippet_selection, parts_keyword_string) > 0:
-            st.success("Text to speech successfully created")
             st.rerun()
     if listenAudioButton:
         showAudioContent(details, snippet_selection, parts_keyword_string)
