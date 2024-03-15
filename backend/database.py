@@ -20,6 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from backend.db_changelogs import apply_db_changelogs
 from backend.openai import text_to_speech
@@ -352,7 +353,7 @@ def add_document_to_podcast(conn, podcast_id, doc_id):
 
 def add_podcast_part(conn, document_content, document_id, document_part_id, model, podcast_id, voice):
     # check if audio part exists
-    audio_parts_exists_sql = ''' SELECT id FROM document_parts_audio where document_part_id = ?'''
+    audio_parts_exists_sql = ''' SELECT id FROM document_parts_audio where document_part_id = ? order by id'''
     cursor = conn.cursor()
 
     try:
@@ -364,20 +365,28 @@ def add_podcast_part(conn, document_content, document_id, document_part_id, mode
     # create audio if not exists
     if len(audio_part_ids) == 0:
         audio_part_ids = []
-        audio_path = text_to_speech(document_content, voice, model)
-        print("M 4")
 
-        try:
-            in_file = open(audio_path, "rb")
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size = const.OPENAI_DFLT_SPEECH_CHUNKSIZE,
+            chunk_overlap  = 0,
+            length_function = len,
+        )
+        splitted_texts = text_splitter.split_text(document_content)
+
+
+        for text in splitted_texts:
+            audio_path = text_to_speech(text, voice, model)
             try:
-                audio_data = in_file.read()
+                in_file = open(audio_path, "rb")
+                try:
+                    audio_data = in_file.read()
+                finally:
+                    in_file.close()
+                audio_part = (int(document_id), int(document_part_id), model, voice, audio_data, len(audio_data), const.MIMETYPE_MP3)
+                new_audio_part = create_document_part_audio(conn, audio_part)
+                audio_part_ids.append(new_audio_part)
             finally:
-                in_file.close()
-            audio_part = (int(document_id), int(document_part_id), model, voice, audio_data, len(audio_data), const.MIMETYPE_MP3)
-            new_audio_part = create_document_part_audio(conn, audio_part)
-            audio_part_ids.append(new_audio_part)
-        finally:
-            os.remove(audio_path)
+                os.remove(audio_path)
 
 
     for audio_part_id in audio_part_ids:
