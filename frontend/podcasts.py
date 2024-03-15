@@ -23,7 +23,8 @@
 
 import streamlit as st
 
-from backend.database import connect_to_colibri_db, fetch_all_podcasts, create_podcast, delete_podcast
+from backend.database import connect_to_colibri_db, fetch_all_podcasts, create_podcast, delete_podcast, \
+    fetch_all_document_parts_with_audio, fetch_podcast_parts, fetch_audio_data, update_podcast_parts_listened_status
 import pandas as pd
 import backend.constants as const
 from datetime import datetime
@@ -47,9 +48,10 @@ def load_view():
 
     st.subheader('Search for podcasts')
     podcast_keyword_string = st.text_input('Podcast keywords', value="")
+    only_not_listened = st.checkbox('Not listened', value=True)
     conn = connect_to_colibri_db()
     try:
-        podcasts_rows = fetch_all_podcasts(conn, podcast_keyword_string)
+        podcasts_rows = fetch_all_podcasts(conn, podcast_keyword_string, only_not_listened)
     finally:
         conn.close()
     if st.button('Refresh'):
@@ -61,10 +63,13 @@ def load_view():
     podcasts_selection = dataframe_with_selections(podcasts_df)
 
     st.title('Podcast parts')
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
         showContentButton = st.button('Show content')
     with col2:
+        markAsListendButton = st.button('Mark as listened')
+
+    with col3:
         deleteButton = st.button('Delete podcasts')
         confirmDelete = st.checkbox("Confirm delete")
 
@@ -79,3 +84,39 @@ def load_view():
                     conn.close()
             st.success("Documents successfully deleted")
             st.rerun()
+
+
+    if showContentButton:
+        st.subheader("Audio content:")
+        if len(podcasts_selection["Id"].values) > 0:
+            with st.spinner('Loading audio content ...'):
+                conn = connect_to_colibri_db()
+                try:
+                  parts_rows = fetch_podcast_parts(conn, podcasts_selection["Id"].values, only_not_listened)
+                  for row in parts_rows:
+                        podcast_part_id = row[0]
+                        podcast_id = row[1]
+                        audio_part_id = row[2]
+                        st.header("Podcast " + str(podcast_id) + " Part " + str(podcast_part_id))
+                        st.subheader("Audio " + str(audio_part_id))
+                        audio_data = fetch_audio_data(conn, audio_part_id)
+                        st.audio(audio_data, format='audio/mp3')
+                finally:
+                    conn.close()
+        else:
+            st.write("(No document selected)")
+
+
+    if markAsListendButton:
+        if len(podcasts_selection["Id"].values) > 0:
+            with st.spinner('Updating status...'):
+                conn = connect_to_colibri_db()
+                try:
+                   update_podcast_parts_listened_status(conn, podcasts_selection["Id"].values)
+                   conn.commit()
+                finally:
+                  conn.close()
+                st.success("Status successfully updated")
+                st.rerun()
+        else:
+            st.info("Nothing to update")

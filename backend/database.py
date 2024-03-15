@@ -189,6 +189,25 @@ def fetch_audio_data(conn, audio_id):
     audio = cursor.fetchone()
     return audio[0] if audio is not None else None
 
+def fetch_podcast_parts(conn, podcast_ids, only_not_listened):
+    conv_ids = [int(str(i)) for i in podcast_ids]
+    sql = ''' SELECT id, podcast_id, audio_part_id, last_listened_time FROM podcast_parts 
+       where podcast_id in ({ids})
+       {listen_status}        
+       order by podcast_id desc, id '''.format(
+        ids = ', '.join('?' for _ in conv_ids),
+        listen_status = "and last_listened_time is NULL" if only_not_listened else "")
+    cursor = conn.cursor()
+    cursor.execute(sql, conv_ids)
+    return cursor.fetchall()
+
+def update_podcast_parts_listened_status(conn, podcast_ids):
+    conv_ids = [int(str(i)) for i in podcast_ids]
+    sql = ''' UPDATE podcast_parts set last_listened_time = ? where id in ({ids}) '''.format(
+        ids = ', '.join('?' for _ in conv_ids))
+    cursor = conn.cursor()
+    cursor.execute(sql, [datetime.now()] + conv_ids)
+
 def split_keywords_into_like_expressions(keywords):
     if keywords is None:
         return []
@@ -258,13 +277,15 @@ def delete_document(conn, document_ids):
     return cursor.fetchall()
 
 
-def fetch_all_podcasts(conn, keyword_string):
+def fetch_all_podcasts(conn, keyword_string, only_not_listened):
     keyword_array = split_keywords_into_like_expressions(keyword_string)
     sql = ''' SELECT id, creation_date, caption, language_id, model_id, voice_id FROM podcasts 
               WHERE caption is not null
               {keywords}       
+              {listen_status}
               order by id desc '''.format(
-        keywords = ' '.join('and lower(caption) like ?' for _ in keyword_array))
+        keywords = ' '.join('and lower(caption) like ?' for _ in keyword_array),
+        listen_status = "and exists (select 1 from podcast_parts where podcast_parts.podcast_id = podcasts.id and last_listened_time is NULL)" if only_not_listened else "")
     cursor = conn.cursor()
     cursor.execute(sql, keyword_array)
     return cursor.fetchall()
