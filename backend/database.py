@@ -27,6 +27,7 @@ from backend.openai import text_to_speech
 from backend.sqlite import create_connection
 import backend.constants as const
 import os
+from datetime import datetime
 
 DATABASE = r"colibri_database.db"
 
@@ -229,8 +230,8 @@ def create_document_part_with_binary_content(conn, document_part):
     return cur.lastrowid
 
 def create_document_part_audio(conn, document_part_audio):
-    sql = ''' INSERT INTO document_parts_audio(document_id, document_part_id, model_id, voice_id, audio_content, audio_size, mime_type)
-              VALUES(?, ?, ?, ?, ?, ?, ?) '''
+    sql = ''' INSERT INTO document_parts_audio(document_id, document_part_id, model_id, voice_id, audio_content, audio_size, mime_type, creation_date, chunk_id, chunk_content)
+              VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '''
     cur = conn.cursor()
     cur.execute(sql, document_part_audio)
     conn.commit()
@@ -374,20 +375,21 @@ def add_podcast_part(conn, document_content, document_id, document_part_id, mode
         splitted_texts = text_splitter.split_text(document_content)
 
 
-        for text in splitted_texts:
-            audio_path = text_to_speech(text, voice, model)
+        chunk_id = 1
+        for chunk_content in splitted_texts:
+            audio_path = text_to_speech(chunk_content, voice, model)
             try:
                 in_file = open(audio_path, "rb")
                 try:
                     audio_data = in_file.read()
                 finally:
                     in_file.close()
-                audio_part = (int(document_id), int(document_part_id), model, voice, audio_data, len(audio_data), const.MIMETYPE_MP3)
+                audio_part = (int(document_id), int(document_part_id), model, voice, audio_data, len(audio_data), const.MIMETYPE_MP3, datetime.now(), chunk_id, chunk_content)
                 new_audio_part = create_document_part_audio(conn, audio_part)
                 audio_part_ids.append(new_audio_part)
+                chunk_id += 1
             finally:
                 os.remove(audio_path)
-
 
     for audio_part_id in audio_part_ids:
         podcast_part = (int(podcast_id), int(audio_part_id))
