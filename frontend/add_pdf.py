@@ -34,6 +34,7 @@ def load_view():
     uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
 
     url = st.text_input('original url (optional)')
+    uploaded_url_file = st.file_uploader("Upload a TXT file for url (optional)", type="txt")
 
     with_summary = st.checkbox('create summary', value=True)
     if with_summary:
@@ -59,7 +60,8 @@ def load_view():
 
             # best 'guess' for language so far
             content_language = const.LANGUAGE_EN
-
+            if ((url is None) or (url == "")) and uploaded_url_file is not None:
+                url = uploaded_url_file.getvalue().decode("utf-8")
 
             if url is not None and url != "":
                 with st.spinner('Loading document...'):

@@ -68,7 +68,7 @@ def load_view():
     with col6:
         conn = connect_to_colibri_db()
         try:
-          podcasts = fetch_all_podcasts(conn, "")
+          podcasts = fetch_all_podcasts(conn, "", False)
         finally:
             conn.close()
         podcast_captions = [podcast[2] for podcast in podcasts]
