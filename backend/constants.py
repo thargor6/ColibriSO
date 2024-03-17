@@ -23,8 +23,8 @@
 
 # Language Constants
 APP_NAME = "ColibriSO"
-APP_VERSION = "0.27.0"
-APP_VERSION_DATE = "2024-03-16"
+APP_VERSION = "0.28.0"
+APP_VERSION_DATE = "2024-03-17"
 
 LANGUAGE_EN = 'en'
 LANGUAGE_FA = 'fa'
@@ -99,12 +99,12 @@ def getLanguageCaption(language_id):
     return None
 
 def getLanguageId(language_caption):
-    if language_caption == LANGUAGE_EN:
-        return LANGUAGE_EN_CAPTION
-    if language_caption == LANGUAGE_FA:
-        return LANGUAGE_FA_CAPTION
-    if language_caption == LANGUAGE_DE:
-        return LANGUAGE_DE_CAPTION
-    if language_caption == LANGUAGE_FR:
-        return LANGUAGE_FR_CAPTION
+    if language_caption == LANGUAGE_EN_CAPTION:
+        return LANGUAGE_EN
+    if language_caption == LANGUAGE_FA_CAPTION:
+        return LANGUAGE_FA
+    if language_caption == LANGUAGE_DE_CAPTION:
+        return LANGUAGE_DE
+    if language_caption == LANGUAGE_FR_CAPTION:
+        return LANGUAGE_FR
     return None

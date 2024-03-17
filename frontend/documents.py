@@ -26,15 +26,14 @@ import streamlit as st
 # https://docs.streamlit.io/library/api-reference/layout
 
 from backend.database import connect_to_colibri_db, fetch_all_documents, delete_document, fetch_all_podcasts, \
-    add_document_to_podcast
+    add_document_to_podcast, create_summary_for_document
 import pandas as pd
 
-from frontend.show_audio_content_detail import showAudioContent
 from frontend.show_content_detail import showContent
 from frontend.show_details_detail import showDetails
 from frontend.show_summary_detail import showSummary
 from frontend.utils import dataframe_with_selections
-
+import backend.constants as const
 
 def load_view():
     st.title('Documents')
@@ -57,7 +56,9 @@ def load_view():
     with col1:
         showSummaryButton = st.button('Show summary')
     with col2:
-        listenAudioButton = st.button('Listen')
+        regenerateSummaryButton = st.button('Regenerate summary')
+        summary_language = st.selectbox('select a language', [const.LANGUAGE_DE_CAPTION, const.LANGUAGE_FA_CAPTION, const.LANGUAGE_EN_CAPTION, const.LANGUAGE_FR_CAPTION])
+        overwrite_summary = st.checkbox("Overwrite existing summary", value=False)
     with col3:
         showContentButton = st.button('Show content')
     with col4:
@@ -98,8 +99,6 @@ def load_view():
                     conn.close()
             st.success("Documents successfully deleted")
             st.rerun()
-    if listenAudioButton:
-        showAudioContent(details, snippet_selection, parts_keyword_string)
     if addToPodcastButton:
         addedCount = 0
         errorCount = 0
@@ -125,7 +124,30 @@ def load_view():
             elif errorCount == 0:
                 st.info("No new content added to podcast")
             if errorCount > 0:
-                st.error("At least one error occured adding content to podcast")
-
-
-            #st.rerun()
+                st.error("At least one error occurred adding content to podcast")
+    if regenerateSummaryButton:
+        addedCount = 0
+        errorCount = 0
+        with st.spinner('Creating summary ...'):
+            conn = connect_to_colibri_db()
+            try:
+                document_ids = snippet_selection["Id"].values
+                for document_id in document_ids:
+                    try:
+                        summary_language_id = const.getLanguageId(summary_language)
+                        if  create_summary_for_document(conn, document_id, const.PART_SUMMARY_BRIEF, summary_language_id, overwrite = overwrite_summary):
+                            addedCount += 1
+                        if  create_summary_for_document(conn, document_id, const.PART_SUMMARY_COMPREHENSIVE, summary_language_id, overwrite = overwrite_summary):
+                            addedCount += 1
+                        conn.commit()
+                    except:
+                        conn.rollback()
+                        errorCount += 1
+            finally:
+                conn.close()
+            if addedCount > 0:
+                st.success("Summary successfully generated")
+            elif errorCount == 0:
+                st.info("No new summary was created")
+            if errorCount > 0:
+                st.error("At least one error occurred while generating summary")

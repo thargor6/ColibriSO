@@ -23,7 +23,7 @@
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from backend.db_changelogs import apply_db_changelogs
-from backend.openai import text_to_speech
+from backend.openai import text_to_speech, simple_summary
 from backend.sqlite import create_connection
 import backend.constants as const
 import os
@@ -285,7 +285,7 @@ def fetch_all_podcasts(conn, keyword_string, only_not_listened):
               {listen_status}
               order by id desc '''.format(
         keywords = ' '.join('and lower(caption) like ?' for _ in keyword_array),
-        listen_status = "and exists (select 1 from podcast_parts where podcast_parts.podcast_id = podcasts.id and last_listened_time is NULL)" if only_not_listened else "")
+        listen_status = "and exists (select 1 from podcast_parts where podcast_parts.podcast_id = podcasts.id and last_listened_time is NULL) or not exists (select 1 from podcast_parts where podcast_parts.podcast_id = podcasts.id)" if only_not_listened else "")
     cursor = conn.cursor()
     cursor.execute(sql, keyword_array)
     return cursor.fetchall()
@@ -296,7 +296,6 @@ def create_podcast(conn, podcast):
               VALUES(?, ?, ?, ?, ?) '''
     cur = conn.cursor()
     cur.execute(sql, podcast)
-    conn.commit()
     return cur.lastrowid
 
 
@@ -418,4 +417,44 @@ def add_podcast_part(conn, document_content, document_id, document_part_id, mode
                               VALUES(?, ?) '''
         cur = conn.cursor()
         cur.execute(podcast_insert_sql, podcast_part)
+
+def create_summary_for_document(conn, document_id, summary_type, summary_language_id, overwrite = False):
+    if overwrite:
+        # delete existing summary
+        del_summary_sql = ''' DELETE FROM document_parts where document_id = ? and document_type=? and language_id=?'''
+        cursor = conn.cursor()
+        try:
+            cursor.execute(del_summary_sql, (int(document_id), summary_type, summary_language_id))
+        finally:
+            cursor.close()
+    # check if document already has summary
+    parts_exists_sql = '''SELECT 1 FROM document_parts where document_id = ?
+              and document_type = ? and language_id = ?'''
+    cursor = conn.cursor()
+    try:
+        cursor.execute(parts_exists_sql, (int(document_id), summary_type, summary_language_id))
+        parts_exists = cursor.fetchone()
+    finally:
+        cursor.close()
+    if not parts_exists is None:
+        return False
+
+    # select document content
+    select_content_sql = '''SELECT text_content FROM document_parts where document_id = ?
+              and document_type = ?'''
+    cursor = conn.cursor()
+    try:
+        cursor.execute(select_content_sql, (int(document_id), const.PART_CONTENT))
+        content_data = cursor.fetchone()
+    finally:
+        cursor.close()
+    if content_data is None:
+        return False
+
+    document_content = content_data[0]
+
+    summary = simple_summary(const.getLanguageCaption(summary_language_id), document_content, True)
+    document_part_summary = (int(document_id), summary_type, summary_language_id, summary)
+
+    create_document_part_with_text_content(conn, document_part_summary)
 

@@ -36,7 +36,7 @@ def load_view():
     url = st.text_input('original url (optional)')
     uploaded_url_file = st.file_uploader("Upload a TXT file for url (optional)", type="txt")
 
-    with_summary = st.checkbox('create summary', value=True)
+    with_summary = st.checkbox('create summary', value=False)
     if with_summary:
         summary_language = st.selectbox('select a language', [const.LANGUAGE_DE, const.LANGUAGE_FA, const.LANGUAGE_EN, const.LANGUAGE_FR])
 

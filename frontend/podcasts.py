@@ -42,7 +42,8 @@ def load_view():
         conn = connect_to_colibri_db()
         try:
             podcast = (datetime.now(), caption, language, model, voice);
-            podcast__id = create_podcast(conn, podcast)
+            podcast_id = create_podcast(conn, podcast)
+            conn.commit()
         finally:
             conn.close()
 
@@ -52,6 +53,8 @@ def load_view():
     conn = connect_to_colibri_db()
     try:
         podcasts_rows = fetch_all_podcasts(conn, podcast_keyword_string, only_not_listened)
+        print(podcasts_rows)
+
     finally:
         conn.close()
     if st.button('Refresh'):

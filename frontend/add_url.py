@@ -34,7 +34,7 @@ from backend import constants as const
 def load_view():
     url = st.text_input('enter your url',  value="https://medium.com/enrique-dans/the-time-has-come-to-ban-robocalls-using-ai-generated-voices-d4b0ea3d665e")
 
-    with_summary = st.checkbox('create summary', value=True)
+    with_summary = st.checkbox('create summary', value=False)
     if with_summary:
       summary_language = st.selectbox('select a language', [const.LANGUAGE_DE, const.LANGUAGE_FA, const.LANGUAGE_EN, const.LANGUAGE_FR])
 
