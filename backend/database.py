@@ -453,8 +453,24 @@ def create_summary_for_document(conn, document_id, summary_type, summary_languag
 
     document_content = content_data[0]
 
-    summary = simple_summary(const.getLanguageCaption(summary_language_id), document_content, True)
-    document_part_summary = (int(document_id), summary_type, summary_language_id, summary)
 
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size = const.OPENAI_DFLT_SUMMARY_CHUNKSIZE,
+        chunk_overlap  = 50,
+        length_function = len,
+    )
+    splitted_texts = text_splitter.split_text(document_content)
+
+    brief_summary = summary_type == const.PART_SUMMARY_BRIEF
+    if len(splitted_texts) == 1:
+      summary = simple_summary(const.getLanguageCaption(summary_language_id), document_content, brief_summary)
+    else:
+      chunky_summaries = ""
+      for chunk_content in splitted_texts:
+          chunk_summary = simple_summary(const.getLanguageCaption(summary_language_id), chunk_content, brief_summary)
+          chunky_summaries += chunk_summary + " "
+      summary = simple_summary(const.getLanguageCaption(summary_language_id), chunky_summaries, brief_summary)
+
+    document_part_summary = (int(document_id), summary_type, summary_language_id, summary)
     create_document_part_with_text_content(conn, document_part_summary)
 

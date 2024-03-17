@@ -51,8 +51,6 @@ def simple_summary(language, text, brief=True):
   code_chain = LLMChain(
     llm=llm, prompt=code_prompt)
   result = code_chain({"summary_type": "brief" if brief is True else "comprehensive", "language": language, "text": text})
-  print(result)
-
   return result["text"]
 
 
