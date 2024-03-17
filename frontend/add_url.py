@@ -24,7 +24,6 @@
 import streamlit as st
 
 from backend.database import connect_to_colibri_db, create_document, create_document_part_with_text_content
-from backend.openai import simple_summary
 from datetime import datetime
 
 from langchain_community.document_loaders import NewsURLLoader
@@ -33,10 +32,6 @@ from backend import constants as const
 
 def load_view():
     url = st.text_input('enter your url',  value="https://medium.com/enrique-dans/the-time-has-come-to-ban-robocalls-using-ai-generated-voices-d4b0ea3d665e")
-
-    with_summary = st.checkbox('create summary', value=False)
-    if with_summary:
-      summary_language = st.selectbox('select a language', [const.LANGUAGE_DE, const.LANGUAGE_FA, const.LANGUAGE_EN, const.LANGUAGE_FR])
 
     if st.button('add url'):
         urls = [
@@ -75,22 +70,6 @@ def load_view():
             st.header("Content")
             st.write(data.page_content)
             print(data.page_content)
-
-            if with_summary:
-              with st.spinner('Creating brief summary...'):
-                  brief_summary = simple_summary(const.getLanguageCaption(summary_language), data.page_content, True)
-                  snippet_part_brief_summary = (snippet_id, const.PART_SUMMARY_BRIEF, summary_language, brief_summary);
-                  create_document_part_with_text_content(conn, snippet_part_brief_summary)
-
-                  st.header("Brief Summary")
-                  st.write(brief_summary)
-              with st.spinner('Creating comprehensive summary...'):
-                  comprehensive_summary = simple_summary(const.getLanguageCaption(summary_language), data.page_content, False)
-                  snippet_part_comprehensive_summary = (snippet_id, const.PART_SUMMARY_COMPREHENSIVE, summary_language, brief_summary);
-                  create_document_part_with_text_content(conn, snippet_part_comprehensive_summary)
-
-                  st.header("Comphrehensive Summary")
-                  st.write(comprehensive_summary)
         finally:
             conn.close()
 

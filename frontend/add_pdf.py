@@ -23,7 +23,6 @@
 
 import streamlit as st
 from backend.database import connect_to_colibri_db, create_document, create_document_part_with_text_content, create_document_part_with_binary_content
-from backend.openai import simple_summary
 from datetime import datetime
 from langchain_community.document_loaders import NewsURLLoader
 from PyPDF2 import PdfReader
@@ -35,10 +34,6 @@ def load_view():
 
     url = st.text_input('original url (optional)')
     uploaded_url_file = st.file_uploader("Upload a TXT file for url (optional)", type="txt")
-
-    with_summary = st.checkbox('create summary', value=False)
-    if with_summary:
-        summary_language = st.selectbox('select a language', [const.LANGUAGE_DE, const.LANGUAGE_FA, const.LANGUAGE_EN, const.LANGUAGE_FR])
 
     if st.button('add pdf'):
         with st.spinner('Loading document...'):
@@ -102,19 +97,6 @@ def load_view():
                 metadata += "Subject: " + str(meta.subject) + "\n"
                 metadata += "Title: " + str(meta.title) + "\n"
                 st.text_area("Metadata", value=metadata, height=120, max_chars=const.UI_DEFAULT_TEXT_AREA_MAX_CHARS, key=None)
-
                 st.text_area("Content", value=document_content, height=400, max_chars=const.UI_DEFAULT_TEXT_AREA_MAX_CHARS, key=None)
-
-                if with_summary:
-                    with st.spinner('Creating brief summary...'):
-                        brief_summary = simple_summary(const.getLanguageCaption(summary_language), document_content, True)
-                        snippet_part_brief_summary = (snippet_id, const.PART_SUMMARY_BRIEF, summary_language, brief_summary);
-                        create_document_part_with_text_content(conn, snippet_part_brief_summary)
-                        st.text_area("Brief Summary", value=brief_summary, height=160, max_chars=const.UI_DEFAULT_TEXT_AREA_MAX_CHARS, key=None)
-                    with st.spinner('Creating comprehensive summary...'):
-                        comprehensive_summary = simple_summary(const.getLanguageCaption(summary_language), document_content, False)
-                        snippet_part_comprehensive_summary = (snippet_id, const.PART_SUMMARY_COMPREHENSIVE, summary_language, comprehensive_summary);
-                        create_document_part_with_text_content(conn, snippet_part_comprehensive_summary)
-                        st.text_area("Comprehensive Summary", value=comprehensive_summary, height=240, max_chars=const.UI_DEFAULT_TEXT_AREA_MAX_CHARS, key=None)
             finally:
                 conn.close()
