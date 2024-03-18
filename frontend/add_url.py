@@ -53,23 +53,27 @@ def load_view():
 
         conn = connect_to_colibri_db()
         try:
-            snippet = (title, datetime.now());
-            snippet_id = create_document(conn, snippet)
+            try:
+                snippet = (title, datetime.now());
+                snippet_id = create_document(conn, snippet)
 
-            snippet_part_url = (snippet_id, const.PART_URL, None, url);
-            create_document_part_with_text_content(conn, snippet_part_url)
+                snippet_part_url = (snippet_id, const.PART_URL, None, url);
+                create_document_part_with_text_content(conn, snippet_part_url)
 
-            content_language = data.metadata[const.METADATA_LANGUAGE]
-            if content_language is None:
-                content_language = const.LANGUAGE_EN
-            snippet_part_content = (snippet_id, const.PART_CONTENT, content_language, data.page_content);
-            create_document_part_with_text_content(conn, snippet_part_content)
+                content_language = data.metadata[const.METADATA_LANGUAGE]
+                if content_language is None:
+                    content_language = const.LANGUAGE_EN
+                snippet_part_content = (snippet_id, const.PART_CONTENT, content_language, data.page_content);
+                create_document_part_with_text_content(conn, snippet_part_content)
 
-            st.header("Metadata")
-            st.write(data.metadata)
-            st.header("Content")
-            st.write(data.page_content)
-            print(data.page_content)
+                st.header("Metadata")
+                st.write(data.metadata)
+                st.header("Content")
+                st.write(data.page_content)
+            except:
+                conn.rollback()
+                raise
+            conn.commit()
         finally:
             conn.close()
 

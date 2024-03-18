@@ -36,7 +36,12 @@ def load_view():
     if st.button('save configuration'):
         conn = connect_to_colibri_db()
         try:
-          update_user(conn, st.session_state[const.SESSION_USER_ID],  obscure_str( open_ai_api_key ) )
+          try:
+            update_user(conn, st.session_state[const.SESSION_USER_ID],  obscure_str( open_ai_api_key ) )
+          except:
+            conn.rollback()
+            raise
+          conn.commit()
         finally:
           conn.close()
         st.session_state[const.SESSION_USER_OPEN_AI_API_KEY] = open_ai_api_key

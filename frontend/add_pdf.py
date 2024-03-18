@@ -75,28 +75,33 @@ def load_view():
 
             conn = connect_to_colibri_db()
             try:
-                snippet = (title, datetime.now());
-                snippet_id = create_document(conn, snippet)
+                try:
+                    snippet = (title, datetime.now());
+                    snippet_id = create_document(conn, snippet)
 
-                if url is not None and url != "":
-                  snippet_part_url = (snippet_id, const.PART_URL, None, url);
-                  create_document_part_with_text_content(conn, snippet_part_url)
+                    if url is not None and url != "":
+                      snippet_part_url = (snippet_id, const.PART_URL, None, url);
+                      create_document_part_with_text_content(conn, snippet_part_url)
 
-                bytes_data = uploaded_file.getvalue()
-                snippet_part_pdf = (snippet_id, const.PART_PRIMARY, uploaded_file.name, bytes_data, len(bytes_data), const.MIMETYPE_PDF)
-                create_document_part_with_binary_content(conn, snippet_part_pdf)
+                    bytes_data = uploaded_file.getvalue()
+                    snippet_part_pdf = (snippet_id, const.PART_PRIMARY, uploaded_file.name, bytes_data, len(bytes_data), const.MIMETYPE_PDF)
+                    create_document_part_with_binary_content(conn, snippet_part_pdf)
 
-                snippet_part_content = (snippet_id, const.PART_CONTENT, content_language, document_content)
-                create_document_part_with_text_content(conn, snippet_part_content)
+                    snippet_part_content = (snippet_id, const.PART_CONTENT, content_language, document_content)
+                    create_document_part_with_text_content(conn, snippet_part_content)
 
-                metadata = ""
-                metadata += "Filename: " + uploaded_file.name + "\n"
-                metadata += "Author: " + str(meta.author) + "\n"
-                metadata += "Creator: " + str(meta.creator) + "\n"
-                metadata += "Producer: " + str(meta.producer) + "\n"
-                metadata += "Subject: " + str(meta.subject) + "\n"
-                metadata += "Title: " + str(meta.title) + "\n"
-                st.text_area("Metadata", value=metadata, height=120, max_chars=const.UI_DEFAULT_TEXT_AREA_MAX_CHARS, key=None)
-                st.text_area("Content", value=document_content, height=400, max_chars=const.UI_DEFAULT_TEXT_AREA_MAX_CHARS, key=None)
+                    metadata = ""
+                    metadata += "Filename: " + uploaded_file.name + "\n"
+                    metadata += "Author: " + str(meta.author) + "\n"
+                    metadata += "Creator: " + str(meta.creator) + "\n"
+                    metadata += "Producer: " + str(meta.producer) + "\n"
+                    metadata += "Subject: " + str(meta.subject) + "\n"
+                    metadata += "Title: " + str(meta.title) + "\n"
+                    st.text_area("Metadata", value=metadata, height=120, max_chars=const.UI_DEFAULT_TEXT_AREA_MAX_CHARS, key=None)
+                    st.text_area("Content", value=document_content, height=400, max_chars=const.UI_DEFAULT_TEXT_AREA_MAX_CHARS, key=None)
+                except:
+                    conn.rollback()
+                    raise
+                conn.commit()
             finally:
                 conn.close()

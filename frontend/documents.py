@@ -94,7 +94,12 @@ def load_view():
             with st.spinner('Deleting documents ...'):
                 conn = connect_to_colibri_db()
                 try:
-                    delete_document(conn, snippet_selection["Id"].values)
+                    try:
+                      delete_document(conn, snippet_selection["Id"].values)
+                    except:
+                        conn.rollback()
+                        raise
+                    conn.commit()
                 finally:
                     conn.close()
             st.success("Documents successfully deleted")
@@ -111,10 +116,10 @@ def load_view():
                     try:
                         if add_document_to_podcast(conn, podcast_id, document_id):
                             addedCount += 1
-                        conn.commit()
                     except:
                         conn.rollback()
                         errorCount += 1
+                    conn.commit()
             finally:
                 conn.close()
             if addedCount > 1:
@@ -139,10 +144,10 @@ def load_view():
                             addedCount += 1
                         if  create_summary_for_document(conn, document_id, const.PART_SUMMARY_COMPREHENSIVE, summary_language_id, overwrite = overwrite_summary):
                             addedCount += 1
-                        conn.commit()
                     except:
                         conn.rollback()
                         errorCount += 1
+                    conn.commit()
             finally:
                 conn.close()
             if addedCount > 0:

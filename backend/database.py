@@ -59,7 +59,6 @@ def create_user(conn, user):
               VALUES(?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, user)
-    conn.commit()
     return cur.lastrowid
 
 def update_user(conn, user_id, open_ai_api_key):
@@ -72,7 +71,6 @@ def update_user(conn, user_id, open_ai_api_key):
     sql = ''' UPDATE users set open_ai_api_key = ? where id = ? '''
     cur = conn.cursor()
     cur.execute(sql, (open_ai_api_key, user_id))
-    conn.commit()
 
 def select_user_by_user_name(conn, user_id):
     """
@@ -118,7 +116,6 @@ def create_session(conn, session):
               VALUES(?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, session)
-    conn.commit()
     return cur.lastrowid
 
 def create_document(conn, document):
@@ -126,7 +123,6 @@ def create_document(conn, document):
               VALUES(?,?) '''
     cur = conn.cursor()
     cur.execute(sql, document)
-    conn.commit()
     return cur.lastrowid
 
 def fetch_all_documents(conn, keyword_string):
@@ -237,7 +233,6 @@ def create_document_part_with_text_content(conn, document_part):
               VALUES(?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, document_part)
-    conn.commit()
     return cur.lastrowid
 
 def create_document_part_with_binary_content(conn, document_part):
@@ -245,7 +240,6 @@ def create_document_part_with_binary_content(conn, document_part):
               VALUES(?, ?, ?, ?, ?, ?) '''
     cur = conn.cursor()
     cur.execute(sql, document_part)
-    conn.commit()
     return cur.lastrowid
 
 def create_document_part_audio(conn, document_part_audio):
@@ -253,7 +247,6 @@ def create_document_part_audio(conn, document_part_audio):
               VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '''
     cur = conn.cursor()
     cur.execute(sql, document_part_audio)
-    conn.commit()
     return cur.lastrowid
 
 def delete_document(conn, document_ids):
@@ -273,7 +266,6 @@ def delete_document(conn, document_ids):
         ids=','.join('?' for _ in conv_ids))
     cursor.execute(del_document_sql, conv_ids)
 
-    conn.commit()
     return cursor.fetchall()
 
 
@@ -312,7 +304,6 @@ def delete_podcast(conn, document_ids):
         ids=','.join('?' for _ in conv_ids))
     cursor.execute(del_podcast_sql, conv_ids)
 
-    conn.commit()
     return cursor.fetchall()
 
 
@@ -451,26 +442,29 @@ def create_summary_for_document(conn, document_id, summary_type, summary_languag
     if content_data is None:
         return False
 
+    brief_summary = summary_type == const.PART_SUMMARY_BRIEF
+
     document_content = content_data[0]
+    summary = create_chunked_summary(brief_summary, document_content, summary_language_id)
+
+    document_part_summary = (int(document_id), summary_type, summary_language_id, summary)
+    create_document_part_with_text_content(conn, document_part_summary)
 
 
+def create_chunked_summary(brief_summary, document_content, summary_language_id):
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size = const.OPENAI_DFLT_SUMMARY_CHUNKSIZE,
         chunk_overlap  = 50,
         length_function = len,
     )
     splitted_texts = text_splitter.split_text(document_content)
-
-    brief_summary = summary_type == const.PART_SUMMARY_BRIEF
     if len(splitted_texts) == 1:
-      summary = simple_summary(const.getLanguageCaption(summary_language_id), document_content, brief_summary)
+        summary = simple_summary(const.getLanguageCaption(summary_language_id), document_content, brief_summary)
     else:
-      chunky_summaries = ""
-      for chunk_content in splitted_texts:
-          chunk_summary = simple_summary(const.getLanguageCaption(summary_language_id), chunk_content, brief_summary)
-          chunky_summaries += chunk_summary + " "
-      summary = simple_summary(const.getLanguageCaption(summary_language_id), chunky_summaries, brief_summary)
-
-    document_part_summary = (int(document_id), summary_type, summary_language_id, summary)
-    create_document_part_with_text_content(conn, document_part_summary)
+        chunk_summaries = ""
+        for chunk_content in splitted_texts:
+            chunk_summary = simple_summary(const.getLanguageCaption(summary_language_id), chunk_content, brief_summary)
+            chunk_summaries += chunk_summary + " "
+        summary = create_chunked_summary(brief_summary, chunk_summaries, summary_language_id)
+    return summary
 
