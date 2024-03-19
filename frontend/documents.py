@@ -133,20 +133,24 @@ def load_view():
     if regenerateSummaryButton:
         addedCount = 0
         errorCount = 0
-        with st.spinner('Creating summary ...'):
+        spinner = st.spinner('Creating summary ...')
+        with spinner:
             conn = connect_to_colibri_db()
             try:
                 document_ids = snippet_selection["Id"].values
                 for document_id in document_ids:
                     try:
                         summary_language_id = const.getLanguageId(summary_language)
+                        spinner.text = "Creating brief summary {curr}/{cnt}".format(curr=addedCount+1, cnt=len(document_ids))
                         if  create_summary_for_document(conn, document_id, const.PART_SUMMARY_BRIEF, summary_language_id, overwrite = overwrite_summary):
                             addedCount += 1
+                        spinner.text = "Creating comprehensive summary {curr}/{cnt}".format(curr=addedCount+1, cnt=len(document_ids))
                         if  create_summary_for_document(conn, document_id, const.PART_SUMMARY_COMPREHENSIVE, summary_language_id, overwrite = overwrite_summary):
                             addedCount += 1
                     except:
                         conn.rollback()
                         errorCount += 1
+                        raise
                     conn.commit()
             finally:
                 conn.close()

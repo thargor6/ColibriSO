@@ -127,7 +127,7 @@ def check_password_db():
     if user_id is None:
       # login_form()
       skip_login_form()
-      if not const.SESSION_PASSWORD_CORRECT in st.session_state:
+    if not const.SESSION_PASSWORD_CORRECT in st.session_state:
         st.error("😕 User not known or password incorrect")
         return False
     else:

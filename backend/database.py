@@ -197,12 +197,12 @@ def fetch_podcast_parts(conn, podcast_ids, only_not_listened):
     cursor.execute(sql, conv_ids)
     return cursor.fetchall()
 
-def update_podcast_parts_listened_status(conn, podcast_ids):
-    conv_ids = [int(str(i)) for i in podcast_ids]
-    sql = ''' UPDATE podcast_parts set last_listened_time = ? where id in ({ids}) '''.format(
-        ids = ', '.join('?' for _ in conv_ids))
+def update_podcast_parts_listened_status(conn, podcast_id):
+    sql = ''' UPDATE podcast_parts set last_listened_time = ? where id = ?'''
     cursor = conn.cursor()
-    cursor.execute(sql, [datetime.now()] + conv_ids)
+    params = [datetime.now(), int(podcast_id)]
+    print(params)
+    cursor.execute(sql, params)
 
 def split_keywords_into_like_expressions(keywords):
     if keywords is None:
@@ -220,11 +220,8 @@ def fetch_all_document_summary_parts(conn, document_ids, keyword_string):
        order by document_id desc, document_type, id '''.format(
           ids = ', '.join('?' for _ in conv_ids),
           keywords = ' '.join('and lower(text_content) like ?' for _ in keyword_array))
-
-    print("SQL", sql)
     cursor = conn.cursor()
     params = conv_ids + [const.PART_SUMMARY_BRIEF, const.PART_SUMMARY_COMPREHENSIVE] + keyword_array
-    print("PARAMS", params)
     cursor.execute(sql, params)
     return cursor.fetchall()
 

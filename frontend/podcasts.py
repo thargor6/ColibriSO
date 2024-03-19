@@ -68,13 +68,10 @@ def load_view():
     podcasts_selection = dataframe_with_selections(podcasts_df)
 
     st.title('Podcast parts')
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
     with col1:
         showContentButton = st.button('Show content')
     with col2:
-        markAsListendButton = st.button('Mark as listened')
-
-    with col3:
         deleteButton = st.button('Delete podcasts')
         confirmDelete = st.checkbox("Confirm delete")
 
@@ -102,30 +99,30 @@ def load_view():
                         podcast_part_id = row[0]
                         podcast_id = row[1]
                         audio_part_id = row[2]
+                        last_listened = row[3]
                         st.header("Podcast " + str(podcast_id) + " Part " + str(podcast_part_id))
                         st.subheader("Audio " + str(audio_part_id))
                         audio_data = fetch_audio_data(conn, audio_part_id)
                         st.audio(audio_data, format='audio/mp3')
+                        st.button("Mark as listened" if last_listened is None else "Mark as listened (again)", key="Mark as listened " + str(podcast_part_id),
+                                     on_click=update_listened_status, args=[podcast_part_id])
+
                 finally:
                     conn.close()
         else:
             st.write("(No document selected)")
 
 
-    if markAsListendButton:
-        if len(podcasts_selection["Id"].values) > 0:
-            with st.spinner('Updating status...'):
-                conn = connect_to_colibri_db()
-                try:
-                   try:
-                      update_podcast_parts_listened_status(conn, podcasts_selection["Id"].values)
-                   except:
-                      conn.rollback()
-                      raise
-                   conn.commit()
-                finally:
-                  conn.close()
-                st.success("Status successfully updated")
-                st.rerun()
-        else:
-            st.info("Nothing to update")
+def update_listened_status(podcast_part_id):
+    print("update_listened_status" + str(podcast_part_id))
+    conn = connect_to_colibri_db()
+    try:
+        try:
+            update_podcast_parts_listened_status(conn, podcast_part_id)
+        except:
+            conn.rollback()
+            raise
+        conn.commit()
+    finally:
+        conn.close()
+    st.success("Podcast Status successfully updated")
