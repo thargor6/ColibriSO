@@ -187,12 +187,15 @@ def fetch_audio_data(conn, audio_id):
 
 def fetch_podcast_parts(conn, podcast_ids, only_not_listened):
     conv_ids = [int(str(i)) for i in podcast_ids]
-    sql = ''' SELECT id, podcast_id, audio_part_id, last_listened_time FROM podcast_parts 
+    sql = ''' SELECT podcast_parts.id, podcast_parts.podcast_id, podcast_parts.audio_part_id, podcast_parts.last_listened_time, documents.caption
+              FROM podcast_parts, document_parts_audio, documents 
        where podcast_id in ({ids})
-       {listen_status}        
-       order by podcast_id desc, id '''.format(
+       {listen_status}  
+       and document_parts_audio.id = podcast_parts.audio_part_id
+       and documents.id = document_parts_audio.document_id        
+       order by podcast_parts.podcast_id desc, podcast_parts.id '''.format(
         ids = ', '.join('?' for _ in conv_ids),
-        listen_status = "and last_listened_time is NULL" if only_not_listened else "")
+        listen_status = "and podcast_parts.last_listened_time is NULL" if only_not_listened else "")
     cursor = conn.cursor()
     cursor.execute(sql, conv_ids)
     return cursor.fetchall()

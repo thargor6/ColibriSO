@@ -100,7 +100,9 @@ def load_view():
                         podcast_id = row[1]
                         audio_part_id = row[2]
                         last_listened = row[3]
-                        st.header("Podcast " + str(podcast_id) + " Part " + str(podcast_part_id))
+                        caption = row[4]
+                        st.header(caption)
+                        st.subheader("Podcast " + str(podcast_id) + " Part " + str(podcast_part_id))
                         st.subheader("Audio " + str(audio_part_id))
                         audio_data = fetch_audio_data(conn, audio_part_id)
                         st.audio(audio_data, format='audio/mp3')
@@ -112,9 +114,7 @@ def load_view():
         else:
             st.write("(No document selected)")
 
-
 def update_listened_status(podcast_part_id):
-    print("update_listened_status" + str(podcast_part_id))
     conn = connect_to_colibri_db()
     try:
         try:

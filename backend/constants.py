@@ -23,7 +23,7 @@
 
 # Language Constants
 APP_NAME = "ColibriSO"
-APP_VERSION = "0.31.0"
+APP_VERSION = "0.31.1"
 APP_VERSION_DATE = "2024-03-18"
 
 LANGUAGE_EN = 'en'
