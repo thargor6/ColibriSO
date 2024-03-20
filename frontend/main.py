@@ -22,7 +22,7 @@
 # SOFTWARE.
 
 from backend.auth import check_password_db
-from frontend import documents, about, add_pdf, options, configuration, add_url, logout, chat, explain, translate, podcasts, utils as utl
+from frontend import documents, about, add_pdf, add_pdfs, options, configuration, add_url, logout, chat, explain, translate, podcasts, utils as utl
 from backend import constants as const
 
 def navigation():
@@ -32,6 +32,8 @@ def navigation():
         about.load_view()
     elif route == const.ROUTE_ADD_PDF:
         add_pdf.load_view()
+    elif route == const.ROUTE_ADD_PDFS:
+        add_pdfs.load_view()
     elif route == const.ROUTE_ADD_URL:
         add_url.load_view()
     elif route == const.ROUTE_CHAT:
