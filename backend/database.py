@@ -449,6 +449,7 @@ def create_summary_for_document(conn, document_id, summary_type, summary_languag
 
     document_part_summary = (int(document_id), summary_type, summary_language_id, summary)
     create_document_part_with_text_content(conn, document_part_summary)
+    return True
 
 
 def create_chunked_summary(brief_summary, document_content, summary_language_id):

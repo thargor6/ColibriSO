@@ -59,6 +59,7 @@ def load_view():
         regenerateSummaryButton = st.button('Regenerate summary')
         summary_language = st.selectbox('select a language', [const.LANGUAGE_DE_CAPTION, const.LANGUAGE_FA_CAPTION, const.LANGUAGE_EN_CAPTION, const.LANGUAGE_FR_CAPTION])
         overwrite_summary = st.checkbox("Overwrite existing summary", value=False)
+        summary_for_all_documents = st.checkbox("For all documents", value=True, key = "summary_for_all_documents")
     with col3:
         showContentButton = st.button('Show content')
     with col4:
@@ -75,6 +76,7 @@ def load_view():
         podcast_captions = [podcast[2] for podcast in podcasts]
         podcast_caption = st.selectbox('select a language', podcast_captions, index=0)
         addToPodcastButton = st.button('Add to podcast')
+        add_to_podcast_for_all_documents = st.checkbox("For all documents", value=True, key="add_to_podcast_for_all_documents")
 
     #print(snippet_selection["Id"])
     #print(snippet_selection["Id"].values)
@@ -111,7 +113,11 @@ def load_view():
             conn = connect_to_colibri_db()
             try:
                 podcast_id = podcasts[podcast_captions.index(podcast_caption)][0]
-                document_ids = snippet_selection["Id"].values
+
+                if add_to_podcast_for_all_documents:
+                    document_ids = snippet_df["Id"].values
+                else:
+                    document_ids = snippet_selection["Id"].values
                 for document_id in document_ids:
                     try:
                         if add_document_to_podcast(conn, podcast_id, document_id):
@@ -137,7 +143,10 @@ def load_view():
         with spinner:
             conn = connect_to_colibri_db()
             try:
-                document_ids = snippet_selection["Id"].values
+                if summary_for_all_documents:
+                    document_ids = snippet_df["Id"].values
+                else:
+                    document_ids = snippet_selection["Id"].values
                 for document_id in document_ids:
                     try:
                         summary_language_id = const.getLanguageId(summary_language)

@@ -67,7 +67,7 @@ def load_view():
                     news_documents = news_loader.load()
                     news_data = news_documents[0]
                     news_title = news_data.metadata[const.METADATA_TITLE]
-                    if news_title is None:
+                    if news_title is not None:
                        title = news_title
                     news_content_language = news_data.metadata[const.METADATA_LANGUAGE]
                     if news_content_language is None:
