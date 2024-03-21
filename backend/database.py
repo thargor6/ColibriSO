@@ -371,6 +371,8 @@ def add_podcast_part(conn, document_content, document_id, document_part_id, mode
     try:
       cursor.execute(audio_parts_exists_sql, (int(document_id),))
       audio_part_ids = cursor.fetchall()
+      # map from tuple to int, e.g. (1,) -> 1
+      audio_part_ids = [audio_part_id[0] for audio_part_id in audio_part_ids]
     finally:
       cursor.close()
 

@@ -34,6 +34,7 @@ from frontend.show_details_detail import showDetails
 from frontend.show_summary_detail import showSummary
 from frontend.utils import dataframe_with_selections
 import backend.constants as const
+import traceback
 
 def load_view():
     st.title('Documents')
@@ -125,6 +126,7 @@ def load_view():
                     except:
                         conn.rollback()
                         errorCount += 1
+                        traceback.print_exc()
                     conn.commit()
             finally:
                 conn.close()
@@ -159,6 +161,7 @@ def load_view():
                     except:
                         conn.rollback()
                         errorCount += 1
+                        traceback.print_exc()
                         raise
                     conn.commit()
             finally:

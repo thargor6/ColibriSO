@@ -102,12 +102,14 @@ def load_view():
                         last_listened = row[3]
                         caption = row[4]
                         st.header(caption)
-                        st.subheader("Podcast " + str(podcast_id) + " Part " + str(podcast_part_id))
-                        st.subheader("Audio " + str(audio_part_id))
+                        # st.subheader("Podcast " + str(podcast_id) + " Part " + str(podcast_part_id))
+                        # st.subheader("Audio " + str(audio_part_id))
                         audio_data = fetch_audio_data(conn, audio_part_id)
                         st.audio(audio_data, format='audio/mp3')
-                        st.button("Mark as listened" if last_listened is None else "Mark as listened (again)", key="Mark as listened " + str(podcast_part_id),
-                                     on_click=update_listened_status, args=[podcast_part_id])
+                        col1, col2, col3 = st.columns([1, 1, 5])
+                        with col3:
+                            st.button("Mark as listened" if last_listened is None else "Mark as listened (again)", key="Mark as listened " + str(podcast_part_id),
+                                         on_click=update_listened_status, args=[podcast_part_id])
 
                 finally:
                     conn.close()
