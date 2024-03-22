@@ -134,6 +134,19 @@ def fetch_all_documents(conn, keyword_string):
     cursor.execute(sql, keyword_array)
     return cursor.fetchall()
 
+def fetch_all_notes(conn, keyword_string):
+    keyword_array = split_keywords_into_like_expressions(keyword_string)
+    sql = ''' SELECT id, creation_date, caption FROM documents 
+              WHERE caption is not null
+              AND exists (select 1 from document_parts where document_parts.document_id = documents.id and document_parts.document_type = ?)
+              {keywords}       
+              order by id desc '''.format(
+        keywords = ' '.join('and lower(caption) like ?' for _ in keyword_array))
+    cursor = conn.cursor()
+    cursor.execute(sql, [const.PART_NOTE] + keyword_array)
+    return cursor.fetchall()
+
+
 def fetch_all_document_parts(conn, document_ids, keyword_string):
     conv_ids = [str(i) for i in document_ids]
     keyword_array = split_keywords_into_like_expressions(keyword_string)

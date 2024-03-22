@@ -23,8 +23,8 @@
 
 # Language Constants
 APP_NAME = "ColibriSO"
-APP_VERSION = "0.34.0"
-APP_VERSION_DATE = "2024-03-21"
+APP_VERSION = "0.35.0"
+APP_VERSION_DATE = "2024-03-22"
 
 LANGUAGE_EN = 'en'
 LANGUAGE_FA = 'fa'
@@ -36,13 +36,14 @@ LANGUAGE_FA_CAPTION = 'Farsi'
 LANGUAGE_DE_CAPTION = 'German'
 LANGUAGE_FR_CAPTION = 'French'
 
-PART_URL = 'url'
 PART_CONTENT = 'content'
-PART_SUMMARY_BRIEF = 'summary_brief'
-PART_SUMMARY_COMPREHENSIVE = 'summary_comprehensive'
 PART_EXPLANATION_BRIEF = 'explanation_brief'
 PART_EXPLANATION_COMPREHENSIVE = 'explanation_comprehensive'
+PART_NOTE = 'note'
 PART_PRIMARY = 'primary'
+PART_SUMMARY_BRIEF = 'summary_brief'
+PART_SUMMARY_COMPREHENSIVE = 'summary_comprehensive'
+PART_URL = 'url'
 
 METADATA_TITLE = 'title'
 METADATA_LANGUAGE = 'language'
@@ -53,6 +54,7 @@ SESSION_USER_OPEN_AI_API_KEY = "user_open_ai_api_key"
 SESSION_PASSWORD_CORRECT = "password_correct"
 
 ROUTE_ABOUT = "about"
+ROUTE_ADD_NOTE = "add_note"
 ROUTE_ADD_PDF = "add_pdf"
 ROUTE_ADD_PDFS = "add_pdfs"
 ROUTE_ADD_URL = "add_url"

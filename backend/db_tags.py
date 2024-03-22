@@ -43,3 +43,10 @@ def delete_tags(conn, tag_ids):
     del_tags_sql = ''' DELETE FROM tags where id in ({ids}) '''.format(
         ids=','.join('?' for _ in conv_ids))
     cursor.execute(del_tags_sql, conv_ids)
+
+def create_document_tag(conn, document_id, tag_id):
+    sql = ''' INSERT INTO document_tags(document_id, tag_id)
+              VALUES(?, ?) '''
+    cur = conn.cursor()
+    cur.execute(sql, (int(document_id), int(tag_id)))
+    return cur.lastrowid

@@ -9,6 +9,6 @@ CREATE TABLE document_tags (
         document_id integer NOT NULL,
         tag_id integer NOT NULL,
         foreign key (document_id) references documents(id),
-        foreign key (tag_id) references tags(id),
+        foreign key (tag_id) references tags(id)
         );
 

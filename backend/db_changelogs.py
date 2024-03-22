@@ -1,5 +1,6 @@
 from sqlite3 import Error
 import os
+import traceback
 
 SQL_CREATE_DB_CHANGELOGS_TABLE = """ CREATE TABLE IF NOT EXISTS db_change_logs (
         id integer PRIMARY KEY,
@@ -26,10 +27,14 @@ def apply_db_changelogs(conn):
                 print("Applying changelog: ", changelog)
                 with open("db_changelogs/" + changelog, "r") as file:
                     content = file.read()
-                    c.execute("INSERT INTO db_change_logs (name, content) VALUES (?, ?)", (changelog, content))
-                    conn.commit()
-                    c.executescript(content)
-                    conn.commit()
+                    try:
+                        c.execute("INSERT INTO db_change_logs (name, content) VALUES (?, ?)", (changelog, content))
+                        c.executescript(content)
+                        conn.commit()
+                    except:
+                        conn.rollback()
+                        traceback.print_exc()
+                        raise
             else:
                 print("Changelog already applied: ", changelog)
         print("Changelogs: ", changelogs)
