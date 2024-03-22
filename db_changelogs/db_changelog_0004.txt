@@ -1,0 +1,14 @@
+CREATE TABLE tags (
+        id integer PRIMARY KEY NOT NULL,
+        creation_time text NOT NULL,
+        tag_name text NOT NULL
+        );
+
+CREATE TABLE document_tags (
+        id integer PRIMARY KEY NOT NULL,
+        document_id integer NOT NULL,
+        tag_id integer NOT NULL,
+        foreign key (document_id) references documents(id),
+        foreign key (tag_id) references tags(id),
+        );
+

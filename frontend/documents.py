@@ -25,10 +25,11 @@ import streamlit as st
 
 # https://docs.streamlit.io/library/api-reference/layout
 
-from backend.database import connect_to_colibri_db, fetch_all_documents, delete_document, fetch_all_podcasts, \
-    add_document_to_podcast, create_summary_for_document
+from backend.database import connect_to_colibri_db, fetch_all_documents, delete_document
 import pandas as pd
 
+from backend.db_podcasts import fetch_all_podcasts, add_document_to_podcast
+from backend.db_summary import create_summary_for_document
 from frontend.show_content_detail import showContent
 from frontend.show_details_detail import showDetails
 from frontend.show_summary_detail import showSummary
@@ -131,7 +132,7 @@ def load_view():
             finally:
                 conn.close()
             if addedCount > 1:
-              st.success("Documents successfully added to podcast")
+              st.success(f"{addedCount} Document(s) successfully added to podcast".format(addedCount=addedCount))
             elif addedCount == 1:
                 st.success("Document successfully added to podcast")
             elif errorCount == 0:

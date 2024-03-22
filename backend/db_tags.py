@@ -21,23 +21,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from backend import constants as const
 
-NAVBAR_PATHS = {
-    'DOCUMENTS': const.ROUTE_DOCUMENTS,
-    'ADD URL': const.ROUTE_ADD_URL,
-    'ADD PDF': const.ROUTE_ADD_PDF,
-    'ADD PDFS': const.ROUTE_ADD_PDFS,
-    'PODCASTS': const.ROUTE_PODCASTS,
-    'EXPLAIN': const.ROUTE_EXPLAIN,
-    'TRANSLATE': const.ROUTE_TRANSLATE
-}
+def fetch_all_tags(conn):
+    sql = ''' SELECT id, creation_time, tag_name from tags order by tag_name'''
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    return cursor.fetchall()
 
-SETTINGS = {
-    'ABOUT': const.ROUTE_ABOUT,
-    'CHAT': const.ROUTE_CHAT,
-    'OPTIONS': const.ROUTE_OPTIONS,
-    'CONFIGURATION': const.ROUTE_CONFIGURATION,
-    'TAGS': const.ROUTE_TAGS,
-    'LOGOUT': const.ROUTE_LOGOUT
-}
+def create_tag(conn, podcast):
+    sql = ''' INSERT INTO tags(creation_time, tag_name)
+              VALUES(?, ?) '''
+    cur = conn.cursor()
+    cur.execute(sql, podcast)
+    return cur.lastrowid
+
+def delete_tags(conn, tag_ids):
+    conv_ids = [str(i) for i in tag_ids]
+
+    cursor = conn.cursor()
+
+    del_tags_sql = ''' DELETE FROM tags where id in ({ids}) '''.format(
+        ids=','.join('?' for _ in conv_ids))
+    cursor.execute(del_tags_sql, conv_ids)

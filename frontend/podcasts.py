@@ -23,11 +23,13 @@
 
 import streamlit as st
 
-from backend.database import connect_to_colibri_db, fetch_all_podcasts, create_podcast, delete_podcast, \
-    fetch_all_document_parts_with_audio, fetch_podcast_parts, fetch_audio_data, update_podcast_parts_listened_status
+from backend.database import connect_to_colibri_db, fetch_audio_data
 import pandas as pd
 import backend.constants as const
 from datetime import datetime
+
+from backend.db_podcasts import create_podcast, fetch_all_podcasts, fetch_podcast_parts, \
+    update_podcast_parts_listened_status, delete_podcast
 from frontend.utils import dataframe_with_selections
 
 
@@ -82,6 +84,7 @@ def load_view():
                 conn = connect_to_colibri_db()
                 try:
                     delete_podcast(conn, podcasts_selection["Id"].values)
+                    conn.commit()
                 finally:
                     conn.close()
             st.success("Documents successfully deleted")
