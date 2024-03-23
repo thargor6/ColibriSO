@@ -22,19 +22,42 @@
 # SOFTWARE.
 
 import streamlit as st
-from backend.database import connect_to_colibri_db, create_document, create_document_part_with_text_content, \
-    create_document_part_with_binary_content, fetch_all_notes
+from backend.database import connect_to_colibri_db, create_document, create_document_part_with_text_content, fetch_all_notes
 from datetime import datetime
 from backend import constants as const
 from backend.db_tags import fetch_all_tags, create_document_tag
 import pandas as pd
 
 from frontend.utils import dataframe_with_selections
-
+import streamlit_antd_components as sac
 
 def load_view():
     st.title('Notes')
+
+    sac.tree(items=[
+        sac.TreeItem('item1', tag=[sac.Tag('Tag', color='red'), sac.Tag('Tag2', color='cyan')]),
+        sac.TreeItem('item2', icon='apple', description='item description', children=[
+            sac.TreeItem('tooltip', icon='github', tooltip='item tooltip'),
+            sac.TreeItem('item2-2', children=[
+                sac.TreeItem('item2-2-1'),
+                sac.TreeItem('item2-2-2'),
+                sac.TreeItem('item2-2-3'),
+            ]),
+        ]),
+        sac.TreeItem('disabled', disabled=True),
+        sac.TreeItem('item3', children=[
+            sac.TreeItem('item3-1'),
+            sac.TreeItem('item3-2'),
+        ]),
+    ], label='label', index=0, align='center', size='md', icon='table', open_all=True, checkbox=True)
+
     st.subheader('Create a new note')
+    sac.tags([
+        sac.Tag(label='tag'),
+        sac.Tag(label='no border', bordered=False),
+        sac.Tag(label='closable', closable=True),
+        sac.Tag(label='link', icon='send', link='https://ant.design/components/tag'),
+    ], align='center')
 
     conn = connect_to_colibri_db()
     try:

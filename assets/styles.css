@@ -98,6 +98,6 @@ h1 {
 
 .dropdown a:hover {background-color: rgba(221, 221, 221, 0.233);}
 
-iframe{
+iframe[data-testid="stIFrame"]{
     height: 0rem;
 }

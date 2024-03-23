@@ -27,7 +27,6 @@ from backend import constants as const
 
 def navigation():
     route = utl.get_current_route()
-
     if route == const.ROUTE_ABOUT:
         about.load_view()
     elif route == const.ROUTE_ADD_NOTE:
