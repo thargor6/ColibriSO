@@ -25,6 +25,7 @@ from backend import constants as const
 
 NAVBAR_PATHS = {
     'DOCUMENTS': const.ROUTE_DOCUMENTS,
+    'QUICK SUMMARY': const.ROUTE_QUICK_SUMMARY,
     'ADD NOTE': const.ROUTE_ADD_NOTE,
     'ADD PDFS': const.ROUTE_ADD_PDFS,
     'PODCASTS': const.ROUTE_PODCASTS,
@@ -37,7 +38,6 @@ SETTINGS = {
     'ADD URL': const.ROUTE_ADD_URL,
     'ADD PDF': const.ROUTE_ADD_PDF,
     'CHAT': const.ROUTE_CHAT,
-    'OPTIONS': const.ROUTE_OPTIONS,
     'CONFIGURATION': const.ROUTE_CONFIGURATION,
     'TAGS': const.ROUTE_TAGS,
     'LOGOUT': const.ROUTE_LOGOUT
