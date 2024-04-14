@@ -24,25 +24,28 @@
 import streamlit as st
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-from backend.database import connect_to_colibri_db, create_document, create_document_part_with_text_content, create_document_part_with_binary_content
-from datetime import datetime
 from langchain_community.document_loaders import NewsURLLoader
 from PyPDF2 import PdfReader
 from backend import constants as const
-from backend.db_summary import create_summary_for_document, create_chunked_summary
+from backend.db_summary import create_chunked_summary
 from backend.openai import text_to_speech
 import os
 
 
 def load_view():
-    uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
-
-    url = st.text_input('original url (alternative)')
-    #uploaded_url_file = st.file_uploader("Upload a TXT file for url (optional)", type="txt")
-
-    summary_type = st.selectbox('type', [const.PART_SUMMARY_BRIEF, const.PART_SUMMARY_COMPREHENSIVE], index=1)
-    summary_language = st.selectbox('language', [const.LANGUAGE_EN_CAPTION, const.LANGUAGE_DE_CAPTION, const.LANGUAGE_FR_CAPTION, const.LANGUAGE_FA_CAPTION], index=1)
-    voice = st.selectbox('voice', [const.SPEECH_VOICE_ALLOY, const.SPEECH_VOICE_ECHO, const.SPEECH_VOICE_FABLE, const.SPEECH_VOICE_ONYX, const.SPEECH_VOICE_NOVA, const.SPEECH_VOICE_SHIMMER], index=4)
+    col1, col2 = st.columns(2)
+    with col1:
+        uploaded_file = st.file_uploader("upload a PDF file", type="pdf")
+    with col2:
+        st.text("or")
+        url = st.text_input('enter url')
+    col3, col4, col5 = st.columns(3)
+    with col3:
+        summary_type = st.selectbox('summary type', [const.PART_SUMMARY_BRIEF, const.PART_SUMMARY_COMPREHENSIVE], index=1)
+    with col4:
+        summary_language = st.selectbox('language', [const.LANGUAGE_EN_CAPTION, const.LANGUAGE_DE_CAPTION, const.LANGUAGE_FR_CAPTION, const.LANGUAGE_FA_CAPTION], index=1)
+    with col5:
+        voice = st.selectbox('voice', [const.SPEECH_VOICE_ALLOY, const.SPEECH_VOICE_ECHO, const.SPEECH_VOICE_FABLE, const.SPEECH_VOICE_ONYX, const.SPEECH_VOICE_NOVA, const.SPEECH_VOICE_SHIMMER], index=4)
     if st.button('create summary'):
         st.subheader('Content')
         with st.spinner('Loading document...'):
@@ -55,15 +58,24 @@ def load_view():
                     page = reader.pages[page_number]
                     page_text = page.extract_text()
                     document_content += page_text
+            elif url is not None and url != "":
+                urls = [
+                    url,
+                ]
+                loader = NewsURLLoader(urls=urls)
+                documents = loader.load()
+                data = documents[0]
+                document_content = data.page_content
             else:
-                document_content = ""
+                st.error('Please upload a PDF file or enter an URL.')
+                return
             st.text_area("Content", height=120, value=document_content)
 
         if document_content is not None and document_content != "":
             st.subheader('Summary')
             brief_summary = summary_type == const.PART_SUMMARY_BRIEF
             with st.spinner('Creating summary...'):
-                summary = summary = create_chunked_summary(brief_summary, document_content, const.getLanguageId(summary_language))
+                summary = create_chunked_summary(brief_summary, document_content, const.getLanguageId(summary_language))
                 st.text_area("Summary", height=120, value=summary)
 
             if summary is not None and summary != "":
@@ -86,6 +98,3 @@ def load_view():
                                 in_file.close()
                         finally:
                             os.remove(audio_path)
-
-
-

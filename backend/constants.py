@@ -23,8 +23,8 @@
 
 # Language Constants
 APP_NAME = "ColibriSO"
-APP_VERSION = "0.36.0"
-APP_VERSION_DATE = "2024-03-23"
+APP_VERSION = "0.37.0"
+APP_VERSION_DATE = "2024-03-24"
 
 LANGUAGE_EN = 'en'
 LANGUAGE_FA = 'fa'
@@ -63,10 +63,12 @@ ROUTE_CONFIGURATION = "configuration"
 ROUTE_DOCUMENTS = "documents"
 ROUTE_EXPLAIN = "explain"
 ROUTE_LOGOUT = "logout"
-ROUTE_OPTIONS = "options"
 ROUTE_PODCASTS = "podcasts"
+ROUTE_QUICK_SUMMARY = "quick_summary"
 ROUTE_TAGS = "tags"
 ROUTE_TRANSLATE = "translate"
+
+SAC_ICONS = ['apple', 'folder', 'github', 'table']
 
 MIMETYPE_PDF = "application/pdf"
 MIMETYPE_MP3 = "audio/mp3"
@@ -74,8 +76,8 @@ MIMETYPE_MP3 = "audio/mp3"
 UI_DEFAULT_TEXT_AREA_HEIGHT = 400
 UI_DEFAULT_TEXT_AREA_MAX_CHARS = 10000
 
-#OPENAI_DFLT_MODEL = 'gpt-4'
-OPENAI_DFLT_MODEL = 'gpt-3.5-turbo'
+OPENAI_DFLT_MODEL = 'gpt-4'
+#OPENAI_DFLT_MODEL = 'gpt-3.5-turbo'
 OPENAI_DFLT_TEMPERATURE = 0.0
 OPENAI_DFLT_SUMMARY_CHUNKSIZE = 12000
 

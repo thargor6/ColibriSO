@@ -33,48 +33,22 @@ import streamlit_antd_components as sac
 
 def load_view():
     st.title('Notes')
-
-    sac.tree(items=[
-        sac.TreeItem('item1', tag=[sac.Tag('Tag', color='red'), sac.Tag('Tag2', color='cyan')]),
-        sac.TreeItem('item2', icon='apple', description='item description', children=[
-            sac.TreeItem('tooltip', icon='github', tooltip='item tooltip'),
-            sac.TreeItem('item2-2', children=[
-                sac.TreeItem('item2-2-1'),
-                sac.TreeItem('item2-2-2'),
-                sac.TreeItem('item2-2-3'),
-            ]),
-        ]),
-        sac.TreeItem('disabled', disabled=True),
-        sac.TreeItem('item3', children=[
-            sac.TreeItem('item3-1'),
-            sac.TreeItem('item3-2'),
-        ]),
-    ], label='label', index=0, align='center', size='md', icon='table', open_all=True, checkbox=True)
-
     st.subheader('Create a new note')
-    sac.tags([
-        sac.Tag(label='tag'),
-        sac.Tag(label='no border', bordered=False),
-        sac.Tag(label='closable', closable=True),
-        sac.Tag(label='link', icon='send', link='https://ant.design/components/tag'),
-    ], align='center')
-
     conn = connect_to_colibri_db()
     try:
-        tag_rows = fetch_all_tags(conn)
+        tag_rows = fetch_all_tags(conn, None)
         all_tags = [tag[2] for tag in tag_rows]
     finally:
         conn.close()
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
     with col1:
-      tag1 = st.selectbox('select a tag', all_tags, key='tag1', index=None)
+        title = st.text_input('Title')
     with col2:
-      tag2 = st.selectbox('select a tag', all_tags, key='tag2', index=None)
-    with col3:
-      tag3 = st.selectbox('select a tag', all_tags, key='tag3', index=None)
+        # https://nicedouble-streamlitantdcomponentsdemo-app-middmy.streamlit.app/
+        tagItems = [sac.CasItem(tag) for tag in all_tags]
+        selectedTags = sac.cascader(items=tagItems, label='tags', index=None, multiple=True, search=True, clear=True)
 
-    title = st.text_input('Title')
     note =  st.text_area("Note", height=120)
 
     if st.button('add note'):
@@ -87,16 +61,9 @@ def load_view():
                 document_part_url = (document_id, const.PART_NOTE, None, note);
                 create_document_part_with_text_content(conn, document_part_url)
 
-                if tag1 is not None:
-                    tag1_id = [tag[0] for tag in tag_rows if tag[2] == tag1][0]
-                    print(document_id, tag1_id)
-                    create_document_tag(conn, document_id, tag1_id)
-                if tag2 is not None:
-                    tag2_id = [tag[0] for tag in tag_rows if tag[2] == tag2][0]
-                    create_document_tag(conn, document_id, tag2_id)
-                if tag3 is not None:
-                    tag3_id = [tag[0] for tag in tag_rows if tag[2] == tag3][0]
-                    create_document_tag(conn, document_id, tag3_id)
+                for selectedTag in selectedTags:
+                    tag_id = [tag[0] for tag in tag_rows if tag[2] == selectedTag][0]
+                    create_document_tag(conn, document_id, tag_id)
             except:
                 conn.rollback()
                 raise

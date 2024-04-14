@@ -1,7 +1,11 @@
 CREATE TABLE tags (
         id integer PRIMARY KEY NOT NULL,
+        parent_tag_id integer NULL,
         creation_time text NOT NULL,
-        tag_name text NOT NULL
+        tag_name text NOT NULL,
+        description text NULL,
+        icon_name text NULL,
+        foreign key (parent_tag_id) references tags(id)
         );
 
 CREATE TABLE document_tags (

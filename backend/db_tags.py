@@ -22,15 +22,23 @@
 # SOFTWARE.
 
 
-def fetch_all_tags(conn):
-    sql = ''' SELECT id, creation_time, tag_name from tags order by tag_name'''
+def fetch_all_tags(conn, parent_tag_id):
     cursor = conn.cursor()
-    cursor.execute(sql)
+    if parent_tag_id is None:
+      sql = ''' SELECT id, creation_time, tag_name, icon_name, description, parent_tag_id from tags 
+                where parent_tag_id is null
+                order by tag_name'''
+      cursor.execute(sql)
+    else:
+      sql = ''' SELECT id, creation_time, tag_name, icon_name, description, parent_tag_id from tags 
+                where parent_tag_id = ? 
+                order by tag_name'''
+      cursor.execute(sql, (int(parent_tag_id),))
     return cursor.fetchall()
 
 def create_tag(conn, podcast):
-    sql = ''' INSERT INTO tags(creation_time, tag_name)
-              VALUES(?, ?) '''
+    sql = ''' INSERT INTO tags(creation_time, tag_name, description, icon_name, parent_tag_id)
+              VALUES(?, ?, ?, ?, ?) '''
     cur = conn.cursor()
     cur.execute(sql, podcast)
     return cur.lastrowid
