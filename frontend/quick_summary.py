@@ -27,7 +27,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import NewsURLLoader
 from PyPDF2 import PdfReader
 from backend import constants as const
-from backend.db_summary import create_chunked_summary
+from backend.db_summary import create_chunked_summary, split_text
 from backend.openai import text_to_speech
 import os
 
@@ -49,7 +49,15 @@ def load_view():
     if st.button('create summary'):
         st.subheader('Content')
         with st.spinner('Loading document...'):
-            if uploaded_file is not None:
+            if url is not None and url != "":
+                urls = [
+                    url,
+                ]
+                loader = NewsURLLoader(urls=urls)
+                documents = loader.load()
+                data = documents[0]
+                document_content = data.page_content
+            elif uploaded_file is not None:
                 reader = PdfReader(uploaded_file)
                 num_pages = len(reader.pages)
 
@@ -58,14 +66,6 @@ def load_view():
                     page = reader.pages[page_number]
                     page_text = page.extract_text()
                     document_content += page_text
-            elif url is not None and url != "":
-                urls = [
-                    url,
-                ]
-                loader = NewsURLLoader(urls=urls)
-                documents = loader.load()
-                data = documents[0]
-                document_content = data.page_content
             else:
                 st.error('Please upload a PDF file or enter an URL.')
                 return
@@ -74,8 +74,11 @@ def load_view():
         if document_content is not None and document_content != "":
             st.subheader('Summary')
             brief_summary = summary_type == const.PART_SUMMARY_BRIEF
+
             with st.spinner('Creating summary...'):
-                summary = create_chunked_summary(brief_summary, document_content, const.getLanguageId(summary_language))
+                progress_bar = st.progress(0, "Creating and merging summary parts...")
+                chunk_count = len(split_text(document_content))
+                summary = create_chunked_summary(brief_summary, document_content, const.getLanguageId(summary_language), progress_bar, chunk_count)
                 st.text_area("Summary", height=120, value=summary)
 
             if summary is not None and summary != "":
@@ -86,7 +89,10 @@ def load_view():
                         length_function = len,
                     )
                     splitted_texts = text_splitter.split_text(summary)
+                    chunk_count = len(splitted_texts)
+                    progress_bar = st.progress(0, "Creating audio parts...")
 
+                    count = 0
                     for chunk_content in splitted_texts:
                         audio_path = text_to_speech(chunk_content, voice, const.OPENAI_DFLT_SPEECH_MODEL_QUALITY)
                         try:
@@ -98,3 +104,5 @@ def load_view():
                                 in_file.close()
                         finally:
                             os.remove(audio_path)
+                        count += 1
+                        progress_bar.progress(count / chunk_count)

@@ -70,20 +70,31 @@ def create_summary_for_document(conn, document_id, summary_type, summary_languag
     return True
 
 
-def create_chunked_summary(brief_summary, document_content, summary_language_id):
+def split_text(document_content):
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size = const.OPENAI_DFLT_SUMMARY_CHUNKSIZE,
         chunk_overlap  = 50,
         length_function = len,
     )
     splitted_texts = text_splitter.split_text(document_content)
+    return splitted_texts
+
+
+def create_chunked_summary(brief_summary, document_content, summary_language_id, progress_bar, chunk_count):
+    splitted_texts = split_text(document_content)
     if len(splitted_texts) == 1:
         summary = simple_summary(const.getLanguageCaption(summary_language_id), document_content, brief_summary)
+        if progress_bar is not None:
+            progress_bar.progress(1.0)
     else:
         chunk_summaries = ""
+        counter = 0
         for chunk_content in splitted_texts:
             chunk_summary = simple_summary(const.getLanguageCaption(summary_language_id), chunk_content, brief_summary)
             chunk_summaries += chunk_summary + " "
-        summary = create_chunked_summary(brief_summary, chunk_summaries, summary_language_id)
+            if progress_bar is not None:
+                counter += 1
+                progress_bar.progress((counter + 1) / (chunk_count+1))
+        summary = create_chunked_summary(brief_summary, chunk_summaries, summary_language_id,None, None)
     return summary
 
